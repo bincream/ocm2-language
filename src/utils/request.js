@@ -5,7 +5,7 @@ import {
 import store from '@/store'
 import {
   getToken,
-  getUserid
+  getUserId
   // getSalesid
 } from '@/utils/auth'
 import {
@@ -26,7 +26,7 @@ service.interceptors.request.use(
 
     if (store.getters.token) {
       config.headers.Authorization = 'Bearer ' + getToken()
-      config.headers.userId = getUserid()
+      config.headers.userId = getUserId()
       // config.headers.salesId = getSalesid()
     } else {
       config.headers.Authorization = 'Basic ' + new Base64().encode('web' + ':' + '123456')

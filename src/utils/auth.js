@@ -1,9 +1,9 @@
 import Cookies from 'js-cookie'
 
-const TokenKey = 'shanghai-token'
-const Username = 'shanghai-username'
-const Userid = 'shanghai-Userid'
-// const Salesid = 'shanghai-Salesid'
+const TokenKey = 'ocm2-token'
+const Username = 'ocm2-username'
+const UserId = 'ocm2-Userid'
+
 export function getToken() {
   return Cookies.get(TokenKey)
 }
@@ -28,24 +28,13 @@ export function removeUsername() {
   return Cookies.remove(Username)
 }
 export function getUserId() {
-  return Cookies.get(Userid)
+  return Cookies.get(UserId)
 }
 
 export function setUserId(userid) {
-  return Cookies.set(Userid, userid)
+  return Cookies.set(UserId, userid)
 }
 
 export function removeUserId() {
-  return Cookies.remove(Userid)
+  return Cookies.remove(UserId)
 }
-// export function getSalesid() {
-//   return Cookies.get(Salesid)
-// }
-
-// export function setSalesid(salesid) {
-//   return Cookies.set(Salesid, salesid)
-// }
-
-// export function removeSalesid() {
-//   return Cookies.remove(Salesid)
-// }
