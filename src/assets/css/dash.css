@@ -1,0 +1,98 @@
+/* // 信息窗体 */
+.infoBox {
+  display: flex;
+  justify-content: space-between;
+}
+
+.infoBoxContent {
+  padding: 5px 15px;
+  position: relative;
+}
+
+.infoBoxContent p {
+  margin: 0;
+  padding: 5px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pdBottom {
+  padding-bottom: 10px;
+}
+
+.infoBoxContent .title {
+  font-size: 14px;
+  font-weight: 600;
+  width: 120px;
+  display: inline-block;
+  margin-bottom: 0;
+}
+
+.infoBoxContent .content {
+  font-size: 14px;
+  color: rgba(68, 68, 68, 1);
+}
+
+.border {
+  border-bottom: 1px solid rgba(68, 68, 68, 0.5);
+}
+
+.infoBox:before {
+  content: "";
+  width: 0;
+  height: 0;
+  border: 20px solid transparent;
+  border-top-color: white;
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  margin-left: -20px;
+}
+
+.hole-area {
+  width: 200px;
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.holeInfo-area {
+  width: 200px;
+  height: 100px;
+  background-color: white;
+  display: none;
+  position: absolute;
+  top: -120px;
+  left: 0;
+  box-shadow: 0px 2px 13px 0px rgba(0, 0, 0, 0.5);
+  border-radius: 13px;
+  z-index: 101;
+  padding: 10px;
+}
+
+.well-area {
+  width: 30%;
+  text-align: center;
+}
+
+.well-area img {
+  width: 46px;
+  height: 46px;
+}
+
+.circle-area {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle {
+  width: 33px;
+  height: 33px;
+  border: 4px solid rgba(66, 135, 255, 1);
+  border-radius: 100%;
+}

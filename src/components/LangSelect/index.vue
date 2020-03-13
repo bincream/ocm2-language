@@ -25,19 +25,6 @@ export default {
     handleSetLanguage(lang) {
       this.$i18n.locale = lang
       this.$store.dispatch('app/setLanguage', lang)
-
-      if (this.language === 'weiyu') {
-        this.$message({
-          message: 'تىل ئالماشتۇرۇش مۇۋەپپەقىيەتلىك بولدى',
-          type: 'success'
-        })
-      }
-      if (this.language === 'zh') {
-        this.$message({
-          message: '语言切换成功',
-          type: 'success'
-        })
-      }
     }
   }
 }

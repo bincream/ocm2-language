@@ -189,3 +189,161 @@ aside {
 .multiselect--active {
   z-index: 1000 !important;
 }
+
+i.mark {
+  color: red;
+  margin-right: 4px;
+  font-size: 16px;
+}
+
+.title {
+  line-height: 40px;
+  height: 40px;
+  font-size: 16px;
+  color: black;
+  position: relative;
+  // border-bottom: 1px solid #eeeeee;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+img.border {
+  width: 146px;
+  height: 146px;
+  line-height: 146px;
+  object-fit: contain;
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  vertical-align: top;
+}
+
+img.mini {
+  width: 100px;
+  height: 100px;
+  line-height: 146px;
+  object-fit: contain;
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  vertical-align: top;
+}
+.icon{
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  vertical-align: top;
+}
+
+.basic {
+  width: 100%;
+  font-size: 14px;
+  margin-top: 10px;
+
+
+  table {
+    width: 100%;
+    margin: 0 auto 20px;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .table_table{
+    width: 100%;
+    height: 100px;
+    margin: 20px auto 20px;
+    border-collapse: collapse;
+    font-size: 20px;
+  }
+
+  tr {
+    height: 45px;
+  }
+
+  .likeA {
+    color: #337ab7;
+    cursor: pointer;
+  }
+  .width5 {
+    text-align: right;
+    width: 5%;
+    font-weight: bold;
+  }
+  .width10 {
+    text-align: left;
+    width: 10%;
+    font-weight: bold;
+  }
+
+  .width15 {
+    text-align: left;
+    width: 15%;
+  }
+
+  .width21 {
+    text-align: left;
+    width: 21%;
+  }
+  .width20 {
+    text-align: right;
+    width: 20%;
+  }
+  .width33 {
+    width: 33%;
+  }
+
+  .font20 {
+    font-size: 20px;
+  }
+
+  .min-img-border {
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    object-fit: contain;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  .min-img-border+.min-img-border {
+    margin-left: 10px;
+  }
+
+  .border+.border {
+    margin-left: 10px;
+  }
+
+}
+
+.blackMark {
+  color: black;
+  font-weight: 600;
+  width: 12%;
+  text-align: right;
+}
+
+div::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+div::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+div::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, .1);
+  background-clip: padding-box;
+  border: solid transparent;
+  border-radius: 10px;
+}
+
+div::-webkit-scrollbar-track {
+  background-clip: padding-box;
+  border: solid transparent;
+  border-width: 1px;
+}

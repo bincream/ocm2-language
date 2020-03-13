@@ -38,14 +38,14 @@
           <span>{{ scope.row.type | type }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('form.actions')" width="200">
+      <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button
             v-if="checkPermission(['alarmInfo/info'])"
             type="primary"
             size="small"
             @click.stop="handleDetail(scope.row)"
-          >{{ $t('form.detail') }}</el-button>
+          >详情</el-button>
           <el-button
             v-show="scope.row.type == 0"
             v-if="checkPermission(['alarmInfo/resolve'])"
@@ -137,7 +137,7 @@
         </table>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogDetVisible = false">{{ $t('form.cancel') }}</el-button>
+        <el-button @click="dialogDetVisible = false">取消</el-button>
       </div>
     </el-dialog>
 
@@ -174,163 +174,163 @@
           v-show="solutionEdit.id"
           type="primary"
           @click="createData('solutionEdit')"
-        >{{ $t('form.confirm') }}</el-button>
-        <el-button @click="dialogFormVisible = false">{{ $t('form.cancel') }}</el-button>
+        >确认</el-button>
+        <el-button @click="dialogFormVisible = false">取消</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-// import { getAllList, getInfo, resolve } from '@/api/alarm/alarmInfo'
-// import waves from '@/directive/waves' // 水波纹指令
-// import checkPermission from '@/utils/permission' // 权限判断函数
-// export default {
-//   name: 'SysUser',
-//   directives: {
-//     waves
-//   },
-//   filters: {
-//     type: function(val) {
-//       switch (val) {
-//         case 0:
-//           return '未处理'
-//         case 1:
-//           return '已处理'
-//         default:
-//           break
-//       }
-//     },
-//     dangerLevel: function(val) {
-//       switch (val) {
-//         case 0:
-//           return '断纤'
-//         case 1:
-//           return 1
-//         case 2:
-//           return 2
-//         case 3:
-//           return 3
-//         default:
-//           break
-//       }
-//     },
-//     isAlarm: function(val) {
-//       switch (val) {
-//         case 0:
-//           return '提醒'
-//         case 1:
-//           return '报警'
-//         default:
-//           break
-//       }
-//     },
-//     white: function(val) {
-//       switch (val) {
-//         case 0:
-//           return '不是白名单类型'
-//         case 1:
-//           return '是白名单类型'
-//         default:
-//           break
-//       }
-//     }
-//   },
-//   data() {
-//     return {
-//       list: [],
-//       total: null,
-//       listLoading: true,
-//       listQuery: {
-//         page: 1,
-//         limit: 20
-//       },
-//       dialogDetVisible: false,
-//       alarmInfo: {},
-//       solutionEdit: {},
-//       soluTypelList: [{ id: 0, value: '未处理' }, { id: 1, value: '已处理' }],
-//       dialogFormVisible: false,
-//       rules: {
-//         solution: [
-//           { required: true, message: '请输入', trigger: 'blur' }
-//         ]
-//       }
-//     }
-//   },
-//   watch: {
-//     dialogDetVisible(val) {
-//       !val && setTimeout(() => {
-//         this.alarmInfo = {}
-//       }, 100)
-//     },
-//     dialogFormVisible(val) {
-//       !val && setTimeout(() => {
-//         this.$refs['solutionEdit'].resetFields()
-//         this.solutionEdit = {}
-//       }, 100)
-//     }
-//   },
-//   created() { },
-//   mounted() {
-//     this.getList()
-//   },
-//   methods: {
-//     checkPermission,
-//     getList() {
-//       this.listLoading = true
-//       getAllList(this.listQuery).then(response => {
-//         this.list = response.data.list
-//         this.total = response.data.total
-//         this.listLoading = false
-//       })
-//     },
-//     handleSizeChange(val) {
-//       this.listQuery.limit = val
-//       this.getList()
-//     },
-//     handleCurrentChange(val) {
-//       this.listQuery.page = val
-//       this.getList()
-//     },
-//     handleFilter() {
-//       if (this.listQuery.keywords === '') {
-//         this.listQuery.keywords = undefined
-//       }
-//       this.listQuery.page = 1
-//       this.getList()
-//     },
-//     handleDetail(row) {
-//       this.dialogDetVisible = true
-//       getInfo({ id: row.id }).then(response => {
-//         this.alarmInfo = response.data
-//       })
-//     },
-//     // 新增
-//     handleSolu(row) {
-//       this.solutionEdit.id = row.id
-//       this.solutionEdit.type = 1
-//       this.dialogFormVisible = true
-//     },
-//     handleSeeSolu(row) {
-//       this.solutionEdit.solution = row.solution
-//       this.dialogFormVisible = true
-//     },
-//     // 新增提交
-//     createData(formName) {
-//       this.$refs[formName].validate((valid) => {
-//         if (valid) {
-//           resolve(this.solutionEdit).then((response) => {
-//             if (response.data) {
-//               this.$message.success('操作成功')
-//               this.dialogFormVisible = false
-//               this.getList()
-//             } else {
-//               this.$message.error('操作失败')
-//             }
-//           })
-//         }
-//       })
-//     }
-//   }
-// }
-// </script>
+import { getAllList, getInfo, resolve } from '@/api/alarm/alarmInfo'
+import waves from '@/directive/waves' // 水波纹指令
+import checkPermission from '@/utils/permission' // 权限判断函数
+export default {
+  name: 'SysUser',
+  directives: {
+    waves
+  },
+  filters: {
+    type: function(val) {
+      switch (val) {
+        case 0:
+          return '未处理'
+        case 1:
+          return '已处理'
+        default:
+          break
+      }
+    },
+    dangerLevel: function(val) {
+      switch (val) {
+        case 0:
+          return '断纤'
+        case 1:
+          return 1
+        case 2:
+          return 2
+        case 3:
+          return 3
+        default:
+          break
+      }
+    },
+    isAlarm: function(val) {
+      switch (val) {
+        case 0:
+          return '提醒'
+        case 1:
+          return '报警'
+        default:
+          break
+      }
+    },
+    white: function(val) {
+      switch (val) {
+        case 0:
+          return '不是白名单类型'
+        case 1:
+          return '是白名单类型'
+        default:
+          break
+      }
+    }
+  },
+  data() {
+    return {
+      list: [],
+      total: null,
+      listLoading: true,
+      listQuery: {
+        page: 1,
+        limit: 20
+      },
+      dialogDetVisible: false,
+      alarmInfo: {},
+      solutionEdit: {},
+      soluTypelList: [{ id: 0, value: '未处理' }, { id: 1, value: '已处理' }],
+      dialogFormVisible: false,
+      rules: {
+        solution: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  watch: {
+    dialogDetVisible(val) {
+      !val && setTimeout(() => {
+        this.alarmInfo = {}
+      }, 100)
+    },
+    dialogFormVisible(val) {
+      !val && setTimeout(() => {
+        this.$refs['solutionEdit'].resetFields()
+        this.solutionEdit = {}
+      }, 100)
+    }
+  },
+  created() { },
+  mounted() {
+    this.getList()
+  },
+  methods: {
+    checkPermission,
+    getList() {
+      this.listLoading = true
+      getAllList(this.listQuery).then(response => {
+        this.list = response.data.list
+        this.total = response.data.total
+        this.listLoading = false
+      })
+    },
+    handleSizeChange(val) {
+      this.listQuery.limit = val
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      this.listQuery.page = val
+      this.getList()
+    },
+    handleFilter() {
+      if (this.listQuery.keywords === '') {
+        this.listQuery.keywords = undefined
+      }
+      this.listQuery.page = 1
+      this.getList()
+    },
+    handleDetail(row) {
+      this.dialogDetVisible = true
+      getInfo({ id: row.id }).then(response => {
+        this.alarmInfo = response.data
+      })
+    },
+    // 新增
+    handleSolu(row) {
+      this.solutionEdit.id = row.id
+      this.solutionEdit.type = 1
+      this.dialogFormVisible = true
+    },
+    handleSeeSolu(row) {
+      this.solutionEdit.solution = row.solution
+      this.dialogFormVisible = true
+    },
+    // 新增提交
+    createData(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          resolve(this.solutionEdit).then((response) => {
+            if (response.data) {
+              this.$message.success('操作成功')
+              this.dialogFormVisible = false
+              this.getList()
+            } else {
+              this.$message.error('操作失败')
+            }
+          })
+        }
+      })
+    }
+  }
+}
+</script>
