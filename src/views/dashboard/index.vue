@@ -45,14 +45,12 @@
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button
-            v-if="checkPermission(['alarmInfo/info'])"
             type="primary"
             size="small"
             @click.stop="handleDetail(scope.row)"
           >详情</el-button>
           <el-button
             v-show="scope.row.type == 0"
-            v-if="checkPermission(['alarmInfo/resolve'])"
             type="warning"
             size="small"
             @click.stop="handleSolu(scope.row)"
@@ -185,7 +183,7 @@
 </template>
 
 <script>
-import { getAllList, getInfo, resolve } from '@/api/alarm/alarmInfo'
+import { getAllList, getInfo, resolve } from '@/api/index'
 export default {
   name: 'Dashboard',
   filters: {
@@ -242,7 +240,9 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20
+        limit: 20,
+        beginCol: 0,
+        endCol: 36000
       },
       dialogDetVisible: false,
       alarmInfo: {},
@@ -253,6 +253,7 @@ export default {
         solution: [{ required: true, message: '请输入', trigger: 'change' }]
       },
       value: [0, 36000],
+
       marks: {
         0: '0',
         3000: '3000',
@@ -347,6 +348,8 @@ export default {
     },
     slider() {
       console.log(this.value)
+      this.listQuery.beginCol = this.value[0]
+      this.listQuery.endCol = this.value[1]
       this.getList()
     }
   }

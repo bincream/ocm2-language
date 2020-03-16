@@ -30,7 +30,6 @@
       <el-button v-waves class="filter-item" icon="el-icon-search" @click="handleFilter" />
 
       <el-button
-        v-if="checkPermission(['alarmHis/getNew'])"
         type="primary"
         class="filter-item"
         @click.stop="handleRefresh"
@@ -76,7 +75,6 @@
         <template slot-scope="scope">
           <el-button
             v-show="scope.row.type == 0"
-            v-if="checkPermission(['alarmHis/resolve'])"
             type="warning"
             size="small"
             @click.stop="handleSolu(scope.row)"

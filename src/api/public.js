@@ -9,3 +9,10 @@ export function roleList(query) {
   })
 }
 
+export function deviceParamQuery(query) {
+  return request({
+    url: '/api-web/public/deviceParamQuery',
+    method: 'get',
+    params: query
+  })
+}

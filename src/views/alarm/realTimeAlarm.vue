@@ -41,14 +41,12 @@
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button
-            v-if="checkPermission(['alarmInfo/info'])"
             type="primary"
             size="small"
             @click.stop="handleDetail(scope.row)"
           >详情</el-button>
           <el-button
             v-show="scope.row.type == 0"
-            v-if="checkPermission(['alarmInfo/resolve'])"
             type="warning"
             size="small"
             @click.stop="handleSolu(scope.row)"

@@ -9,16 +9,16 @@
         @keyup.enter.native="handleFilter"
       />
       <el-button v-waves class="filter-item" icon="el-icon-search" @click="handleFilter" />
-
+      <!--
       <FilenameOption v-model="filename" class="filter-item" />
-      <el-button type="primary" icon="document" class="filter-item" @click="handleDownload">导出Excel</el-button>
+      <el-button type="primary" icon="document" class="filter-item" @click="handleDownload">导出Excel</el-button> -->
 
-      <el-button
+      <!-- <el-button
         class="filter-item"
         style="position:absolute;right:0px"
         type="primary"
         @click="handleCreate"
-      >新增</el-button>
+      >新增</el-button> -->
     </div>
 
     <el-table
@@ -33,9 +33,9 @@
     >
       <el-table-column label="基站名称" prop="standName" />
       <el-table-column label="基站编号" prop="standNo" />
+      <el-table-column label="基站通道" prop="standChannel" />
       <el-table-column label="基站IP" prop="standIp" />
       <el-table-column label="基站精度" prop="precisions" />
-
       <el-table-column label="操作" width="260">
         <template slot-scope="scope">
           <el-button
@@ -48,11 +48,11 @@
             size="small"
             @click.stop="handleUpdate(scope.row)"
           >编辑</el-button>
-          <el-button
+          <!-- <el-button
             type="danger"
             size="small"
             @click.stop="handleDelete(scope.row)"
-          >删除</el-button>
+          >删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -105,6 +105,11 @@
             </tr>
             <tr>
               <td class="width33">
+                <el-form-item label="基站通道" prop="standChannel">
+                  <el-input v-model="standEdit.standChannel" size="small" placeholder="请输入" />
+                </el-form-item>
+              </td>
+              <td class="width33">
                 <el-form-item label="基站精度" prop="precisions">
                   <el-input v-model="standEdit.precisions" size="small" placeholder="请输入" />
                 </el-form-item>
@@ -129,10 +134,10 @@ import { getAllList, save, deleteData, update, getInfo, getPrecisions } from '@/
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
 import { validIp } from '@/utils'
-import FilenameOption from '@/views/components/FilenameOption'
+// import FilenameOption from '@/views/components/FilenameOption'
 export default {
   name: 'SysUser',
-  components: { FilenameOption },
+  // components: { FilenameOption },
   directives: {
     waves
   },
@@ -156,6 +161,9 @@ export default {
           { required: true, message: '请输入', trigger: 'blur' }
         ],
         standNo: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
+        standChannel: [
           { required: true, message: '请输入', trigger: 'blur' }
         ],
         standIp: [
@@ -227,10 +235,10 @@ export default {
     },
     // 修改
     handleUpdate(row) {
-      if (!checkPermission(['rscStation/info'])) {
-        this.$message.error('您没有详情权限')
-        return false
-      }
+      // if (!checkPermission(['rscStation/info'])) {
+      //   this.$message.error('您没有详情权限')
+      //   return false
+      // }
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       getInfo({ id: row.id }).then(response => {

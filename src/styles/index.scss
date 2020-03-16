@@ -247,7 +247,7 @@ img.mini {
     width: 100%;
     margin: 0 auto 20px;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .table_table{
@@ -269,6 +269,11 @@ img.mini {
   .width5 {
     text-align: right;
     width: 5%;
+    font-weight: bold;
+  }
+  .width9 {
+    text-align: left;
+    width: 9%;
     font-weight: bold;
   }
   .width10 {
