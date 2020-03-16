@@ -63,15 +63,15 @@
             <tr>
               <td class="blackMark">光源电压：</td>
               <td class="width9">
-                <span>{{ info.trainReminderTime }}V</span>
+                <span>{{ info.OSrc_Voltage }}V</span>
               </td>
               <td class="blackMark">机箱温度：</td>
               <td class="width9">
-                <span>{{ info.trainReminderTime }}℃</span>
+                <span>{{ info.Amb_InBoxTemp }}℃</span>
               </td>
               <td class="blackMark">光功率：</td>
               <td class="width9">
-                <span>{{ info.trainReminderTime }}mW</span>
+                <span>{{ info.OSrc_Power }}mW</span>
               </td>
               <td class="blackMark">电路主控板电流：</td>
               <td class="width9">
@@ -122,12 +122,12 @@
               <td class="width9">
                 <el-input
                   v-show="ope2Status == 'update2'"
-                  v-model="restEdit.creditQueryPrice"
+                  v-model="restEdit.SysCfg_SpaceR"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
                 />
-                <span v-show="ope2Status == 'info2'">{{ info.creditQueryPrice }}</span>
+                <span v-show="ope2Status == 'info2'">{{ info.SysCfg_SpaceR }}</span>
               </td>
               <td class="blackMark">
                 <span style="color: red">*</span>
@@ -136,12 +136,12 @@
               <td class="width9">
                 <el-input
                   v-show="ope2Status == 'update2'"
-                  v-model="restEdit.creditQueryPrice"
+                  v-model="restEdit.SysCfg_TimeR"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
                 />
-                <span v-show="ope2Status == 'info2'">{{ info.creditQueryPrice }}</span>
+                <span v-show="ope2Status == 'info2'">{{ info.SysCfg_TimeR }}</span>
               </td>
               <td class="blackMark">
                 <span style="color: red">*</span>
@@ -150,12 +150,12 @@
               <td class="width9">
                 <el-input
                   v-show="ope2Status == 'update2'"
-                  v-model="restEdit.averageNumber"
+                  v-model="restEdit.SysCfg_AvgTime"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
                 />
-                <span v-show="ope2Status == 'info2'">{{ info.averageNumber }}</span>
+                <span v-show="ope2Status == 'info2'">{{ info.SysCfg_AvgTime }}</span>
               </td>
               <td />
             </tr>
@@ -298,6 +298,7 @@ export default {
       uploadUrl1: process.env.VUE_APP_BASE_API + 'api-web/ossUpload/uploadFile',
       websocket: null,
       dialogImgVisible: false,
+      dpq: '',
       ope1Status: 'info1',
       ope2Status: 'info2',
       ope3Status: 'info3',
@@ -314,7 +315,6 @@ export default {
   created() { },
   mounted() {
     this.getDpq()
-    this.createWs()
     this.ope1Status = 'info1'
     this.ope2Status = 'info2'
     this.ope3Status = 'info3'
@@ -327,6 +327,7 @@ export default {
     getDpq() {
       deviceParamQuery().then(response => {
         this.dpq = response.data
+        this.createWs()
       })
     },
     handleUpdate() {
@@ -427,7 +428,7 @@ export default {
 
         // 连接打开的时候触发
         this.websocket.onopen = function(event) {
-          this.websocket.send('hello')
+          that.websocket.send(that.dpq)
           console.log('建立连接')
         }
 

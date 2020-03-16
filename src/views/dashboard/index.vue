@@ -25,7 +25,7 @@
       highlight-current-row
       height="500"
     >
-      <el-table-column label="基站名称" prop="alarmType" />
+      <el-table-column label="基站名称" prop="standName" />
       <el-table-column label="告警名称" prop="alarmType" />
       <el-table-column label="能量值" prop="amplitude" />
       <el-table-column label="开始点" prop="beginCol" />
