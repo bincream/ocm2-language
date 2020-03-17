@@ -142,15 +142,6 @@ export const constantRoutes = [
         }
       },
       {
-        path: 'realTimeVoice',
-        component: () => import('@/views/signal/realTimeVoice'),
-        name: 'RealTimeVoice',
-        meta: {
-          title: '实时声音',
-          roles: ['超级管理员']
-        }
-      },
-      {
         path: 'twoDimension',
         component: () => import('@/views/signal/twoDimension'),
         name: 'TwoDimension',
