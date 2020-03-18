@@ -57,7 +57,7 @@
       </el-table-column>
     </el-table>
 
-    <div class="pagination-container">
+    <!-- <div class="pagination-container">
       <el-pagination
         v-show="total>0"
         :current-page="listQuery.page"
@@ -69,7 +69,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
-    </div>
+    </div> -->
 
     <!--新增编辑页面 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="100%">

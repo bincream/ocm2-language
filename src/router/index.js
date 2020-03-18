@@ -82,7 +82,15 @@ export const constantRoutes = [
         meta: { title: '首页', icon: 'dashboard', affix: true }
       }
     ]
-  },
+  }
+
+]
+
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+ */
+export const asyncRoutes = [
   {
     path: '/profile',
     component: Layout,
@@ -105,8 +113,7 @@ export const constantRoutes = [
     name: 'systemtest',
     meta: {
       title: '系统测试',
-      icon: 'lock',
-      roles: ['超级管理员', 'editor'] // 可以在根导航中设置角色
+      icon: 'lock'
     },
     children: [
       {
@@ -114,8 +121,7 @@ export const constantRoutes = [
         component: () => import('@/views/systemtest/index'),
         name: 'Systemtest',
         meta: {
-          title: '系统测试',
-          roles: ['超级管理员'] // 或者只能在子导航中设置角色
+          title: '系统测试'
         }
       }
     ]
@@ -128,8 +134,7 @@ export const constantRoutes = [
     name: 'Signal',
     meta: {
       title: '信号调节',
-      icon: 'lock',
-      roles: ['超级管理员', 'editor'] // 可以在根导航中设置角色
+      icon: 'lock'
     },
     children: [
       {
@@ -137,8 +142,7 @@ export const constantRoutes = [
         component: () => import('@/views/signal/squiggle'),
         name: 'Squiggle',
         meta: {
-          title: '波形曲线',
-          roles: ['超级管理员']
+          title: '波形曲线'
         }
       },
       {
@@ -146,8 +150,7 @@ export const constantRoutes = [
         component: () => import('@/views/signal/twoDimension'),
         name: 'TwoDimension',
         meta: {
-          title: '二维振动',
-          roles: ['超级管理员']
+          title: '二维振动'
         }
       }
     ]
@@ -160,8 +163,7 @@ export const constantRoutes = [
     name: 'AiIdentify',
     meta: {
       title: 'AI识别',
-      icon: 'lock',
-      roles: ['超级管理员', 'editor'] // 可以在根导航中设置角色
+      icon: 'lock'
     },
     children: [
       {
@@ -169,17 +171,7 @@ export const constantRoutes = [
         component: () => import('@/views/AiIdentify/model'),
         name: 'Model',
         meta: {
-          title: '模型管理',
-          roles: ['超级管理员']
-        }
-      },
-      {
-        path: 'modelTraining',
-        component: () => import('@/views/AiIdentify/modelTraining'),
-        name: 'ModelTraining',
-        meta: {
-          title: '模型训练',
-          roles: ['超级管理员']
+          title: '模型管理'
         }
       },
       {
@@ -187,8 +179,7 @@ export const constantRoutes = [
         component: () => import('@/views/AiIdentify/identifyType'),
         name: 'IdentifyType',
         meta: {
-          title: '识别类型',
-          roles: ['超级管理员']
+          title: '识别类型'
         }
       }
     ]
@@ -201,8 +192,8 @@ export const constantRoutes = [
     name: 'alarm',
     meta: {
       title: '报警管理',
-      icon: 'lock',
-      roles: ['超级管理员', 'editor'] // 可以在根导航中设置角色
+      icon: 'lock'
+      // roles: ['超级管理员', 'editor'] // 可以在根导航中设置角色
     },
     children: [
       {
@@ -210,8 +201,7 @@ export const constantRoutes = [
         component: () => import('@/views/alarm/realTimeAlarm'),
         name: 'RealTimeAlarm',
         meta: {
-          title: '实时报警',
-          roles: ['超级管理员']
+          title: '实时报警'
         }
       },
       {
@@ -219,8 +209,7 @@ export const constantRoutes = [
         component: () => import('@/views/alarm/historicalAlarm'),
         name: 'HistoricalAlarm',
         meta: {
-          title: '历史报警',
-          roles: ['超级管理员']
+          title: '历史报警'
         }
       },
       {
@@ -228,8 +217,7 @@ export const constantRoutes = [
         component: () => import('@/views/alarm/timeStatistics'),
         name: 'timeStatistics',
         meta: {
-          title: '时间统计',
-          roles: ['超级管理员']
+          title: '时间统计'
         }
       },
       {
@@ -237,8 +225,7 @@ export const constantRoutes = [
         component: () => import('@/views/alarm/regionalStatistics'),
         name: 'regionalStatistics',
         meta: {
-          title: '区域统计',
-          roles: ['超级管理员']
+          title: '区域统计'
         }
       }
     ]
@@ -250,8 +237,8 @@ export const constantRoutes = [
     // alwaysShow: true, // 总是显示根菜单吗
     meta: {
       title: '设备维护',
-      icon: 'lock',
-      roles: ['超级管理员', 'editor'] // 可以在根导航中设置角色
+      icon: 'lock'
+      // roles: ['超级管理员', 'editor'] // 可以在根导航中设置角色
     },
     children: [
       {
@@ -259,8 +246,7 @@ export const constantRoutes = [
         component: () => import('@/views/maintain/index'),
         name: 'maintain',
         meta: {
-          title: '设备维护',
-          roles: ['超级管理员']
+          title: '设备维护'
         }
       }
     ]
@@ -319,15 +305,7 @@ export const constantRoutes = [
       }
     }
     ]
-  }
-]
-
-/**
- * asyncRoutes
- * the routes that need to be dynamically loaded based on user roles
- */
-export const asyncRoutes = [
-
+  },
   {
     path: '/permission',
     component: Layout,

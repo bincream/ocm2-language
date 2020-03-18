@@ -237,6 +237,7 @@ export default {
       currentRole: 'adminDashboard',
       list: [],
       total: null,
+      interval: null,
       listLoading: true,
       listQuery: {
         page: 1,
@@ -284,13 +285,38 @@ export default {
       }, 100)
     }
   },
-  created() { },
+  created() {
+  },
   mounted() {
     this.getList()
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.init()
+    })
+  },
+
+  beforeRouteLeave(to, from, next) {
+    this.out()
+    next()
+  },
 
   methods: {
-
+    init() {
+      const that = this
+      this.interval = setInterval(function() {
+        console.log('进入')
+        that.getList()
+      }, 5000)
+    },
+    out() {
+      console.log(this.interval)
+      if (this.interval) {
+        clearInterval(this.interval) // 关闭
+        this.interval = null
+        console.log('离开')
+      }
+    },
     getList() {
       this.listLoading = true
       getAllList(this.listQuery).then(response => {

@@ -2,14 +2,15 @@
   <div class="app-container">
     <div class="chart-container">
       <div class="title">全线时序图</div>
-      <div id="myChart" style="width: 100%; height: 100%" />
+      <div id="myChart" style="width: 100%; height: 80%" />
     </div>
 
   </div>
 </template>
 
 <script>
-import { list } from '@/api/signal/squiggle'
+// import { list } from '@/api/signal/squiggle'
+import { rscQuery } from '@/api/public'
 import echarts from 'echarts'
 import checkPermission from '@/utils/permission' // 权限判断函数
 import waves from '@/directive/waves' // 水波纹指令
@@ -44,6 +45,7 @@ export default {
   mounted() {
     this.initChart()
     this.getData()
+    this.getRsc()
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -54,49 +56,48 @@ export default {
   },
   methods: {
     checkPermission,
-
+    getRsc() {
+      rscQuery().then(response => {
+        this.rsc = response.data
+        this.createWs()
+      })
+    },
     getData() {
       this.xData = []
       this.y1Data = []
       this.y2Data = []
       this.y3Data = []
+    },
+    createWs() { // 二维振动ws
+      if (window.WebSocket) {
+        // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
+        this.websocket = new WebSocket('ws://192.168.199.108:9042/')
 
-      list(this.listQuery).then(response => {
-        this.infoCount.noPassCount = response.data.noPassCount
-        this.infoCount.getPastCount = response.data.getPastCount
-        if (response.data.getPastCount) {
-          const total = Number(response.data.noPassCount) + Number(response.data.getPastCount)
-          this.infoCount.passRate = (response.data.getPastCount / total * 100)
-        } else {
-          this.$message.error('当前时间没有数据')
-          this.infoCount.passRate = 0
+        // 当有消息过来的时候触发
+        const that = this
+        this.websocket.onmessage = function(event) {
+          const data = JSON.parse(event.data)
+          that.getWsData(data)
         }
 
-        // 一个月
-        let time = ''
-        if (this.listQuery.type === 1) {
-          time = '日'
-        } else if (this.listQuery.type === 2) {
-          time = '月'
+        // 连接关闭的时候触发
+        this.websocket.onclose = function(event) {
+          console.log('断开连接')
         }
 
-        response.data.ylist.forEach((item, index) => {
-          this.xData.push(index + 1 + time)
-          let rate = ''
-          if (item === 0) {
-            rate = '0%'
-          } else {
-            const num = (Number(item) + Number(response.data.nlist[index]))
-            rate = ((item / num) * 100).toFixed(2)
-          }
-          this.y3Data.push(rate)
-        })
+        // 连接打开的时候触发
+        this.websocket.onopen = function(event) {
+          that.websocket.send(that.rsc)
+          console.log('建立连接')
+        }
 
-        this.y1Data = response.data.ylist
-        this.y2Data = response.data.nlist
-
-        this.initChart()
-      })
+        this.websocket.onclose = function(event) {
+          console.log('连接断开')
+          // that.contextAudioStop()
+        }
+      } else {
+        this.$message.error('浏览器不支持WebSocket')
+      }
     },
     initChart() {
       this.chart = echarts.init(document.getElementById('myChart'))
@@ -144,7 +145,7 @@ export default {
         legend: {
           x: '5%',
           top: '10%',
-          data: ['通过数', '未通过数', '通过率']
+          data: ['0', '1', '2']
         },
         calculable: true,
         xAxis: [{
@@ -216,7 +217,7 @@ export default {
         ],
         series: [
           {
-            name: 'report.examReport.passNumber',
+            name: '强度',
             type: 'bar',
             barMaxWidth: 25,
             itemStyle: {
@@ -235,7 +236,7 @@ export default {
           },
 
           {
-            name: 'report.examReport.notpassNumber',
+            name: '',
             type: 'bar',
             barMaxWidth: 25,
             itemStyle: {
@@ -253,7 +254,7 @@ export default {
             },
             data: []
           }, {
-            name: 'report.examReport.passRate',
+            name: '',
             type: 'line',
             stack: 'total',
             symbolSize: 10,
