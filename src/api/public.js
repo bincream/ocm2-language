@@ -16,7 +16,7 @@ export function deviceParamQuery(query) {
     params: query
   })
 }
-
+// 基站下拉
 export function standList(query) {
   return request({
     url: '/api-web/public/baseStandList',
@@ -44,6 +44,14 @@ export function rscQuery(query) {
 export function vibQuery(query) {
   return request({
     url: '/api-web/public/vibQuery',
+    method: 'get',
+    params: query
+  })
+}
+// 类型下拉
+export function aiModelTypeList(query) {
+  return request({
+    url: '/api-web/public/aiModelTypeList',
     method: 'get',
     params: query
   })

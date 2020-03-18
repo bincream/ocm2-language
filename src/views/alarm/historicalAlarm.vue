@@ -61,7 +61,7 @@
           <span>{{ scope.row.type | type }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="320">
+      <el-table-column label="音频" width="320">
         <template slot-scope="scope">
           <audio :id="scope.row.id" controls="controls">
             <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->

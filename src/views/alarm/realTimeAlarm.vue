@@ -1,4 +1,4 @@
-/* eslint-disable vue/no-v-html */
+
 <template>
   <div class="app-container">
     <div class="filter-container" style="position:relative">
