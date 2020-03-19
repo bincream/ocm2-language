@@ -156,28 +156,28 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/AiIdentify',
+    path: '/Ai',
     component: Layout,
-    redirect: '/AiIdentify',
+    redirect: '/AiI',
     alwaysShow: true, // 总是显示根菜单吗
-    name: 'AiIdentify',
+    name: 'Ai',
     meta: {
       title: 'AI识别',
       icon: 'lock'
     },
     children: [
       {
-        path: 'model',
-        component: () => import('@/views/AiIdentify/model'),
-        name: 'Model',
+        path: 'aimodel',
+        component: () => import('@/views/Ai/aimodel'),
+        name: 'aimodel',
         meta: {
           title: '模型管理'
         }
       },
       {
-        path: 'identifyType',
-        component: () => import('@/views/AiIdentify/identifyType'),
-        name: 'IdentifyType',
+        path: 'aiModelType',
+        component: () => import('@/views/Ai/aiModelType'),
+        name: 'aiModelType',
         meta: {
           title: '识别类型'
         }

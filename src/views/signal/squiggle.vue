@@ -189,6 +189,7 @@ export default {
             show: false
           }
         }],
+        // 缩放
         dataZoom: [
           {
             show: true,

@@ -119,8 +119,8 @@ export default {
         this.$nextTick(() => {
           this.listQuery.baseStandId = this.standList[0].id
           this.listQuery.type = 1
-          this.listQuery.ymd = '2019-10-16'
         })
+        this.$set(this.listQuery, 'ymd', new Date().toLocaleDateString().replace(/\//g, '-'))
 
         this.getList()
       })
