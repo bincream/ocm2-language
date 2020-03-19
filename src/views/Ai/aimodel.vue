@@ -42,6 +42,11 @@
           <el-progress :text-inside="true" :stroke-width="26" :percentage="scope.row.process" />
         </template>
       </el-table-column>
+      <el-table-column label="训练状态">
+        <template slot-scope="scope">
+          <span>{{ scope.row.status | status }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="模型类型数" prop="typeCount" />
       <el-table-column label="模型存放路径" prop="path" />
       <el-table-column label="模型置信度" prop="score" />
@@ -63,9 +68,10 @@
             @click.stop="handleSign(scope.row)"
           >标记</el-button>
           <el-button
+            v-show="scope.row.status === 0"
             type="primary"
             size="small"
-            @click.stop="handleSolu(scope.row)"
+            @click.stop="handleTrain(scope.row)"
           >训练</el-button>
           <el-button
             type="primary"
@@ -75,7 +81,7 @@
           <el-button
             type="primary"
             size="small"
-            @click.stop="handleSolu(scope.row)"
+            @click.stop="handleSign(scope.row)"
           >导出</el-button>
         </template>
       </el-table-column>
@@ -488,7 +494,7 @@
 </template>
 
 <script>
-import { getAllList, getInfo, saveType, update, getHisList, save, deleteData, bindAlarm } from '@/api/AI/aimodel'
+import { getAllList, getInfo, saveType, update, getHisList, save, deleteData, bindAlarm, practice } from '@/api/AI/aimodel'
 import { aiModelTypeList } from '@/api/public'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
@@ -498,26 +504,22 @@ export default {
     waves
   },
   filters: {
+    status: function(val) {
+      switch (val) {
+        case 0:
+          return '未训练'
+        case 1:
+          return '训练中'
+        default:
+          break
+      }
+    },
     type: function(val) {
       switch (val) {
         case 0:
           return '未处理'
         case 1:
           return '已处理'
-        default:
-          break
-      }
-    },
-    dangerLevel: function(val) {
-      switch (val) {
-        case 0:
-          return '断纤'
-        case 1:
-          return 1
-        case 2:
-          return 2
-        case 3:
-          return 3
         default:
           break
       }
@@ -560,13 +562,7 @@ export default {
       importUrl: process.env.VUE_APP_BASE_API + 'api-web/rsc/rscCable/uploadExcel',
       uploadUrl: process.env.VUE_APP_BASE_API + 'api-web/public/uploadFile',
       fileList: [],
-<<<<<<< HEAD
-<<<<<<< HEAD
       ids: [],
-=======
->>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
-=======
->>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
       aiModelTypeList: [],
       modelInfo: {},
       modelEdit: {},
@@ -585,19 +581,7 @@ export default {
         ],
         typeId: [
           { required: true, message: '请选择', trigger: 'chage' }
-<<<<<<< HEAD
-<<<<<<< HEAD
         ],
-=======
-        ]
-      },
-      AddRules: {
->>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
-=======
-        ]
-      },
-      AddRules: {
->>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
         weight: [
           { required: true, message: '请选择', trigger: 'chage' }
         ],
@@ -698,8 +682,6 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
-<<<<<<< HEAD
-<<<<<<< HEAD
     handleTypeFilter() {
       if (this.listQueryType.keywords === '') {
         this.listQueryType.keywords = undefined
@@ -707,10 +689,6 @@ export default {
       this.listQueryType.page = 1
       this.getHistoryList()
     },
-=======
->>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
-=======
->>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
     handleDetail(row) {
       this.dialogDetVisible = true
       getInfo({ id: row.id }).then(response => {
@@ -718,18 +696,8 @@ export default {
       })
     },
     handleCurrentChangeType(val) {
-<<<<<<< HEAD
-<<<<<<< HEAD
       this.listQueryType.page = val
       this.getHistoryList()
-=======
-      this.listQueryMember.page = val
-      this.getMembersList()
->>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
-=======
-      this.listQueryMember.page = val
-      this.getMembersList()
->>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
     },
     handleSizeChangeType(val) {
       this.listQueryType.limit = val
@@ -742,6 +710,12 @@ export default {
       this.ids = val.map(x => x.id)
       console.log(this.ids)
     },
+    // 训练
+    handleTrain(row) {
+      practice({ id: row.id }).then(response => {
+        this.getList()
+      })
+    },
     // 标记
     handleSign(row) {
       this.aiModelId = row.id
@@ -751,16 +725,10 @@ export default {
     },
     // 标记
     signCreate() {
-<<<<<<< HEAD
-<<<<<<< HEAD
       if (this.ids.length === 0) {
         this.$message.error('至少需要选择一条数据')
         return false
       }
-=======
->>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
-=======
->>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
       this.signEdit.alarmIdList = this.ids
       bindAlarm(this.signEdit).then((response) => {
         if (response.data) {
@@ -912,3 +880,12 @@ export default {
   }
 }
 </script>
+<style>
+.el-progress-bar__innerText {
+    display: inline-block;
+    vertical-align: middle;
+    color: #000;
+    font-size: 12px;
+    margin: 0 5px;
+}
+</style>

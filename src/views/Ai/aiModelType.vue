@@ -72,8 +72,13 @@
           <img :src="scope.row.alarmIconBlue" al class="mini" @click.stop="bigImg(scope.row.alarmIconBlue)">
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="250">
+      <el-table-column label="操作" width="320">
         <template slot-scope="scope">
+          <el-button
+            type="info"
+            size="small"
+            @click.stop="handleDetail(scope.row)"
+          >详情</el-button>
           <el-button
             type="primary"
             size="small"
@@ -344,7 +349,7 @@
             <td class="width21">
               <audio :id="item.id" controls="controls">
                 <source :src="item.oggUrl">
-                <source :src="scope.row.fileName">
+                <!-- <source :src="scope.row.fileName"> -->
               </audio>
             </td>
 

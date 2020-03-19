@@ -60,3 +60,11 @@ export function bindAlarm(data) {
     data
   })
 }
+
+export function practice(query) {
+  return request({
+    url: '/api-web/ai/aiModel/practice',
+    method: 'get',
+    params: query
+  })
+}

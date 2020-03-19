@@ -171,7 +171,7 @@ export const asyncRoutes = [
         component: () => import('@/views/Ai/aimodel'),
         name: 'aimodel',
         meta: {
-          title: '模型管理'
+          title: '识别模型'
         }
       },
       {

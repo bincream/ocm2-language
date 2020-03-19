@@ -44,7 +44,7 @@
         <el-input v-model="spectrogramEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:120px" />
         <el-button type="primary" style="position:absolute;right:10px" @click="spectrogram">开始</el-button>
       </div>
-      <div id="myChart" style="width: 100%; height: 80%" />
+      <div id="myChart" style="width: 100%; height: 30%" />
     </div>
 
   </div>
@@ -68,6 +68,7 @@ export default {
       listQuery: {},
       standList: [],
       warningEdit: {},
+      spectrogramEdit: {},
       infoCount: {
         noPassCount: 0,
         getPastCount: 0,
@@ -517,6 +518,7 @@ export default {
   font-size:30px;
   font-weight:500;
   color:rgba(0,0,0,1);
+  margin-top: 80px
 }
 
 .radio-label {
