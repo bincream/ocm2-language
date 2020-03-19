@@ -561,7 +561,10 @@ export default {
       uploadUrl: process.env.VUE_APP_BASE_API + 'api-web/public/uploadFile',
       fileList: [],
 <<<<<<< HEAD
+<<<<<<< HEAD
       ids: [],
+=======
+>>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
 =======
 >>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
       aiModelTypeList: [],
@@ -583,7 +586,13 @@ export default {
         typeId: [
           { required: true, message: '请选择', trigger: 'chage' }
 <<<<<<< HEAD
+<<<<<<< HEAD
         ],
+=======
+        ]
+      },
+      AddRules: {
+>>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
 =======
         ]
       },
@@ -690,6 +699,7 @@ export default {
       this.getList()
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     handleTypeFilter() {
       if (this.listQueryType.keywords === '') {
         this.listQueryType.keywords = undefined
@@ -697,6 +707,8 @@ export default {
       this.listQueryType.page = 1
       this.getHistoryList()
     },
+=======
+>>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
 =======
 >>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
     handleDetail(row) {
@@ -707,8 +719,13 @@ export default {
     },
     handleCurrentChangeType(val) {
 <<<<<<< HEAD
+<<<<<<< HEAD
       this.listQueryType.page = val
       this.getHistoryList()
+=======
+      this.listQueryMember.page = val
+      this.getMembersList()
+>>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
 =======
       this.listQueryMember.page = val
       this.getMembersList()
@@ -735,10 +752,13 @@ export default {
     // 标记
     signCreate() {
 <<<<<<< HEAD
+<<<<<<< HEAD
       if (this.ids.length === 0) {
         this.$message.error('至少需要选择一条数据')
         return false
       }
+=======
+>>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
 =======
 >>>>>>> aef9e9e31343607694c1dfe917dfc44713e9a0a7
       this.signEdit.alarmIdList = this.ids

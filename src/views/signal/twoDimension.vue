@@ -40,7 +40,6 @@
         <el-button type="primary" style="position:absolute;right:10px" @click="submit">提交数据</el-button>
       </div>
       <div id="warnChart" style="width: 100%; height: 25%" />
-
       <div class="title">单点频谱图
         <el-input v-model="spectrogramEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:120px" />
         <el-button type="primary" style="position:absolute;right:10px" @click="spectrogram">开始</el-button>
