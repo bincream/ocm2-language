@@ -382,7 +382,7 @@ export default {
         cancelButtonText: '取 消',
         type: 'warning'
       }).then(() => {
-        deleteData({ id: row.userid }).then(response => {
+        deleteData({ id: row.id }).then(response => {
           if (response.data) {
             this.$message.success('删除成功')
             this.getList()

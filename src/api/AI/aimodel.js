@@ -68,3 +68,11 @@ export function practice(query) {
     params: query
   })
 }
+
+export function exportZip(query) {
+  return request({
+    url: '/api-web/ai/aiModel/exportZip',
+    method: 'get',
+    params: query
+  })
+}

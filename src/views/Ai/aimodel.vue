@@ -85,9 +85,10 @@
             @click.stop="handleAdd(scope.row)"
           >添加类型</el-button>
           <el-button
+            v-if="checkPermission(['aiModel/exportZip'])"
             type="primary"
             size="small"
-            @click.stop="handleSign(scope.row)"
+            @click.stop="handleExport(scope.row)"
           >导出</el-button>
         </template>
       </el-table-column>
@@ -161,123 +162,122 @@
     <el-dialog :visible.sync="dialogSignVisible" title="标记" width="100%">
       <el-form
         ref="signEdit"
-        :rules="signrules"
+        :rules="rules"
         :model="signEdit"
         :show-message="false"
         inline
         status-icon
       >
         <div class="basic">
-          <div class="filter-container" style="position:relative">
-            <td>
-              <el-form-item label="标记类型" prop="typeId">
-                <el-select
-                  v-model="signEdit.typeId"
-                  placeholder="请选择标记类型"
-                  style="width: 200px;"
-                  class="filter-item"
-                  clearable
-                  filterable
-                >
-                  <el-option
-                    v-for="item in aiModelTypeList"
-                    :key="item.id"
-                    :label="item.typeZhName"
-                    :value="item.id"
-                  />
-                </el-select>
-              </el-form-item>
-            </td>
-          </div>
-          <div class="title">
-            <span>历史告警列表</span>
-          </div>
-          <div class="filter-container" style="position:relative">
-            <el-input
-              v-model="listQueryType.keywords"
-              placeholder="请输入中心点"
-              style="width: 200px;"
-              class="filter-item"
-              @keyup.enter.native="handleTypeFilter"
-            />
-            <el-date-picker
-              v-model="date"
-              style="width: 380px;margin-bottom: 10px;vertical-align: middle;"
-              type="datetimerange"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              value-format="yyyy-MM-dd HH-mm-ss"
-              clearable
-            />
-
-            <el-select
-              v-model="listQueryType.type"
-              placeholder="请选择处理类型"
-              style="width: 150px;"
-              class="filter-item"
-              clearable
-              filterable
-            >
-              <el-option
-                v-for="item in soluTypelList"
-                :key="item.id"
-                :label="item.value"
-                :value="item.id"
-              />
-            </el-select>
-            <el-button class="filter-item" icon="el-icon-search" @click="handleTypeFilter" />
-          </div>
-          <el-table
-            ref="historyTable"
-            v-loading="listLoading"
-            :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
-            :data="historyList"
-            stripe
-            highlight-current-row
-            height="500"
-            :row-key="getRowKeys"
-            @selection-change="handleHistoryChange"
-          >
-            <el-table-column type="selection" width="55" reserve-selection />
-            <el-table-column label="基站" prop="standName" />
-            <el-table-column label="开始点" prop="startCol" />
-            <el-table-column label="中心点" prop="centerCol" />
-            <el-table-column label="结束点" prop="endCol" />
-            <el-table-column label="识别类型" prop="typeId" />
-            <el-table-column label="开始时间" prop="beginTime" width="110" />
-            <el-table-column label="结束时间" prop="endTime" width="110" />
-            <el-table-column label="震动次数" prop="freq" />
-            <el-table-column label="是否处理">
-              <template slot-scope="scope">
-                <span>{{ scope.row.type | type }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="音频" width="320">
-              <template slot-scope="scope">
-                <audio :id="scope.row.id" controls="controls">
-                  <source :src="scope.row.oggUrl">
-                  <source :src="scope.row.fileName">
-                </audio>
-              </template>
-            </el-table-column>
-          </el-table>
-
-          <div class="pagination-container">
-            <el-pagination
-              v-show="historyTotal>0"
-              :current-page="listQueryType.page"
-              :page-sizes="[10,20,30, 50]"
-              :page-size="listQueryType.limit"
-              :total="historyTotal"
-              background
-              layout="total, sizes, prev, pager, next, jumper"
-              @size-change="handleSizeChangeType"
-              @current-change="handleCurrentChangeType"
-            />
-          </div>
+          <table>
+            <tr>
+              <td>
+                <el-form-item label="标记类型" prop="typeId">
+                  <el-select
+                    v-model="signEdit.typeId"
+                    placeholder="请选择标记类型"
+                    style="width: 200px;"
+                    class="filter-item"
+                    clearable
+                    filterable
+                  >
+                    <el-option
+                      v-for="item in aiModelTypeList"
+                      :key="item.id"
+                      :label="item.typeZhName"
+                      :value="item.id"
+                    />
+                  </el-select>
+                </el-form-item>
+              </td>
+            </tr>
+          </table>
         </div>
       </el-form>
+      <div class="title">
+        <span>历史告警列表</span>
+      </div>
+      <div class="filter-container" style="position:relative">
+        <el-input
+          v-model="listQueryType.keywords"
+          placeholder="请输入中心点"
+          style="width: 200px;"
+          class="filter-item"
+          @keyup.enter.native="handleTypeFilter"
+        />
+        <el-date-picker
+          v-model="date"
+          style="width: 380px;margin-bottom: 10px;vertical-align: middle;"
+          type="datetimerange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          value-format="yyyy-MM-dd HH-mm-ss"
+          clearable
+        />
+        <el-select
+          v-model="listQueryType.type"
+          placeholder="请选择处理类型"
+          style="width: 150px;"
+          class="filter-item"
+          clearable
+          filterable
+        >
+          <el-option
+            v-for="item in soluTypelList"
+            :key="item.id"
+            :label="item.value"
+            :value="item.id"
+          />
+        </el-select>
+        <el-button class="filter-item" icon="el-icon-search" @click="handleTypeFilter" />
+      </div>
+      <el-table
+        ref="historyTable"
+        v-loading="listLoading"
+        :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
+        :data="historyList"
+        stripe
+        highlight-current-row
+        height="500"
+        :row-key="getRowKeys"
+        @selection-change="handleHistoryChange"
+      >
+        <el-table-column type="selection" width="55" reserve-selection />
+        <el-table-column label="基站" prop="standName" />
+        <el-table-column label="开始点" prop="startCol" />
+        <el-table-column label="中心点" prop="centerCol" />
+        <el-table-column label="结束点" prop="endCol" />
+        <el-table-column label="开始时间" prop="beginTime" width="110" />
+        <el-table-column label="结束时间" prop="endTime" width="110" />
+        <el-table-column label="震动次数" prop="freq" />
+        <el-table-column label="是否处理">
+          <template slot-scope="scope">
+            <span>{{ scope.row.type | type }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="音频" width="320">
+          <template slot-scope="scope">
+            <audio :id="scope.row.id" controls="controls">
+              <source :src="scope.row.oggUrl">
+              <source :src="scope.row.fileName">
+            </audio>
+          </template>
+        </el-table-column>
+      </el-table>
 
+      <div class="pagination-container">
+        <el-pagination
+          v-show="historyTotal>0"
+          :current-page="listQueryType.page"
+          :page-sizes="[10,20,30, 50]"
+          :page-size="listQueryType.limit"
+          :total="historyTotal"
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChangeType"
+          @current-change="handleCurrentChangeType"
+        />
+      </div>
       <div slot="footer" class="dialog-footer">
         <el-button
           type="primary"
@@ -624,11 +624,9 @@ export default {
         ],
         typeZhName: [
           { required: true, message: '请输入', trigger: 'blur' }
-        ]
-      },
-      signrules: {
+        ],
         typeId: [
-          { required: true, message: '请选择', trigger: 'blur' }
+          { required: true, message: '请选择', trigger: 'chage' }
         ]
       },
       getRowKeys(row) {
@@ -864,6 +862,10 @@ export default {
         }
       })
     },
+    // 导出
+    handleExport(row) {
+      window.open(process.env.VUE_APP_BASE_API1 + 'ai/aiModel/exportZip?id=' + row.id)
+    },
     // 删除
     handleDelete(row) {
       this.$confirm('将删除该条记录并中断训练, 是否继续?', '提示', {
@@ -950,4 +952,5 @@ export default {
     font-size: 12px;
     margin: 0 5px;
 }
+
 </style>
