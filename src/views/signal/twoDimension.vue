@@ -51,8 +51,8 @@
 </template>
 
 <script>
-// import { list } from '@/api/signal/squiggle'
-import { standList, realtimeAudioQuery, vibQuery } from '@/api/public'
+import { realtimeAudioQuery, vibQuery } from '@/api/signal/squiggle'
+import { standList } from '@/api/public'
 import echarts from 'echarts'
 import checkPermission from '@/utils/permission' // 权限判断函数
 import waves from '@/directive/waves' // 水波纹指令

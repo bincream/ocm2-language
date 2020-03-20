@@ -31,3 +31,11 @@ export function getInfo(query) {
   })
 }
 
+// 音频操作
+export function audioHandle(data) {
+  return request({
+    url: '/api-web/ai/aiModelType/audioHandle',
+    method: 'post',
+    data
+  })
+}

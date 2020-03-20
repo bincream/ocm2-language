@@ -11,6 +11,7 @@
       <el-button v-waves class="filter-item" icon="el-icon-search" @click="handleFilter" />
 
       <el-button
+        v-if="checkPermission(['aimodel/save'])"
         class="filter-item"
         style="position:absolute;right:120px"
         type="primary"
@@ -47,33 +48,38 @@
           <span>{{ scope.row.status | status }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="模型类型数" prop="typeCount" />
+      <el-table-column label="类型数量" prop="typeCount" />
       <el-table-column label="模型存放路径" prop="path" />
       <el-table-column label="模型置信度" prop="score" />
       <el-table-column label="操作" width="460">
         <template slot-scope="scope">
           <el-button
+            v-if="checkPermission(['aiModel/update'])"
             type="primary"
             size="small"
             @click.stop="handleUpdate(scope.row)"
           >修改</el-button>
           <el-button
+            v-if="checkPermission(['aiModel/delete'])"
             type="danger"
             size="small"
             @click.stop="handleDelete(scope.row)"
           >删除</el-button>
           <el-button
+            v-if="checkPermission(['aiModel/bindAlarm'])"
             type="primary"
             size="small"
             @click.stop="handleSign(scope.row)"
           >标记</el-button>
           <el-button
-            v-show="scope.row.status === 0"
+            v-if="checkPermission(['aiModel/practice'])"
+            v-show="scope.row.status !== 1"
             type="primary"
             size="small"
             @click.stop="handleTrain(scope.row)"
           >训练</el-button>
           <el-button
+            v-if="checkPermission(['aiModel/saveType'])"
             type="primary"
             size="small"
             @click.stop="handleAdd(scope.row)"
@@ -155,7 +161,7 @@
     <el-dialog :visible.sync="dialogSignVisible" title="标记" width="100%">
       <el-form
         ref="signEdit"
-        :rules="rules"
+        :rules="signrules"
         :model="signEdit"
         :show-message="false"
         inline
@@ -223,12 +229,13 @@
           </div>
           <el-table
             ref="historyTable"
+            v-loading="listLoading"
             :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
             :data="historyList"
             stripe
             highlight-current-row
             height="500"
-            row-key="historyId"
+            :row-key="getRowKeys"
             @selection-change="handleHistoryChange"
           >
             <el-table-column type="selection" width="55" reserve-selection />
@@ -519,8 +526,8 @@
 </template>
 
 <script>
-import { getAllList, getInfo, saveType, update, getHisList, save, deleteData, bindAlarm, practice } from '@/api/AI/aimodel'
-import { aiModelTypeList } from '@/api/public'
+import { getAllList, getInfo, saveType, update, save, deleteData, bindAlarm, practice } from '@/api/AI/aimodel'
+import { aiModelTypeList, hisAlarmList } from '@/api/public'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
 export default {
@@ -535,6 +542,9 @@ export default {
           return '未训练'
         case 1:
           return '训练中'
+        case 2:
+          return '通讯失败'
+
         default:
           break
       }
@@ -596,7 +606,7 @@ export default {
       typeEdit: {},
       historyList: [],
       weightlList: [{ id: 0, value: '0' }, { id: 1, value: '1' }],
-      soluTypelList: [{ id: 0, value: '未处理' }, { id: 1, value: '已处理' }],
+      soluTypelList: [{ id: 0, value: '未处理' }, { id: 1, value: '已处理' }, { id: 2, value: '通讯失败' }],
       dialogFormVisible: false,
       rules: {
         modelName: [
@@ -605,9 +615,7 @@ export default {
         modelDesc: [
           { required: true, message: '请输入', trigger: 'blur' }
         ],
-        typeId: [
-          { required: true, message: '请选择', trigger: 'chage' }
-        ],
+
         weight: [
           { required: true, message: '请选择', trigger: 'chage' }
         ],
@@ -617,6 +625,14 @@ export default {
         typeZhName: [
           { required: true, message: '请输入', trigger: 'blur' }
         ]
+      },
+      signrules: {
+        typeId: [
+          { required: true, message: '请选择', trigger: 'blur' }
+        ]
+      },
+      getRowKeys(row) {
+        return row.id
       }
     }
   },
@@ -674,7 +690,7 @@ export default {
     checkPermission,
     getHistoryList() {
       this.listLoading = true
-      getHisList(this.listQueryType).then(response => {
+      hisAlarmList(this.listQueryType).then(response => {
         this.historyList = response.data.list
         this.historyTotal = response.data.total
         this.listLoading = false
@@ -731,6 +747,7 @@ export default {
     handleCurrentChangeType(val) {
       this.listQueryType.page = val
       this.getHistoryList()
+      console.log(this.ids)
     },
     handleSizeChangeType(val) {
       this.listQueryType.limit = val
@@ -740,13 +757,20 @@ export default {
       this.uploadVisible = true
     },
     handleHistoryChange(val) {
-      this.ids = val.map(x => x.id)
+      this.ids = []
+      val.forEach((item, index) => {
+        this.ids.push(item.id)
+      })
       console.log(this.ids)
     },
     // 训练
     handleTrain(row) {
+      this.listLoading = true
+
       practice({ id: row.id }).then(response => {
         this.getList()
+      }).catch(() => {
+        this.listLoading = false
       })
     },
     // 标记
@@ -842,7 +866,7 @@ export default {
     },
     // 删除
     handleDelete(row) {
-      this.$confirm('将删除该条记录, 是否继续?', '提示', {
+      this.$confirm('将删除该条记录并中断训练, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -854,6 +878,11 @@ export default {
           } else {
             this.$message.error('删除失败')
           }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
         })
       })
     },
@@ -900,10 +929,10 @@ export default {
 
     // 文件大小限制提示
     beforeAvatarUpload(file) {
-      // if (!checkPermission(['ossUpload/**'])) {
-      //   this.$message.error('您没有文件上传权限')
-      //   return false
-      // }
+      if (!checkPermission(['ossUpload/**'])) {
+        this.$message.error('您没有文件上传权限')
+        return false
+      }
       const isLt2M = file.size / 1024 / 1024 < 5
       if (!isLt2M) {
         this.$message.error('上传大小不能超过 5MB!')

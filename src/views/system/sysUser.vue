@@ -23,11 +23,12 @@
           v-for="(item, index) in roleList"
           :key="index"
           :value="item.id"
-          label="item.roleName"
+          :label="item.roleName"
         />
       </el-select>
 
       <el-button
+        v-if="checkPermission(['systemUser/save'])"
         class="filter-item"
         style="position:absolute;right:0px"
         type="primary"
@@ -55,28 +56,33 @@
       <el-table-column label="操作" width="330">
         <template slot-scope="scope">
           <el-button
+            v-if="checkPermission(['systemUser/changeStatus'])"
             v-show="scope.row.status == 1 && scope.row.userid !== 1"
             type="primary"
             size="small"
             @click.stop="handleChangeStatus(scope.row)"
           >启用</el-button>
           <el-button
+            v-if="checkPermission(['systemUser/changeStatus'])"
             v-show="scope.row.status == 0 && scope.row.userid !== 1"
             type="warning"
             size="small"
             @click.stop="handleChangeStatus(scope.row)"
           >停用</el-button>
           <el-button
+            v-if="checkPermission(['systemUser/resetPassword'])"
             type="danger"
             size="small"
             @click.stop="handleReset(scope.row)"
           >重置密码</el-button>
           <el-button
+            v-if="checkPermission(['systemUser/update'])"
             type="primary"
             size="small"
             @click.stop="handleUpdate(scope.row)"
           >编辑</el-button>
           <el-button
+            v-if="checkPermission(['systemUser/delete'])"
             v-show="scope.row.userid !== 1"
             type="danger"
             size="small"
@@ -130,7 +136,7 @@
                       v-for="item in roleList"
                       :key="item.id"
                       :value="item.id"
-                      label="item.roleName"
+                      :label="item.roleName"
                     />
                   </el-select>
                 </el-form-item>
@@ -384,6 +390,11 @@ export default {
             this.$message.error('删除成功')
           }
         })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     handleChangeStatus(row) {
@@ -409,6 +420,11 @@ export default {
           } else {
             this.$message.error('操作失败')
           }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消重置'
         })
       })
     },

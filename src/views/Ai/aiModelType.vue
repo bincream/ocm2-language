@@ -36,6 +36,7 @@
       :row-style="{textAlign: 'center'}"
       highlight-current-row
       height="500"
+      :row-key="getRowKeys"
       @row-click="handleDetail"
     >
       <el-table-column label="类型英文名" prop="typeEnName" />
@@ -46,6 +47,7 @@
           <span>{{ scope.row.weight | weight }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="音频数量" prop="audioCount" />
       <el-table-column label="类型图标">
         <template slot-scope="scope">
           <img :src="scope.row.typeIcon" al class="mini" @click.stop="bigImg(scope.row.typeIcon)">
@@ -74,21 +76,25 @@
       <el-table-column label="操作" width="320">
         <template slot-scope="scope">
           <el-button
+            v-if="checkPermission(['aiModelType/getInfo'])"
             type="info"
             size="small"
             @click.stop="handleDetail(scope.row)"
           >详情</el-button>
           <el-button
+            v-if="checkPermission(['aiModelType/update'])"
             type="primary"
             size="small"
             @click.stop="handleUpdate(scope.row)"
           >修改</el-button>
           <el-button
+            v-if="checkPermission(['aiModelType/delete'])"
             type="danger"
             size="small"
             @click.stop="handleDelete(scope.row)"
           >删除</el-button>
           <el-button
+            v-if="checkPermission(['aiModelType/audioHandle'])"
             type="warning"
             size="small"
             @click.stop="handleAudio(scope.row)"
@@ -360,7 +366,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogAudioVisible" title="音频操作" width="100%">
+    <el-dialog :visible.sync="dialogAudioVisible" title="音频操作" width="80%">
       <el-form
         ref="audioEdit"
         :rules="rules"
@@ -387,22 +393,11 @@
             stripe
             highlight-current-row
             height="500"
-            row-key="audioId"
+            :row-key="getRowKeys"
           >
-            <el-table-column type="selection" width="55" reserve-selection />
-            <el-table-column label="基站" prop="standName" />
-            <el-table-column label="开始点" prop="startCol" />
             <el-table-column label="中心点" prop="centerCol" />
-            <el-table-column label="结束点" prop="endCol" />
+            <el-table-column label="基站精度" prop="precisions" />
             <el-table-column label="识别类型" prop="typeId" />
-            <el-table-column label="开始时间" prop="beginTime" width="110" />
-            <el-table-column label="结束时间" prop="endTime" width="110" />
-            <el-table-column label="震动次数" prop="freq" />
-            <el-table-column label="是否处理">
-              <template slot-scope="scope">
-                <span>{{ scope.row.type | type }}</span>
-              </template>
-            </el-table-column>
             <el-table-column label="音频" width="320">
               <template slot-scope="scope">
                 <audio :id="scope.row.id" controls="controls">
@@ -442,48 +437,11 @@
       <div slot="footer" class="dialog-footer">
         <el-button
           type="primary"
-          @click="signCreate('audioEdit')"
+          @click="audioUpdate('audioEdit')"
         >确认</el-button>
         <el-button @click="dialogAudioVisible = false">取消</el-button>
       </div>
     </el-dialog>
-    <!--新增编辑页面 -->
-    <!-- <el-dialog title="处理告警" :visible.sync="dialogFormVisible" width="30%">
-      <el-form
-        ref="typeEdit"
-        :rules="rules"
-        :model="typeEdit"
-        :show-message="false"
-        inline
-        status-icon
-      >
-        <div class="basic">
-          <table>
-            <tr>
-              <td class="width33">
-                <el-form-item label="处理措施" prop="solution">
-                  <el-input
-                    v-model="typeEdit.solution"
-                    type="textarea"
-                    :rows="5"
-                    size="small"
-                    placeholder="请输入"
-                  />
-                </el-form-item>
-              </td>
-            </tr>
-          </table>
-        </div>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          v-show="typeEdit.id"
-          type="primary"
-          @click="createData('typeEdit')"
-        >确认</el-button>
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-      </div>
-    </el-dialog> -->
 
     <el-dialog :visible.sync="dialogImgVisible" width="800px" style="text-align: center">
       <div style="border: 1px solid #ededed">
@@ -494,7 +452,7 @@
 </template>
 
 <script>
-import { getAllList, getInfo, update, deleteData } from '@/api/AI/aiModelType'
+import { getAllList, getInfo, update, deleteData, audioHandle } from '@/api/AI/aiModelType'
 import { aiModelList } from '@/api/public'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
@@ -554,6 +512,7 @@ export default {
       list: [],
       aiModelList: [],
       audioList: [],
+      alarmIdList: [],
       total: null,
       bigImgSrc: null,
       listLoading: true,
@@ -589,6 +548,9 @@ export default {
         typeZhName: [
           { required: true, message: '请输入', trigger: 'blur' }
         ]
+      },
+      getRowKeys(row) {
+        return row.id
       }
     }
   },
@@ -616,6 +578,14 @@ export default {
       !val && setTimeout(() => {
         this.$refs['typeEdit'].resetFields()
         this.typeEdit = {}
+      }, 100)
+    },
+    dialogAudioVisible(val) {
+      !val && setTimeout(() => {
+        this.$refs['audioEdit'].resetFields()
+        this.audioEdit = {}
+        this.audioList = []
+        this.alarmIdList = []
       }, 100)
     }
   },
@@ -661,8 +631,15 @@ export default {
       this.listQueryType.page = 1
       this.getHistoryList()
     },
-    handleAudio() {
+    handleAudio(row) {
+      this.typeId = row.id
       this.dialogAudioVisible = true
+      getInfo({ id: row.id }).then(response => {
+        this.audioList = response.data.typeAlarmList
+        response.data.typeAlarmList.forEach((item, index) => {
+          this.$set(this.audioList[index], 'oggUrl', item.oggUrl)
+        })
+      })
     },
     handleDetail(row) {
       this.dialogDetVisible = true
@@ -673,21 +650,39 @@ export default {
         })
       })
     },
+
     // 音频删除
     audioDelete(row) {
-      this.$confirm('将删除该条记录, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        deleteData({ id: row.id }).then(response => {
-          if (response.data) {
-            this.$message.success('删除成功')
-            this.getAudioList()
-          } else {
-            this.$message.error('删除失败')
-          }
-        })
+      const index = this.audioList.indexOf(row)
+      this.audioList.splice(index, 1)
+
+      console.log(this.audioList)
+      // this.id = row.id
+      // for (let i = 0; i < this.audioList.length; i++) {
+      //   console.log(this.audioList[i].id)
+
+      //   if (this.audioList[i].id === this.id) {
+      //     this.audioList.splice(this.audioList[i], 1)
+      //   }
+      // }
+    },
+    audioUpdate(formName) {
+      this.audioList.forEach((item, index) => {
+        this.alarmIdList.push(item.id)
+      })
+      console.log(this.alarmIdList)
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          audioHandle({ typeId: this.typeId, alarmIdList: this.alarmIdList }).then(response => {
+            if (response.data) {
+              this.$message.success('修改成功')
+              this.dialogAudioVisible = false
+              this.getList()
+            } else {
+              this.$message.error('修改失败')
+            }
+          })
+        }
       })
     },
     // 类别删除
@@ -705,6 +700,11 @@ export default {
             this.$message.error('删除失败')
           }
         })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     handleUpdate(row) {
@@ -713,6 +713,7 @@ export default {
         this.typeEdit = response.data
       })
     },
+
     updateData(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {

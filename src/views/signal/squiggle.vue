@@ -10,7 +10,7 @@
 
 <script>
 // import { list } from '@/api/signal/squiggle'
-import { rscQuery } from '@/api/public'
+import { rscQuery } from '@/api/signal/squiggle'
 import echarts from 'echarts'
 import checkPermission from '@/utils/permission' // 权限判断函数
 import waves from '@/directive/waves' // 水波纹指令

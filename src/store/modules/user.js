@@ -77,23 +77,23 @@ const actions = {
     return new Promise((resolve, reject) => {
       getUserInfo(state.username)
         .then(response => {
-          const data = response.data
+          const { sysUser, pmList } = response.data
+          console.log(pmList)
 
-          if (!data) {
+          if (!sysUser) {
             reject('Verification failed, please Login again.')
           }
-
           // roles must be a non-empty array
-          commit('SET_ROLES', ['admin'])
-          commit('SET_NAME', data.name)
-          commit('SET_PLATFORMNAME', data.platformName)
-          commit('SET_CARRIERNAME', data.carrierName)
+          commit('SET_ROLES', pmList)
+          commit('SET_NAME', sysUser.name)
+          commit('SET_PLATFORMNAME', sysUser.platformName)
+          commit('SET_CARRIERNAME', sysUser.carrierName)
           commit('SET_AVATAR', '')
-          commit('SET_INTRODUCTION', data.introduction)
-          commit('SET_USERID', data.id)
-          commit('SET_PLATFORMID', data.platformId)
-          commit('SET_CARRIERID', data.carrierId)
-          setUserId(data.id)
+          commit('SET_INTRODUCTION', sysUser.introduction)
+          commit('SET_USERID', sysUser.id)
+          commit('SET_PLATFORMID', sysUser.platformId)
+          commit('SET_CARRIERID', sysUser.carrierId)
+          setUserId(sysUser.id)
           resolve(response.data)
         })
         .catch(error => {

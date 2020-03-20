@@ -7,3 +7,11 @@ export function list(query) {
     params: query
   })
 }
+
+export function rscQuery(query) {
+  return request({
+    url: '/api-web/signal/squiggle/rscQuery',
+    method: 'get',
+    params: query
+  })
+}

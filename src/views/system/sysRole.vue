@@ -12,6 +12,7 @@
           />
           <el-button v-waves class="filter-item" icon="el-icon-search" @click="handleFilter" />
           <el-button
+            v-if="checkPermission(['sysPer/save'])"
             class="filter-item"
             style="position:absolute;right:0px"
             type="primary"
@@ -45,18 +46,21 @@
           <el-table-column label="操作" width="220">
             <template slot-scope="scope">
               <el-button
+                v-if="checkPermission(['sysPer/update'])"
                 v-show="scope.row.dialogStatus == 'create' || scope.row.dialogStatus == 'update'"
                 type="primary"
                 size="small"
                 @click.stop="handleSave(scope.row)"
               >确认</el-button>
               <el-button
+                v-if="checkPermission(['sysPer/update'])"
                 v-show="scope.row.dialogStatus == 'info' && scope.row.id > 4"
                 type="primary"
                 size="small"
                 @click.stop="handleUpdate(scope.row)"
               >编辑</el-button>
               <el-button
+                v-if="checkPermission(['sysPer/delete'])"
                 v-show="scope.row.id > 4"
                 type="danger"
                 size="small"
@@ -238,6 +242,11 @@ export default {
             } else {
               this.$message.error('删除失败')
             }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
           })
         })
       } else {

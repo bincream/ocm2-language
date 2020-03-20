@@ -30,6 +30,7 @@
       <el-button v-waves class="filter-item" icon="el-icon-search" @click="handleFilter" />
 
       <el-button
+        v-if="checkPermission(['alarmHis/getNew'])"
         type="primary"
         class="filter-item"
         @click.stop="handleRefresh"
@@ -74,12 +75,14 @@
       <el-table-column label="操作" width="140">
         <template slot-scope="scope">
           <el-button
+            v-if="checkPermission(['alarmHis/resolve'])"
             v-show="scope.row.type == 0"
             type="warning"
             size="small"
             @click.stop="handleSolu(scope.row)"
           >处理报警</el-button>
           <el-button
+            v-if="checkPermission(['alarmHis/resolve'])"
             v-show="scope.row.type == 1"
             type="primary"
             size="small"

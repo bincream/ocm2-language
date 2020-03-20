@@ -24,3 +24,10 @@ export function info(query) {
   })
 }
 
+export function deviceParamQuery(query) {
+  return request({
+    url: '/api-web/systemtest/systemtest/deviceParamQuery',
+    method: 'get',
+    params: query
+  })
+}

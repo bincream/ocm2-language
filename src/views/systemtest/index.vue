@@ -278,8 +278,7 @@
 </template>
 
 <script>
-import { update } from '@/api/systemtest/index'
-import { deviceParamQuery } from '@/api/public'
+import { update, deviceParamQuery } from '@/api/systemtest/index'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
 export default {
