@@ -22,7 +22,7 @@
         <el-option
           v-for="item in soluTypelList"
           :key="item.id"
-          label="item.value"
+          :label="item.value"
           :value="item.id"
         />
       </el-select>

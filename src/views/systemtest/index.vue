@@ -294,8 +294,6 @@ export default {
     return {
       restEdit: {},
       info: [],
-      uploadUrl: process.env.VUE_APP_BASE_API + 'api-web/ossUpload/uploadFile',
-      uploadUrl1: process.env.VUE_APP_BASE_API + 'api-web/ossUpload/uploadFile',
       websocket: null,
       dialogImgVisible: false,
       dpq: '',

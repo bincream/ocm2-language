@@ -194,6 +194,31 @@
               class="filter-item"
               @keyup.enter.native="handleTypeFilter"
             />
+            <el-date-picker
+              v-model="date"
+              style="width: 380px;margin-bottom: 10px;vertical-align: middle;"
+              type="datetimerange"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="yyyy-MM-dd HH-mm-ss"
+              clearable
+            />
+
+            <el-select
+              v-model="listQueryType.type"
+              placeholder="请选择处理类型"
+              style="width: 150px;"
+              class="filter-item"
+              clearable
+              filterable
+            >
+              <el-option
+                v-for="item in soluTypelList"
+                :key="item.id"
+                :label="item.value"
+                :value="item.id"
+              />
+            </el-select>
             <el-button class="filter-item" icon="el-icon-search" @click="handleTypeFilter" />
           </div>
           <el-table
@@ -542,6 +567,7 @@ export default {
       historyTotal: null,
       listLoading: true,
       dialogStatus: '',
+      date: '',
       textMap: {
         update: '修改',
         create: '新增'
@@ -685,6 +711,13 @@ export default {
     handleTypeFilter() {
       if (this.listQueryType.keywords === '') {
         this.listQueryType.keywords = undefined
+      }
+      if (this.date && this.date.length > 0) {
+        this.listQueryType.beginTime = this.date[0]
+        this.listQueryType.endTime = this.date[1]
+      } else {
+        this.listQueryType.beginTime = undefined
+        this.listQueryType.endTime = undefined
       }
       this.listQueryType.page = 1
       this.getHistoryList()
