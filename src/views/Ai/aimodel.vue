@@ -864,7 +864,7 @@ export default {
     },
     // 导出
     handleExport(row) {
-      window.open(process.env.VUE_APP_BASE_API1 + 'ai/aiModel/exportZip?id=' + row.id)
+      window.open(process.env.VUE_APP_BASE_API + 'api-web/ai/aiModel/exportZip?id=' + row.id)
     },
     // 删除
     handleDelete(row) {

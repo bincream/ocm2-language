@@ -444,10 +444,10 @@ export default {
       }
     },
     getWsData(data) { // 报警消息数据处理
-      if (!data.alarmInfo) {
+      if (!data.param_list) {
         return false
       }
-
+      console.log(data.param_list)
       if (data.alarmInfo.freq <= 10) {
         data.alarmInfo.freqColor = 1
       } else if (data.alarmInfo.freq > 10 && data.alarmInfo.freq < 50) {

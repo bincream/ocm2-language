@@ -78,7 +78,6 @@ const actions = {
       getUserInfo(state.username)
         .then(response => {
           const { sysUser, pmList } = response.data
-          console.log(pmList)
 
           if (!sysUser) {
             reject('Verification failed, please Login again.')

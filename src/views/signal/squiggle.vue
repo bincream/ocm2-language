@@ -71,7 +71,7 @@ export default {
     createWs() { // 二维振动ws
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.199.108:9042/')
+        this.websocket = new WebSocket('ws://192.168.199.108:9041/')
 
         // 当有消息过来的时候触发
         const that = this
