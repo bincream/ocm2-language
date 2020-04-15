@@ -84,8 +84,7 @@ export default {
     this.warnChart()
     this.myChart()
     this.getStandList()
-    this.createWs()
-    this.vibQuery()
+    this.getVibQuery()
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -101,9 +100,10 @@ export default {
         this.standList = response.data
       })
     },
-    vibQuery() {
+    getVibQuery() {
       vibQuery().then(response => {
         this.vibQuery = response.data
+        this.createWs()
       })
     },
     getWsData(data) {
