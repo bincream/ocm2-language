@@ -51,8 +51,14 @@
       <el-table-column label="类型数量" prop="typeCount" />
       <el-table-column label="模型存放路径" prop="path" />
       <el-table-column label="模型置信度" prop="score" />
-      <el-table-column label="操作" width="460">
+      <el-table-column label="操作" width="530">
         <template slot-scope="scope">
+          <el-button
+            v-show="scope.row.enable == 0 && scope.row.userid !== 1"
+            type="primary"
+            size="small"
+            @click.stop="handleChangeStatus(scope.row)"
+          >启用</el-button>
           <el-button
             v-if="checkPermission(['aiModel/update'])"
             type="primary"
@@ -526,7 +532,7 @@
 </template>
 
 <script>
-import { getAllList, getInfo, saveType, update, save, deleteData, bindAlarm, practice } from '@/api/AI/aimodel'
+import { getAllList, getInfo, saveType, update, save, deleteData, bindAlarm, practice, enable } from '@/api/AI/aimodel'
 import { aiModelTypeList, hisAlarmList } from '@/api/public'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
@@ -545,6 +551,16 @@ export default {
         case 2:
           return '通讯失败'
 
+        default:
+          break
+      }
+    },
+    enable: function(val) {
+      switch (val) {
+        case 0:
+          return '停用'
+        case 1:
+          return '启用'
         default:
           break
       }
@@ -784,6 +800,10 @@ export default {
         this.$message.error('至少需要选择一条数据')
         return false
       }
+      if (!this.typeId) {
+        this.$message.error('请选择标记类型')
+        return false
+      }
       this.signEdit.alarmIdList = this.ids
       bindAlarm(this.signEdit).then((response) => {
         if (response.data) {
@@ -795,7 +815,16 @@ export default {
         }
       })
     },
-
+    handleChangeStatus(row) {
+      enable({ id: row.id }).then(res => {
+        if (res.data) {
+          this.$message.success('操作成功')
+          this.getList()
+        } else {
+          this.$message.error('操作失败')
+        }
+      })
+    },
     // 新增
     handleCreate() {
       this.dialogStatus = 'create'

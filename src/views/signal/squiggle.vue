@@ -45,15 +45,26 @@ export default {
   mounted() {
     this.initChart()
     this.getData()
-    this.getRsc()
+  //   this.getRsc()
   },
-  beforeDestroy() {
-    if (!this.chart) {
-      return
-    }
-    this.chart.dispose()
-    this.chart = null
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.getRsc()
+    })
   },
+
+  beforeRouteLeave(to, from, next) {
+    this.destroyedWs()
+    next()
+  },
+  // beforeDestroy() {
+  //   this.destroyedWs()
+  //   if (!this.chart) {
+  //     return
+  //   }
+  //   this.chart.dispose()
+  //   this.chart = null
+  // },
   methods: {
     checkPermission,
     getRsc() {
@@ -65,8 +76,6 @@ export default {
     getData() {
       this.xData = []
       this.y1Data = []
-      this.y2Data = []
-      this.y3Data = []
     },
     createWs() { // 二维振动ws
       if (window.WebSocket) {
@@ -98,6 +107,11 @@ export default {
       } else {
         this.$message.error('浏览器不支持WebSocket')
       }
+    },
+    destroyedWs() {
+      console.log(1)
+      this.websocket.close()
+      this.websocket = null
     },
     initChart() {
       this.chart = echarts.init(document.getElementById('myChart'))
@@ -279,8 +293,6 @@ export default {
       }
       option.xAxis[0].data = this.xData
       option.series[0].data = this.y1Data
-      option.series[1].data = this.y2Data
-      option.series[2].data = this.y3Data
       this.chart.setOption(option)
     }
   }

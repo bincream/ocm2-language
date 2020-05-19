@@ -76,3 +76,10 @@ export function exportZip(query) {
     params: query
   })
 }
+export function enable(query) {
+  return request({
+    url: '/api-web/ai/aiModel/enable',
+    method: 'get',
+    params: query
+  })
+}

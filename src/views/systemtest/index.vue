@@ -122,12 +122,12 @@
               <td class="width9">
                 <el-input
                   v-show="ope2Status == 'update2'"
-                  v-model="restEdit.SysCfg_SpaceR"
+                  v-model="configurationEdit.SysConfig_Resolution"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
                 />
-                <span v-show="ope2Status == 'info2'">{{ info.SysCfg_SpaceR }}</span>
+                <span v-show="ope2Status == 'info2'">{{ info.SysConfig_Resolution }}</span>
               </td>
               <td class="blackMark">
                 <span style="color: red">*</span>
@@ -136,7 +136,7 @@
               <td class="width9">
                 <el-input
                   v-show="ope2Status == 'update2'"
-                  v-model="restEdit.SysCfg_TimeR"
+                  v-model="configurationEdit.SysCfg_TimeR"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
@@ -150,7 +150,7 @@
               <td class="width9">
                 <el-input
                   v-show="ope2Status == 'update2'"
-                  v-model="restEdit.SysCfg_AvgTime"
+                  v-model="configurationEdit.SysCfg_AvgTime"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
@@ -165,7 +165,10 @@
     </div>
 
     <div class="content">
-      <el-form>
+      <el-form
+        ref="deviceEdit"
+        :model="deviceEdit"
+      >
         <div class="basic">
           <div class="title">
             <span>光器件参数设置</span>
@@ -173,7 +176,7 @@
               v-show="ope1Status == 'update1'"
               type="primary"
               style="position:absolute;right:100px"
-              @click="updateData1"
+              @click="updateData1('deviceEdit')"
             >确认</el-button>
             <el-button
               v-show="ope1Status == 'info1'"
@@ -192,12 +195,12 @@
               <td class="width9">
                 <el-input
                   v-show="ope1Status == 'update1'"
-                  v-model="restEdit.EDFA"
+                  v-model="deviceEdit.OptDevice_EDFACurrent"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
                 />
-                <span v-show="ope1Status == 'info1'">{{ info.EDFA }}</span>
+                <span v-show="ope1Status == 'info1'">{{ info.OptDevice_EDFACurrent }}</span>
                 <span>mA</span>
               </td>
               <td class="blackMark">
@@ -207,7 +210,7 @@
               <td class="width9">
                 <el-input
                   v-show="ope1Status == 'update1'"
-                  v-model="restEdit.RAMAN"
+                  v-model="deviceEdit.RAMAN"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
@@ -225,7 +228,12 @@
     </div>
 
     <div class="content">
-      <el-form>
+      <el-form
+        ref="vibrationEdit"
+        :model="vibrationEdit"
+        inline
+        status-icon
+      >
         <div class="basic">
           <div class="title">
             <span>震动阀值设置</span>
@@ -252,7 +260,7 @@
               <td class="width9">
                 <el-select
                   v-show="ope3Status == 'update3'"
-                  v-model="restEdit.length"
+                  v-model="vibrationEdit.length"
                   size="small"
                   style="width: 150px;"
                   placeholder="请选择光纤长度"
@@ -278,7 +286,7 @@
 </template>
 
 <script>
-import { update, deviceParamQuery } from '@/api/systemtest/index'
+import { update, deviceParamQuery, deviceParamSetting } from '@/api/systemtest/index'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
 export default {
@@ -292,6 +300,9 @@ export default {
   data() {
     return {
       restEdit: {},
+      vibrationEdit: {},
+      deviceEdit: {},
+      configurationEdit: {},
       info: [],
       websocket: null,
       dialogImgVisible: false,
@@ -311,19 +322,39 @@ export default {
   },
   created() { },
   mounted() {
-    this.getDpq()
     this.ope1Status = 'info1'
     this.ope2Status = 'info2'
     this.ope3Status = 'info3'
   },
-  beforeDestroy() {
-    this.destroyedWs()
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.getDpq()
+    })
   },
+  beforeRouteLeave(to, from, next) {
+    this.destroyedWs()
+    next()
+  },
+  // beforeDestroy() {
+  //   this.destroyedWs()
+  // },
   methods: {
     checkPermission,
     getDpq() {
       deviceParamQuery().then(response => {
         this.dpq = response.data
+        this.obj = response.data
+        this.createWs()
+      })
+    },
+    getDeviceParamSetting() {
+      this.settingParam = JSON.stringify(this.deviceEdit)
+      console.log(this.settingParam)
+
+      deviceParamSetting({ settingParam: this.settingParam }).then(response => {
+        this.deviceParamSetting = response.data
+        this.obj = this.deviceParamSetting
+        console.log(this.obj)
         this.createWs()
       })
     },
@@ -345,68 +376,20 @@ export default {
     },
 
     test(formName) {
-      if (!this.restEdit.trainReminderTime) {
-        this.$message.error(this.$t('system.config.timeIsNull1'))
-        return false
-      }
-      if (this.restEdit.trainReminderTime < 0) {
-        this.$message.error(this.$t('system.config.tip1'))
-        return false
-      }
-      update(this.restEdit).then((response) => {
-        if (response.data) {
-          this.$message.success('修改成功!')
-          this.getInfo()
-        } else {
-          this.$message.error('修改失败!')
-        }
-      })
     },
     updateData1() {
-      update(this.restEdit).then((response) => {
-        if (response.data) {
-          this.$message.success('修改成功!')
-          this.getInfo()
-        } else {
-          this.$message.error('修改失败!')
-        }
-      })
+      this.ope1Status = 'info1'
+      console.log(this.deviceEdit, '11111')
+      this.getDeviceParamSetting()
     },
     updateData2() {
-      if (!this.restEdit.trainReminderTime) {
-        this.$message.error(this.$t('system.config.timeIsNull1'))
-        return false
-      }
-      if (this.restEdit.trainReminderTime < 0) {
-        this.$message.error(this.$t('system.config.tip1'))
-        return false
-      }
-      update(this.restEdit).then((response) => {
-        if (response.data) {
-          this.$message.success('修改成功!')
-          this.getInfo()
-        } else {
-          this.$message.error('修改失败!')
-        }
-      })
+      this.ope2Status = 'info2'
     },
     updateData3(formName) {
-      if (!this.restEdit.smsSign) {
-        this.$message.error(this.$t('system.config.timeIsNull3'))
-        return false
-      }
-      update(this.restEdit).then((response) => {
-        if (response.data) {
-          this.$message.success('修改成功!')
-          this.ope3Status = 'info3'
-          this.getInfo()
-        } else {
-          this.$message.error('修改失败!')
-        }
-      })
+      this.ope3Status = 'info3'
     },
 
-    createWs() { // 创建报警消息ws
+    createWs() {
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
         this.websocket = new WebSocket('ws://192.168.199.108:9041/')
@@ -425,7 +408,7 @@ export default {
 
         // 连接打开的时候触发
         this.websocket.onopen = function(event) {
-          that.websocket.send(that.dpq)
+          that.websocket.send(that.obj)
           console.log('建立连接')
         }
 
@@ -438,44 +421,45 @@ export default {
       }
     },
     destroyedWs() {
-      if (this.websocket && this.websocket.readyState === 1) {
+      if (this.websocket) {
         this.websocket.close()
         this.websocket = null
       }
     },
     getWsData(data) { // 报警消息数据处理
-      if (!data.param_list) {
-        return false
-      }
-      console.log(data.param_list)
-      if (data.alarmInfo.freq <= 10) {
-        data.alarmInfo.freqColor = 1
-      } else if (data.alarmInfo.freq > 10 && data.alarmInfo.freq < 50) {
-        data.alarmInfo.freqColor = 2
-      } else if (data.alarmInfo.freq >= 50) {
-        data.alarmInfo.freqColor = 3
-      }
+      this.info = data
+      // if (!data.param_list) {
+      //   return false
+      // }
+      // console.log(data.param_list)
+      // if (data.alarmInfo.freq <= 10) {
+      //   data.alarmInfo.freqColor = 1
+      // } else if (data.alarmInfo.freq > 10 && data.alarmInfo.freq < 50) {
+      //   data.alarmInfo.freqColor = 2
+      // } else if (data.alarmInfo.freq >= 50) {
+      //   data.alarmInfo.freqColor = 3
+      // }
 
-      data.alarmInfo.selfId = data.alarmInfo.standNo + '-' + data.alarmInfo.centerCol + '-' + data.alarmInfo.dangerLevel
-      data.alarmInfo.isPlay = false
+      // data.alarmInfo.selfId = data.alarmInfo.standNo + '-' + data.alarmInfo.centerCol + '-' + data.alarmInfo.dangerLevel
+      // data.alarmInfo.isPlay = false
 
-      data.alarmInfo.beginTime = this.timestampToTime(data.alarmInfo.beginTime)
-      data.alarmInfo.endTime = this.timestampToTime(data.alarmInfo.endTime)
-      data.alarmInfo.cableName = data.rscCable.cableName
-      data.alarmInfo.standId = data.rscCable.standId
+      // data.alarmInfo.beginTime = this.timestampToTime(data.alarmInfo.beginTime)
+      // data.alarmInfo.endTime = this.timestampToTime(data.alarmInfo.endTime)
+      // data.alarmInfo.cableName = data.rscCable.cableName
+      // data.alarmInfo.standId = data.rscCable.standId
 
-      let lastPoint = {}
-      let nextPoint = {}
+      // let lastPoint = {}
+      // let nextPoint = {}
 
-      for (let i = 0; i < data.cablePointList.length; i++) {
-        if (data.alarmInfo.centerCol >= data.cablePointList[i].length && data.cablePointList[i + 1] && data.alarmInfo.centerCol < data.cablePointList[i + 1].length) {
-          lastPoint = data.cablePointList[i]
-          nextPoint = data.cablePointList[i + 1]
-        }
-      }
-      data.alarmInfo.lastPointLength = data.alarmInfo.centerCol - lastPoint.length
+      // for (let i = 0; i < data.cablePointList.length; i++) {
+      //   if (data.alarmInfo.centerCol >= data.cablePointList[i].length && data.cablePointList[i + 1] && data.alarmInfo.centerCol < data.cablePointList[i + 1].length) {
+      //     lastPoint = data.cablePointList[i]
+      //     nextPoint = data.cablePointList[i + 1]
+      //   }
+      // }
+      // data.alarmInfo.lastPointLength = data.alarmInfo.centerCol - lastPoint.length
 
-      data.alarmInfo.nextPointLength = nextPoint.length - data.alarmInfo.centerCol
+      // data.alarmInfo.nextPointLength = nextPoint.length - data.alarmInfo.centerCol
     }
   }
 }

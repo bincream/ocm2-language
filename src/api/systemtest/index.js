@@ -31,3 +31,11 @@ export function deviceParamQuery(query) {
     params: query
   })
 }
+
+export function deviceParamSetting(query) {
+  return request({
+    url: '/api-web/systemtest/systemtest/deviceParamSetting',
+    method: 'get',
+    params: query
+  })
+}

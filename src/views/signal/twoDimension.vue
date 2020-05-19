@@ -8,7 +8,7 @@
         <el-button type="primary" style="position:absolute;right:10px" @click="monitor">开始监听</el-button>
       </div>
 
-      <div id="vibrateChart" style="width: 100%; height: 30%" />
+      <div id="vibrateChart" style="width:100%;height:16%" />
 
       <div class="title" style="position:relative">
         <span>预警恒警信息</span>
@@ -39,12 +39,12 @@
 
         <el-button type="primary" style="position:absolute;right:10px" @click="submit">提交数据</el-button>
       </div>
-      <div id="warnChart" style="width: 100%; height: 25%" />
+      <div id="warnChart" style="width:100%; height:20%" />
       <div class="title">单点频谱图
         <el-input v-model="spectrogramEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:120px" />
         <el-button type="primary" style="position:absolute;right:10px" @click="spectrogram">开始</el-button>
       </div>
-      <div id="myChart" style="width: 100%; height: 30%" />
+      <div id="myChart" style="width:100%;height:20%" />
     </div>
 
   </div>
@@ -84,7 +84,17 @@ export default {
     this.warnChart()
     this.myChart()
     this.getStandList()
-    this.getVibQuery()
+    // this.getVibQuery()
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.getVibQuery()
+    })
+  },
+
+  beforeRouteLeave(to, from, next) {
+    this.destroyedWs()
+    next()
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -123,7 +133,7 @@ export default {
           }
         }
       }
-      console.log(xData)
+      // console.log(xData)
     },
     getWsData1(data) {
     },
@@ -221,7 +231,7 @@ export default {
         // ],
         visualMap: {
           min: 0,
-          max: 10,
+          max: 14,
           calculable: true,
           orient: 'horizontal',
           left: 'center',
@@ -287,7 +297,7 @@ export default {
           {
             name: '有序统计量',
             type: 'line',
-            step: 'end',
+            step: 'middle',
             data: [450, 432, 401, 454, 590, 530, 510]
           }
         ]
@@ -505,6 +515,12 @@ export default {
         }
       } else {
         this.$message.error('浏览器不支持WebSocket')
+      }
+    },
+    destroyedWs() {
+      if (this.websocket) {
+        this.websocket.close()
+        this.websocket = null
       }
     },
     createWs1() { // 实时监听ws
