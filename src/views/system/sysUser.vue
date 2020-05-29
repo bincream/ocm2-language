@@ -57,14 +57,14 @@
         <template slot-scope="scope">
           <el-button
             v-if="checkPermission(['systemUser/changeStatus'])"
-            v-show="scope.row.status == 1 && scope.row.userid !== 1"
+            v-show="scope.row.status == 1 && scope.row.id !== 1"
             type="primary"
             size="small"
             @click.stop="handleChangeStatus(scope.row)"
           >启用</el-button>
           <el-button
             v-if="checkPermission(['systemUser/changeStatus'])"
-            v-show="scope.row.status == 0 && scope.row.userid !== 1"
+            v-show="scope.row.status == 0 && scope.row.id !== 1"
             type="warning"
             size="small"
             @click.stop="handleChangeStatus(scope.row)"
@@ -83,7 +83,7 @@
           >编辑</el-button>
           <el-button
             v-if="checkPermission(['systemUser/delete'])"
-            v-show="scope.row.userid !== 1"
+            v-show="scope.row.id !== 1"
             type="danger"
             size="small"
             @click.stop="handleDelete(scope.row)"
@@ -303,7 +303,7 @@ export default {
         this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false
-        this.userid = response.data.list.userid
+        this.userid = response.data.list.id
       })
     },
     handleSizeChange(val) {
@@ -355,9 +355,9 @@ export default {
       // }
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-      getInfo({ id: row.userid }).then(response => {
+      getInfo({ id: row.id }).then(response => {
         this.sysUserEdit = response.data
-        this.sysUserEdit.id = response.data.userid
+        this.sysUserEdit.id = response.data.id
       })
     },
     // 修改提交
@@ -398,7 +398,7 @@ export default {
       })
     },
     handleChangeStatus(row) {
-      changeStatus({ id: row.userid }).then(res => {
+      changeStatus({ id: row.id }).then(res => {
         if (res.data) {
           this.$message.success('操作成功')
           this.getList()
@@ -413,7 +413,7 @@ export default {
         cancelButtonText: '取 消',
         type: 'warning'
       }).then(() => {
-        resetPassword({ id: row.userid }).then(response => {
+        resetPassword({ id: row.id }).then(response => {
           if (response.data) {
             this.$message.success('操作成功')
             this.getList()

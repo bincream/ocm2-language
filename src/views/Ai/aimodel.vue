@@ -55,7 +55,7 @@
         <template slot-scope="scope">
           <el-button
             v-show="scope.row.enable == 0 && scope.row.userid !== 1"
-            type="primary"
+            type="warning"
             size="small"
             @click.stop="handleChangeStatus(scope.row)"
           >启用</el-button>

@@ -24,7 +24,6 @@ export default {
   data() {
     return {
       listQuery: {},
-
       infoCount: {
         noPassCount: 0,
         getPastCount: 0,
