@@ -47,7 +47,8 @@
     >
       <el-table-column label="角色名称" prop="roleName" />
       <el-table-column label="账号" prop="username" />
-      <el-table-column label="手机号" prop="mobile" />
+      <el-table-column label="真实姓名" prop="realname" />
+      <el-table-column label="创建时间" prop="createTime" />
       <el-table-column label="状态">
         <template slot-scope="scope">
           <span>{{ scope.row.status | status(translate) }}</span>
@@ -205,9 +206,9 @@ export default {
     status: function(val, translate) {
       switch (val) {
         case 0:
-          return '停用'
-        case 1:
           return '启用'
+        case 1:
+          return '停用'
 
         default:
           break

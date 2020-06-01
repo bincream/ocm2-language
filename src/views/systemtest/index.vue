@@ -8,38 +8,38 @@
           <table class="table">
             <tr>
               <td class="width5">
-                <svg-icon icon-class="open" />
-                <svg-icon v-show="restEdit.status == 1" icon-class="close" />
+                <svg-icon v-if="restEdit.DeviceStatus_Power == 0" icon-class="open" />
+                <svg-icon v-else icon-class="close" />
               </td>
               <td class="width9">电源
               </td>
               <td class="width5">
-                <svg-icon v-show="restEdit.status == 0" icon-class="open" />
-                <svg-icon icon-class="close" />
+                <svg-icon v-if="restEdit.DeviceStatus_Net == 0" icon-class="open" />
+                <svg-icon v-else icon-class="close" />
               </td>
               <td class="width9">网络通信
               </td>
-              <td>
-                <svg-icon v-show="restEdit.status == 0" icon-class="open" />
-                <svg-icon v-show="restEdit.status == 1" icon-class="close" />
+              <td class="width5">
+                <svg-icon v-if="restEdit.DeviceStatus_AcqCard == 0" icon-class="open" />
+                <svg-icon v-else icon-class="close" />
               </td>
               <td class="width9">采集卡
               </td>
-              <td>
-                <svg-icon v-show="restEdit.status == 0" icon-class="open" />
-                <svg-icon v-show="restEdit.status == 1" icon-class="close" />
+              <td class="width5">
+                <svg-icon v-if="restEdit.DeviceStatus_Alarm == 0" icon-class="open" />
+                <svg-icon v-else icon-class="close" />
               </td>
               <td class="width9">报警状态
               </td>
-              <td>
-                <svg-icon v-show="restEdit.status == 0" icon-class="open" />
-                <svg-icon v-show="restEdit.status == 1" icon-class="close" />
+              <td class="width5">
+                <svg-icon v-if="restEdit.DeviceStatus_OSrc == 0" icon-class="open" />
+                <svg-icon v-else icon-class="close" />
               </td>
               <td class="width9">光源
               </td>
-              <td>
-                <svg-icon v-show="restEdit.status == 0" icon-class="open" />
-                <svg-icon v-show="restEdit.status == 1" icon-class="close" />
+              <td class="width5">
+                <svg-icon v-if="restEdit.DeviceStatus_OSwitch == 0" icon-class="open" />
+                <svg-icon v-else icon-class="close" />
               </td>
               <td class="width9">光开关
               </td>
@@ -48,12 +48,30 @@
         </div>
       </el-form>
     </div>
+    <div style="background:blue;height:2px" />
     <div class="content">
-      <el-form>
+      <el-form
+        ref="parameterEdit"
+        :v-model="parameterEdit"
+      >
         <div class="basic">
           <div class="title">
             <span>设备参数</span>
             <el-button
+              v-show="ope4Status == 'update4'"
+              type="primary"
+              style="position:absolute;right:100px"
+              @click="updateData4"
+            >确认</el-button>
+            <el-button
+              v-show="ope4Status == 'info4'"
+              style="position:absolute;right:100px"
+              type="warning"
+              @click="ope4Status = 'update4'"
+            >编辑</el-button>
+            <el-button v-show="ope4Status == 'update4'" style="position:absolute;right:0px" @click="ope4Status = 'info4'">取消</el-button>
+            <el-button
+              v-show="ope4Status == 'info4'"
               type="primary"
               size="small"
               @click="test"
@@ -63,41 +81,103 @@
             <tr>
               <td class="blackMark">光源电压：</td>
               <td class="width9">
-                <span>{{ info.OSrc_Voltage }}V</span>
+                <span>{{ info.DeviceParam_OSrcVoltage }}V</span>
               </td>
               <td class="blackMark">机箱温度：</td>
               <td class="width9">
-                <span>{{ info.Amb_InBoxTemp }}℃</span>
+                <span>{{ info.DeviceParam_Temperature }}℃</span>
               </td>
               <td class="blackMark">光功率：</td>
               <td class="width9">
-                <span>{{ info.OSrc_Power }}mW</span>
-              </td>
-              <td class="blackMark">电路主控板电流：</td>
-              <td class="width9">
-                <span>{{ info.trainReminderTime }}mA</span>
-              </td>
-              <td class="blackMark">衰减器：</td>
-              <td class="width9">
-                <span>{{ info.trainReminderTime }}dB</span>
+                <span>{{ info.DeviceParam_OSrcPower }}mW</span>
               </td>
               <td class="blackMark">通道数：</td>
               <td class="width9">
                 <span>{{ info.trainReminderTime }}</span>
               </td>
             </tr>
-
+            <tr>
+              <td class="blackMark">电路主控板电流1：</td>
+              <td class="width9">
+                <span>{{ info.DeviceParam_Current1 }}mA</span>
+              </td>
+              <td class="blackMark">电路主控板电流2：</td>
+              <td class="width9">
+                <span>{{ info.DeviceParam_Current2 }}mA</span>
+              </td>
+              <td class="blackMark">电路主控板电流3：</td>
+              <td class="width9">
+                <span>{{ info.DeviceParam_Current3 }}mA</span>
+              </td>
+              <td class="blackMark">电路主控板电流4：</td>
+              <td class="width9">
+                <span>{{ info.DeviceParam_Current4 }}mA</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="blackMark">衰减器1：</td>
+              <td class="width9">
+                <el-input
+                  v-show="ope4Status == 'update4'"
+                  v-model="parameterEdit.DeviceParam_Attenuator1"
+                  size="small"
+                  placeholder="请输入"
+                  style="width: 100px;"
+                />
+                <span v-show="ope4Status == 'info4'">{{ info.DeviceParam_Attenuator1 }}</span>
+                <span>dB</span>
+              </td>
+              <td class="blackMark">衰减器2：</td>
+              <td class="width9">
+                <el-input
+                  v-show="ope4Status == 'update4'"
+                  v-model="parameterEdit.DeviceParam_Attenuator2"
+                  size="small"
+                  placeholder="请输入"
+                  style="width: 100px;"
+                />
+                <span v-show="ope4Status == 'info4'">{{ info.DeviceParam_Attenuator2 }}</span>
+                <span>dB</span>
+              </td>
+              <td class="blackMark">衰减器3：</td>
+              <td class="width9">
+                <el-input
+                  v-show="ope4Status == 'update4'"
+                  v-model="parameterEdit.DeviceParam_Attenuator3"
+                  size="small"
+                  placeholder="请输入"
+                  style="width: 100px;"
+                />
+                <span v-show="ope4Status == 'info4'">{{ info.DeviceParam_Attenuator3 }}</span>
+                <span>dB</span>
+              </td>
+              <td class="blackMark">衰减器4：</td>
+              <td class="width9">
+                <el-input
+                  v-show="ope4Status == 'update4'"
+                  v-model="parameterEdit.DeviceParam_Attenuator4"
+                  size="small"
+                  placeholder="请输入"
+                  style="width: 100px;"
+                />
+                <span v-show="ope4Status == 'info4'">{{ info.DeviceParam_Attenuator4 }}</span>
+                <span>dB</span>
+              </td>
+            </tr>
           </table>
         </div>
       </el-form>
       <div style="text-align:right;" />
     </div>
-
+    <div style="background:blue;height:2px" />
     <div class="content">
-      <el-form>
+      <el-form
+        ref="configurationEdit"
+        :model="configurationEdit"
+      >
         <div class="basic">
           <div class="title">
-            <span>系统配置</span>
+            <span>系统参数</span>
             <el-button
               v-show="ope2Status == 'update2'"
               type="primary"
@@ -203,6 +283,11 @@
                 <span v-show="ope1Status == 'info1'">{{ info.OptDevice_EDFACurrent }}</span>
                 <span>mA</span>
               </td>
+              <td class="blackMark" />
+              <td class="width9" />
+              <td />
+            </tr>
+            <tr>
               <td class="blackMark">
                 <span style="color: red">*</span>
                 RAMAN：
@@ -215,12 +300,9 @@
                   placeholder="请输入"
                   style="width: 100px;"
                 />
-                <span v-show="ope1Status == 'info1'">{{ info.RAMAN }}</span>
+                <span v-show="ope1Status == 'info1'">{{ info.OptDevice_RamanPower }}</span>
                 <span>dB</span>
               </td>
-              <td class="blackMark" />
-              <td class="width9" />
-              <td />
             </tr>
           </table>
         </div>
@@ -268,9 +350,9 @@
                 >
                   <el-option
                     v-for="item in lengthList"
-                    :key="item.id"
-                    :value="item.id"
-                    :label="item.value"
+                    :key="item"
+                    :value="item"
+                    :label="item"
                   />
                 </el-select>
                 <span v-show="ope3Status == 'info3'">{{ info.length }}</span>
@@ -303,6 +385,7 @@ export default {
       vibrationEdit: {},
       deviceEdit: {},
       configurationEdit: {},
+      parameterEdit: {},
       info: [],
       websocket: null,
       dialogImgVisible: false,
@@ -310,7 +393,8 @@ export default {
       ope1Status: 'info1',
       ope2Status: 'info2',
       ope3Status: 'info3',
-      lengthList: [{ id: 0, value: '30' }, { id: 1, value: '50' }, { id: 2, value: '70' }]
+      ope4Status: 'info4',
+      lengthList: ['30', '50', '70']
     }
   },
   computed: {
@@ -325,6 +409,7 @@ export default {
     this.ope1Status = 'info1'
     this.ope2Status = 'info2'
     this.ope3Status = 'info3'
+    this.ope4Status = 'info4'
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -348,7 +433,6 @@ export default {
       })
     },
     getDeviceParamSetting() {
-      this.settingParam = JSON.stringify(this.deviceEdit)
       console.log(this.settingParam)
 
       deviceParamSetting({ settingParam: this.settingParam }).then(response => {
@@ -363,6 +447,7 @@ export default {
       this.ope1Status = 'update1'
       this.ope2Status = 'update2'
       this.ope3Status = 'update3'
+      this.ope4Status = 'update4'
     },
 
     reset(formName) {
@@ -380,19 +465,31 @@ export default {
     updateData1() {
       this.ope1Status = 'info1'
       console.log(this.deviceEdit, '11111')
+      this.settingParam = JSON.stringify(this.deviceEdit)
       this.getDeviceParamSetting()
     },
     updateData2() {
       this.ope2Status = 'info2'
+      this.settingParam = JSON.stringify(this.configurationEdit)
+      console.log(this.settingParam)
+      this.getDeviceParamSetting()
     },
-    updateData3(formName) {
+    updateData3() {
       this.ope3Status = 'info3'
+      this.settingParam = JSON.stringify(this.vibrationEdit)
+      console.log(this.settingParam)
+      this.getDeviceParamSetting()
     },
-
+    updateData4() {
+      this.ope4Status = 'info4'
+      this.settingParam = JSON.stringify(this.parameterEdit)
+      console.log(this.settingParam)
+      this.getDeviceParamSetting()
+    },
     createWs() {
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.199.108:9041/')
+        this.websocket = new WebSocket('ws://192.168.199.108:9005/')
 
         // 当有消息过来的时候触发
         const that = this
@@ -469,7 +566,7 @@ export default {
   width: 100%;
   margin-top: 20px;
   background-color: white;
-  box-shadow: 0.5px 0.5px 2px 2px #c2c5c5b6;
+  /* box-shadow: 0.5px 0.5px 2px 2px #c2c5c5b6; */
   padding: 10px;
   border-radius: 10px 10px 10px 10px;
 }

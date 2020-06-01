@@ -30,6 +30,7 @@ export default {
         passRate: 0
       },
       xData: [],
+      yData: [],
       y1Data: [],
       y2Data: [],
       y3Data: [],
@@ -53,7 +54,10 @@ export default {
   },
 
   beforeRouteLeave(to, from, next) {
-    this.destroyedWs()
+    // this.destroyedWs()
+    this.websocket.close()
+    console.log(1)
+    this.websocket = null
     next()
   },
   // beforeDestroy() {
@@ -73,13 +77,13 @@ export default {
       })
     },
     getData() {
-      this.xData = []
-      this.y1Data = []
+      // this.xData = []
+      // this.y1Data = []
     },
     createWs() { // 二维振动ws
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.199.108:9041/')
+        this.websocket = new WebSocket('ws://192.168.199.108:9005/')
 
         // 当有消息过来的时候触发
         const that = this
@@ -107,37 +111,65 @@ export default {
         this.$message.error('浏览器不支持WebSocket')
       }
     },
+    getWsData(data) {
+      this.yData = data
+      this.xData = []
+      for (let i = 0; i < data.length; i++) {
+        this.xData.push(i)
+      }
+      console.log(this.xData, 'xdata')
+      this.initChart()
+      console.log(this.yData, 'ydata')
+    },
     destroyedWs() {
-      console.log(1)
-      this.websocket.close()
-      this.websocket = null
+
     },
     initChart() {
       this.chart = echarts.init(document.getElementById('myChart'))
       const option = {
         backgroundColor: '#F2F6FC',
         title: {
-          text: '',
-          x: 'center',
-          top: '20',
-          textStyle: {
-            color: 'black',
-            fontSize: '18'
-          },
-          subtextStyle: {
-            color: 'black',
-            fontSize: '16'
-          }
+
+          left: 'center'
         },
         tooltip: {
           trigger: 'axis',
           axisPointer: {
-            textStyle: {
-              type: 'cross',
-              color: '#fff'
-            }
+            animation: false
           }
         },
+        legend: {
+          data: ['频谱', '距离'],
+          left: 10
+        },
+        toolbox: {
+          feature: {
+            dataZoom: {
+              yAxisIndex: 'none'
+            },
+            restore: {},
+            saveAsImage: {}
+          }
+        },
+        axisPointer: {
+          link: { xAxisIndex: 'all' }
+        },
+        // dataZoom: [
+        //   {
+        //     show: true,
+        //     realtime: true,
+        //     start: 30,
+        //     end: 70,
+        //     xAxisIndex: [0, 1]
+        //   },
+        //   {
+        //     type: 'inside',
+        //     realtime: true,
+        //     start: 30,
+        //     end: 70,
+        //     xAxisIndex: [0, 1]
+        //   }
+        // ],
         grid: {
           left: '5%',
           right: '5%',
@@ -148,59 +180,19 @@ export default {
             color: '#fff'
           }
         },
-        toolbox: {
-          feature: {
-            dataView: { show: true, readOnly: false },
-            restore: { show: true },
-            saveAsImage: { show: true }
-          }
-        },
-        legend: {
-          x: '5%',
-          top: '10%',
-          data: ['0', '1', '2']
-        },
-        calculable: true,
-        xAxis: [{
+        xAxis: {
           type: 'category',
-          axisLine: {
-            lineStyle: {
-              color: '#90979c'
-            }
-          },
-          splitLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
-          splitArea: {
-            show: false
-          },
-          axisLabel: {
-            interval: 0
-          },
           data: []
-        }],
-        yAxis: [{
-          type: 'value',
-          splitLine: {
-            show: false
-          },
-          axisLine: {
-            lineStyle: {
-              color: '#90979c'
-            }
-          },
-          axisTick: {
-            show: false
-          },
-          axisLabel: {
-            interval: 0
-          },
-          splitArea: {
-            show: false
-          }
+        },
+        yAxis: {
+          name: '强度',
+          type: 'value'
+          // max: 1000
+        },
+        series: [{
+          name: '频谱',
+          data: [],
+          type: 'line'
         }],
         // 缩放
         dataZoom: [
@@ -228,71 +220,14 @@ export default {
             start: 1,
             end: 35
           }
-        ],
-        series: [
-          {
-            name: '强度',
-            type: 'bar',
-            barMaxWidth: 25,
-            itemStyle: {
-              normal: {
-                color: '#409EFF',
-                label: {
-                  show: true,
-                  position: 'top',
-                  formatter(p) {
-                    return p.value
-                  }
-                }
-              }
-            },
-            data: []
-          },
-
-          {
-            name: '',
-            type: 'bar',
-            barMaxWidth: 25,
-            itemStyle: {
-              normal: {
-                color: '#d14a61',
-                barBorderRadius: 1,
-                label: {
-                  show: true,
-                  position: 'top',
-                  formatter(p) {
-                    return p.value
-                  }
-                }
-              }
-            },
-            data: []
-          }, {
-            name: '',
-            type: 'line',
-            stack: 'total',
-            symbolSize: 10,
-            symbol: 'circle',
-            itemStyle: {
-              normal: {
-                color: '#675bba',
-                barBorderRadius: 0,
-                label: {
-                  show: true,
-                  position: 'top',
-                  formatter(p) {
-                    return p.value + '%'
-                  }
-                }
-              }
-            },
-            data: []
-          }
         ]
       }
-      option.xAxis[0].data = this.xData
-      option.series[0].data = this.y1Data
-      this.chart.setOption(option)
+      option.xAxis.data = this.xData
+      // option.yAxis[0].data = this.yData
+      option.series[0].data = this.yData
+      console.log(this.yData, 'ydata2')
+
+      this.chart.setOption(option, true)
     }
   }
 }

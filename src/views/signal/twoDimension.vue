@@ -7,9 +7,9 @@
         <el-input v-model="monitorEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:120px" />
         <el-button type="primary" style="position:absolute;right:10px" @click="monitor">开始监听</el-button>
       </div>
-
-      <div id="vibrateChart" style="width:100%;height:16%" />
-
+      <div id="myChart" style="width:100%;height:30%" />
+      <div id="vibrateChart" style="width:100%;height:80%" />
+      <!--
       <div class="title" style="position:relative">
         <span>预警恒警信息</span>
         <label class="radio-label" style="position:absolute;right:890px">基站名:</label>
@@ -39,12 +39,11 @@
 
         <el-button type="primary" style="position:absolute;right:10px" @click="submit">提交数据</el-button>
       </div>
-      <div id="warnChart" style="width:100%; height:20%" />
-      <div class="title">单点频谱图
+      <div id="warnChart" style="width:100%; height:40%" /> -->
+      <!-- <div class="title">单点频谱图
         <el-input v-model="spectrogramEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:120px" />
         <el-button type="primary" style="position:absolute;right:10px" @click="spectrogram">开始</el-button>
-      </div>
-      <div id="myChart" style="width:100%;height:20%" />
+      </div> -->
     </div>
 
   </div>
@@ -75,16 +74,20 @@ export default {
         passRate: 0
       },
       monitorEdit: {},
+      yData: [],
+      xData: [],
+      Data1: [],
+      twoData: [],
+
       chart: null
     }
   },
   created() { },
   mounted() {
     this.initChart()
-    this.warnChart()
-    this.myChart()
+    this.mychart()
+    // this.warnChart()
     this.getStandList()
-    // this.getVibQuery()
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -117,23 +120,14 @@ export default {
       })
     },
     getWsData(data) {
-      const xData = []
-      // for (let i = 0; i < data.length; i++) {
-      //   xData.push(i)
-      // }
+      this.Data1 = data
+      this.xData = []
       for (let i = 0; i < data.length; i++) {
-        const x = data[i]
-        xData.push(x[0])
+        this.xData.push(i)
       }
-      for (let i = 0; i < xData.length; i++) {
-        for (let j = i + 1; j < xData.length; j++) {
-          if (xData[i] === xData[j]) {
-            xData.splice(j, 1)
-            j--
-          }
-        }
-      }
-      // console.log(xData)
+
+      this.initChart()
+      this.mychart(data)
     },
     getWsData1(data) {
     },
@@ -148,348 +142,163 @@ export default {
         this.createWs1()
       })
     },
-    spectrogram() {
-      realtimeAudioQuery(this.spectrogramEdit).then(response => {
-        this.data = response.data
-        this.createWs()
-      })
-    },
-    initChart() {
-      var data = [[0, 0, 5], [0, 1, 1], [0, 2, 0], [0, 3, 0], [0, 4, 0], [0, 5, 0], [0, 6, 0], [0, 7, 0], [0, 8, 0], [0, 9, 0], [0, 10, 0], [0, 11, 2], [0, 12, 4], [0, 13, 1], [0, 14, 1], [0, 15, 3], [0, 16, 4], [0, 17, 6], [0, 18, 4], [0, 19, 4], [0, 20, 3], [0, 21, 3], [0, 22, 2], [0, 23, 5], [1, 0, 7], [1, 1, 0], [1, 2, 0], [1, 3, 0], [1, 4, 0], [1, 5, 0], [1, 6, 0], [1, 7, 0], [1, 8, 0], [1, 9, 0], [1, 10, 5], [1, 11, 2], [1, 12, 2], [1, 13, 6], [1, 14, 9], [1, 15, 11], [1, 16, 6], [1, 17, 7], [1, 18, 8], [1, 19, 12], [1, 20, 5], [1, 21, 5], [1, 22, 7], [1, 23, 2], [2, 0, 1], [2, 1, 1], [2, 2, 0], [2, 3, 0], [2, 4, 0], [2, 5, 0], [2, 6, 0], [2, 7, 0], [2, 8, 0], [2, 9, 0], [2, 10, 3], [2, 11, 2], [2, 12, 1], [2, 13, 9], [2, 14, 8], [2, 15, 10], [2, 16, 6], [2, 17, 5], [2, 18, 5], [2, 19, 5], [2, 20, 7], [2, 21, 4], [2, 22, 2], [2, 23, 4], [3, 0, 7], [3, 1, 3], [3, 2, 0], [3, 3, 0], [3, 4, 0], [3, 5, 0], [3, 6, 0], [3, 7, 0], [3, 8, 1], [3, 9, 0], [3, 10, 5], [3, 11, 4], [3, 12, 7], [3, 13, 14], [3, 14, 13], [3, 15, 12], [3, 16, 9], [3, 17, 5], [3, 18, 5], [3, 19, 10], [3, 20, 6], [3, 21, 4], [3, 22, 4], [3, 23, 1], [4, 0, 1], [4, 1, 3], [4, 2, 0], [4, 3, 0], [4, 4, 0], [4, 5, 1], [4, 6, 0], [4, 7, 0], [4, 8, 0], [4, 9, 2], [4, 10, 4], [4, 11, 4], [4, 12, 2], [4, 13, 4], [4, 14, 4], [4, 15, 14], [4, 16, 12], [4, 17, 1], [4, 18, 8], [4, 19, 5], [4, 20, 3], [4, 21, 7], [4, 22, 3], [4, 23, 0], [5, 0, 2], [5, 1, 1], [5, 2, 0], [5, 3, 3], [5, 4, 0], [5, 5, 0], [5, 6, 0], [5, 7, 0], [5, 8, 2], [5, 9, 0], [5, 10, 4], [5, 11, 1], [5, 12, 5], [5, 13, 10], [5, 14, 5], [5, 15, 7], [5, 16, 11], [5, 17, 6], [5, 18, 0], [5, 19, 5], [5, 20, 3], [5, 21, 4], [5, 22, 2], [5, 23, 0], [6, 0, 1], [6, 1, 0], [6, 2, 0], [6, 3, 0], [6, 4, 0], [6, 5, 0], [6, 6, 0], [6, 7, 0], [6, 8, 0], [6, 9, 0], [6, 10, 1], [6, 11, 0], [6, 12, 2], [6, 13, 1], [6, 14, 3], [6, 15, 4], [6, 16, 0], [6, 17, 0], [6, 18, 0], [6, 19, 0], [6, 20, 1], [6, 21, 2], [6, 22, 2], [6, 23, 6]]
-
-      data = data.map(function(item) {
-        return [item[1], item[0], item[2] || '-']
-      })
-      const xData = []
-      // for (let i = 0; i < data.length; i++) {
-      //   xData.push(i)
-      // }
-      for (let i = 0; i < data.length; i++) {
-        const x = data[i]
-        xData.push(x[0])
-      }
-      for (let i = 0; i < xData.length; i++) {
-        for (let j = i + 1; j < xData.length; j++) {
-          if (xData[i] === xData[j]) {
-            xData.splice(j, 1)
-            j--
-          }
-        }
-      }
-      console.log(xData)
-
-      this.chart = echarts.init(document.getElementById('vibrateChart'))
-      const option = {
-        tooltip: {
-          position: 'top'
-        },
-        animation: false,
-        grid: {
-          height: '50%',
-          top: '10%'
-        },
-        xAxis: {
-          name: '距离',
-          type: 'category',
-          data: xData,
-          splitArea: {
-            show: true
-          }
-        },
-        yAxis: {
-          name: '强度',
-          type: 'category',
-          splitArea: {
-            show: true
-          }
-        },
-        // dataZoom: [
-        //   {
-        //     show: true,
-        //     height: 20,
-        //     xAxisIndex: [0],
-        //     bottom: 30,
-        //     start: 0,
-        //     end: 80,
-        //     handleIcon: 'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
-        //     handleSize: '110%',
-        //     handleStyle: {
-        //       color: '#675bba'
-        //     },
-        //     textStyle: {
-        //       color: '#fff'
-        //     },
-        //     borderColor: '#90979c'
-        //   },
-        //   {
-        //     type: 'inside',
-        //     show: true,
-        //     height: 15,
-        //     start: 1,
-        //     end: 35
-        //   }
-        // ],
-        visualMap: {
-          min: 0,
-          max: 14,
-          calculable: true,
-          orient: 'horizontal',
-          left: 'center',
-          bottom: '15%'
-        },
-        series: [{
-          name: 'Punch Card',
-          type: 'heatmap',
-          data: data,
-          label: {
-            show: true
-          },
-          emphasis: {
-            itemStyle: {
-              shadowBlur: 10,
-              shadowColor: 'rgba(0, 0, 0, 0.5)'
-            }
-          }
-
-        }]
-      }
-      //   option.series[0].data = this.y1Data
-      //   option.series[1].data = this.y2Data
-      this.chart.setOption(option)
-    },
-    warnChart() {
-      this.warnchart = echarts.init(document.getElementById('warnChart'))
-      const option = {
-        title: {
-          text: '预警恒警'
-        },
-        tooltip: {
-          trigger: 'axis'
-        },
-        legend: {
-          data: ['恒定预警', '有序统计量']
-        },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
-        toolbox: {
-          feature: {
-            saveAsImage: {}
-          }
-        },
-        xAxis: {
-          type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        },
-        yAxis: {
-          type: 'value'
-        },
-        series: [
-          {
-            name: '恒定预警',
-            type: 'line',
-            step: 'middle',
-            data: [220, 282, 201, 234, 290, 430, 410]
-          },
-          {
-            name: '有序统计量',
-            type: 'line',
-            step: 'middle',
-            data: [450, 432, 401, 454, 590, 530, 510]
-          }
-        ]
-      }
-      this.warnchart.setOption(option)
-    },
-    myChart() {
+    // spectrogram() {
+    //   realtimeAudioQuery(this.spectrogramEdit).then(response => {
+    //     this.data = response.data
+    //     this.createWs()
+    //   })
+    // },
+    mychart(data) {
       this.chart = echarts.init(document.getElementById('myChart'))
       const option = {
         backgroundColor: '#F2F6FC',
-        title: {
-          text: '',
-          x: 'center',
-          top: '20',
-          textStyle: {
-            color: 'black',
-            fontSize: '18'
-          },
-          subtextStyle: {
-            color: 'black',
-            fontSize: '16'
-          }
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            textStyle: {
-              type: 'cross',
-              color: '#fff'
-            }
-          }
-        },
         grid: {
-          left: '5%',
-          right: '5%',
-          borderWidth: 0,
-          top: 150,
-          bottom: 95,
-          textStyle: {
-            color: '#fff'
-          }
+          height: '50%',
+          bottom: '1%'
         },
-        toolbox: {
-          feature: {
-            dataView: { show: true, readOnly: false },
-            restore: { show: true },
-            saveAsImage: { show: true }
-          }
-        },
-        legend: {
-          x: '5%',
-          top: '10%',
-          data: ['0', '1', '2']
-        },
-        calculable: true,
-        xAxis: [{
+        xAxis: {
+          axisLabel: {
+            formatter: function() {
+              return ''
+            }
+          },
+          // show: false,
           type: 'category',
-          axisLine: {
-            lineStyle: {
-              color: '#90979c'
-            }
-          },
-          splitLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
-          splitArea: {
-            show: false
-          },
-          axisLabel: {
-            interval: 0
-          },
           data: []
-        }],
-        yAxis: [{
-          type: 'value',
-          splitLine: {
-            show: false
-          },
-          axisLine: {
-            lineStyle: {
-              color: '#90979c'
+        },
+        yAxis: {
+          axisLabel: {
+            formatter: function() {
+              return ''
             }
           },
-          axisTick: {
-            show: false
+          type: 'value',
+          max: 2000
+        },
+        series: [{
+          name: '强度',
+          data: data,
+          type: 'line',
+          itemStyle: {
+            color: '#313695'
           },
-          axisLabel: {
-            interval: 0
-          },
-          splitArea: {
-            show: false
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+              offset: 0,
+              color: '#4575b4'
+            }, {
+              offset: 1,
+              color: '#74add1'
+            }])
           }
-        }],
-        dataZoom: [
-          {
-            show: true,
-            height: 20,
-            xAxisIndex: [0],
-            bottom: 30,
-            start: 0,
-            end: 80,
-            handleIcon: 'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
-            handleSize: '110%',
-            handleStyle: {
-              color: '#675bba'
-            },
-            textStyle: {
-              color: '#fff'
-            },
-            borderColor: '#90979c'
-          },
-          {
-            type: 'inside',
-            show: true,
-            height: 15,
-            start: 1,
-            end: 35
-          }
-        ],
-        series: [
-          {
-            name: '强度',
-            type: 'bar',
-            barMaxWidth: 25,
-            itemStyle: {
-              normal: {
-                color: '#409EFF',
-                label: {
-                  show: true,
-                  position: 'top',
-                  formatter(p) {
-                    return p.value
-                  }
-                }
-              }
-            },
-            data: []
-          },
-          {
-            name: '',
-            type: 'bar',
-            barMaxWidth: 25,
-            itemStyle: {
-              normal: {
-                color: '#d14a61',
-                barBorderRadius: 1,
-                label: {
-                  show: true,
-                  position: 'top',
-                  formatter(p) {
-                    return p.value
-                  }
-                }
-              }
-            },
-            data: []
-          }, {
-            name: '',
-            type: 'line',
-            stack: 'total',
-            symbolSize: 10,
-            symbol: 'circle',
-            itemStyle: {
-              normal: {
-                color: '#675bba',
-                barBorderRadius: 0,
-                label: {
-                  show: true,
-                  position: 'top',
-                  formatter(p) {
-                    return p.value + '%'
-                  }
-                }
-              }
-            },
-            data: []
-          }
-        ]
+        }]
       }
-      // option.xAxis[0].data = this.xData
-      // option.series[0].data = this.y1Data
-      // option.series[1].data = this.y2Data
-      // option.series[2].data = this.y3Data
+      option.xAxis.data = this.xData
+      option.yAxis.data = data
+      option.series[0].data = data
+      this.chart.setOption(option, true)
+    },
+    initChart() {
+      var myDate = new Date()
+      // var now = myDate.getHours() + ':' + myDate.getMinutes() + ':' + myDate.getSeconds()// 时分秒
+      // var now = myDate.toLocaleString() // 日期+时间
+      var now = myDate.toLocaleTimeString()// 时间
+      this.yData.push(now)
+      if (this.yData.length > 21) {
+        this.yData.shift()
+      }
+      this.Data1.forEach((item, index) => {
+        this.twoData.push([index, now, item])
+      })
+      // this.twoData.forEach((item, index) => {
+      //   if (index < this.xData.length) {
+      //     this.twoData.splice(item, 1)
+      //   }
+      // })
+
+      console.log(this.twoData, '1')
+
+      this.chart = echarts.init(document.getElementById('vibrateChart'))
+      const option = {
+        tooltip: {},
+        backgroundColor: '#F2F6FC',
+        grid: {
+          height: '80%',
+          top: '0'
+        },
+        xAxis: {
+          type: 'category',
+          data: []
+        },
+        yAxis: {
+          type: 'category',
+          data: []
+        },
+        visualMap: {
+          min: 0,
+          max: 1000,
+          calculable: true,
+          orient: 'horizontal',
+          left: 'center',
+          bottom: '5%',
+          inRange: {
+            color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+          }
+        },
+        series: [{
+          name: 'Gaussian',
+          type: 'heatmap',
+          data: [],
+          emphasis: {
+            itemStyle: {
+              borderColor: '#333',
+              borderWidth: 1
+            }
+          },
+          progressive: 1000,
+          animation: false
+        }]
+      }
+      option.xAxis.data = this.xData
+      option.yAxis.data = this.yData
+      option.series[0].data = this.twoData
       this.chart.setOption(option)
+    },
+    createWs1() { // 二维振动ws
+      if (window.WebSocket) {
+        // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
+        this.websocket = new WebSocket('ws://192.168.199.108:9005/')
+
+        // 当有消息过来的时候触发
+        const that = this
+        this.websocket.onmessage = function(event) {
+          const data = JSON.parse(event.data)
+          that.getWsData(data)
+        }
+
+        // 连接关闭的时候触发
+        this.websocket.onclose = function(event) {
+          console.log('断开连接')
+        }
+
+        // 连接打开的时候触发
+        this.websocket.onopen = function(event) {
+          that.websocket.send(that.data)
+          console.log('建立连接')
+        }
+
+        this.websocket.onclose = function(event) {
+          console.log('连接断开')
+          // that.contextAudioStop()
+        }
+      } else {
+        this.$message.error('浏览器不支持WebSocket')
+      }
     },
     createWs() { // 二维振动ws
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.199.108:9042/')
+        this.websocket = new WebSocket('ws://192.168.199.108:9005/')
 
         // 当有消息过来的时候触发
         const that = this
@@ -522,37 +331,6 @@ export default {
         this.websocket.close()
         this.websocket = null
       }
-    },
-    createWs1() { // 实时监听ws
-      if (window.WebSocket) {
-        // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.199.108:9041/')
-
-        // 当有消息过来的时候触发
-        const that = this
-        this.websocket.onmessage = function(event) {
-          const data = JSON.parse(event.data)
-          that.getWsData1(data)
-        }
-
-        // 连接关闭的时候触发
-        this.websocket.onclose = function(event) {
-          console.log('断开连接')
-        }
-
-        // 连接打开的时候触发
-        this.websocket.onopen = function(event) {
-          that.websocket.send(that.data)
-          console.log('建立连接')
-        }
-
-        this.websocket.onclose = function(event) {
-          console.log('连接断开')
-          // that.contextAudioStop()
-        }
-      } else {
-        this.$message.error('浏览器不支持WebSocket')
-      }
     }
   }
 }
@@ -560,8 +338,8 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
 .chart-container {
   width: 100%;
-  height: calc(300vh - 84px);
-  margin-bottom: 150px;
+  height: calc(100vh - 84px);
+  margin-bottom: 100px;
 }
 .title {
   position: relative;

@@ -36,6 +36,11 @@
       <el-table-column label="基站通道" prop="standChannel" />
       <el-table-column label="基站IP" prop="standIp" />
       <el-table-column label="基站精度" prop="precisions" />
+      <el-table-column label="基站模式">
+        <template slot-scope="scope">
+          {{ scope.row.standMode | standMode }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="260">
         <template slot-scope="scope">
           <el-button
@@ -142,6 +147,18 @@ export default {
   // components: { FilenameOption },
   directives: {
     waves
+  },
+  filters: {
+    standMode: function(val) {
+      switch (val) {
+        case 0:
+          return '光纤振动监测模式'
+        case 1:
+          return '光纤性能检测模式'
+        default:
+          break
+      }
+    }
   },
   data() {
     return {
