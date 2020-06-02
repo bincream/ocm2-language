@@ -5,10 +5,12 @@
       <div class="title">
         <span>阀值设置下的二维振动</span>
         <el-input v-model="monitorEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:120px" />
-        <el-button type="primary" style="position:absolute;right:10px" @click="monitor">开始监听</el-button>
+        <el-button v-if="audioStatus == 0" type="primary" style="position:absolute;right:10px" @click="monitorStart">开始监听</el-button>
+        <el-button v-else type="primary" style="position:absolute;right:10px" @click="monitorEnd">结束监听</el-button>
+        <audio id="aud" />
       </div>
       <div id="myChart" style="width:100%;height:30%" />
-      <div id="vibrateChart" style="width:100%;height:80%" />
+      <div id="vibrateChart" style="  height:80%" />
       <!--
       <div class="title" style="position:relative">
         <span>预警恒警信息</span>
@@ -51,7 +53,8 @@
 
 <script>
 import { realtimeAudioQuery, vibQuery } from '@/api/signal/twoDimension'
-import { standList } from '@/api/public'
+import { standList, baseStandInfo } from '@/api/public'
+import { debounce } from '@/utils'
 import echarts from 'echarts'
 import checkPermission from '@/utils/permission' // 权限判断函数
 import waves from '@/directive/waves' // 水波纹指令
@@ -68,6 +71,7 @@ export default {
       standList: [],
       warningEdit: {},
       spectrogramEdit: {},
+      audioStatus: 0,
       infoCount: {
         noPassCount: 0,
         getPastCount: 0,
@@ -78,8 +82,9 @@ export default {
       xData: [],
       Data1: [],
       twoData: [],
-
-      chart: null
+      baseStandInfo: [],
+      chart: null,
+      chart1: null
     }
   },
   created() { },
@@ -88,6 +93,23 @@ export default {
     this.mychart()
     // this.warnChart()
     this.getStandList()
+    this.getBaseStandInfo()
+
+    if (this.autoResize) {
+      this.__resizeHandler = debounce(() => {
+        if (this.chart) {
+          this.chart.resize()
+        }
+        if (this.chart1) {
+          this.chart1.resize()
+        }
+      }, 100)
+      window.addEventListener('resize', this.__resizeHandler)
+    }
+
+    // 监听侧边栏的变化
+    this.sidebarElm = document.getElementsByClassName('sidebar-container')[0]
+    this.sidebarElm && this.sidebarElm.addEventListener('transitionend', this.sidebarResizeHandler)
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -105,12 +127,22 @@ export default {
     }
     this.chart.dispose()
     this.chart = null
+    if (!this.chart1) {
+      return
+    }
+    this.chart1.dispose()
+    this.chart1 = null
   },
   methods: {
     checkPermission,
     getStandList() {
       standList().then(response => {
         this.standList = response.data
+      })
+    },
+    getBaseStandInfo() {
+      baseStandInfo().then(response => {
+        this.baseStandInfo = response.data
       })
     },
     getVibQuery() {
@@ -123,24 +155,42 @@ export default {
       this.Data1 = data
       this.xData = []
       for (let i = 0; i < data.length; i++) {
-        this.xData.push(i)
+        this.xData.push(i * this.baseStandInfo.precisions)
       }
 
       this.initChart()
       this.mychart(data)
     },
     getWsData1(data) {
+      var audio = document.getElementById('aud')
+      if (window.URL) {
+        audio.src = window.URL.createObjectURL(event.data)
+      } else {
+        audio.src = event
+      }
+      audio.autoplay = true
     },
+
     // 提交数据
     submit() {
 
     },
     // 监听
-    monitor() {
+    monitorStart() {
+      if (!this.monitorEdit.col) {
+        this.$message.error('请输入距离')
+        return false
+      }
       realtimeAudioQuery(this.monitorEdit).then(response => {
         this.data = response.data
+        this.audioStatus = 1
         this.createWs1()
       })
+    },
+    monitorEnd() {
+      var audio = document.getElementById('aud')
+      this.audioStatus = 0
+      audio.pause()
     },
     // spectrogram() {
     //   realtimeAudioQuery(this.spectrogramEdit).then(response => {
@@ -203,13 +253,23 @@ export default {
       // var now = myDate.getHours() + ':' + myDate.getMinutes() + ':' + myDate.getSeconds()// 时分秒
       // var now = myDate.toLocaleString() // 日期+时间
       var now = myDate.toLocaleTimeString()// 时间
-      this.yData.push(now)
-      if (this.yData.length > 21) {
+      var arr = this.yData.indexOf(now)
+      if (arr === -1) {
+        this.yData.push(now)
+      }
+      if (this.yData.length > 100) {
         this.yData.shift()
       }
+      console.log(this.yData)
+
       this.Data1.forEach((item, index) => {
-        this.twoData.push([index, now, item])
+        if (item > 50) {
+          this.twoData.push([index, now, item])
+        }
       })
+      if (this.twoData.length > 50000) {
+        this.twoData.splice(0, 2500)
+      }
       // this.twoData.forEach((item, index) => {
       //   if (index < this.xData.length) {
       //     this.twoData.splice(item, 1)
@@ -217,8 +277,9 @@ export default {
       // })
 
       console.log(this.twoData, '1')
+      console.log(this.xData)
 
-      this.chart = echarts.init(document.getElementById('vibrateChart'))
+      this.chart1 = echarts.init(document.getElementById('vibrateChart'))
       const option = {
         tooltip: {},
         backgroundColor: '#F2F6FC',
@@ -234,21 +295,109 @@ export default {
           type: 'category',
           data: []
         },
+        toolbox: {
+          feature: {
+            dataZoom: {
+              yAxisIndex: 'none'
+            },
+            restore: {},
+            saveAsImage: {}
+          }
+        },
+        // 缩放
+        // dataZoom: [
+        //   {
+        //     rangeMode: ['value'],
+        //     show: true,
+        //     height: 20,
+        //     xAxisIndex: [0],
+        //     bottom: 80,
+        //     startValue: this.dataZoom_start,
+        //     endValue: this.dataZoom_end,
+        //     handleIcon: 'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
+        //     handleSize: '110%',
+        //     handleStyle: {
+        //       color: '#675bba'
+        //     },
+        //     textStyle: {
+        //       color: '#fff'
+        //     },
+        //     borderColor: '#90979c'
+        //   },
+
+        //   {
+        //     type: 'inside',
+        //     show: true,
+        //     height: 15,
+        //     start: 1,
+        //     end: 35
+        //   }
+        // ],
+        // dataZoom: {
+        //   show: true,
+        //   yAxisIndex: false,
+        //   title: {
+        //     zoom: '区域选择',
+        //     back: '后退'
+        //   }, // 三角形图标: // 空图标:
+        //   icon: {
+        //     back: ''
+        //   },
+        //   minPoints: 20
+        // },
         visualMap: {
-          min: 0,
-          max: 1000,
+          type: 'piecewise',
+          // min: 0,
+          // max: 2000,
           calculable: true,
           orient: 'horizontal',
           left: 'center',
           bottom: '5%',
+          // inRange: {
+          //   color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+          // }
+          splitNumber: 8,
+          pieces: [{
+            gt: 0,
+            lte: 200,
+            color: '#096'
+          }, {
+            gt: 200,
+            lte: 1000,
+            color: '#ffde33'
+          }, {
+            gt: 1000,
+            lte: 1500,
+            color: '#ff9933'
+          }, {
+            gt: 1500,
+            lte: 2000,
+            color: '#cc0033'
+          }, {
+            gt: 2000,
+            lte: 4000,
+            color: '#660099'
+          }, {
+            gt: 4000,
+            color: '#7e0023'
+          }],
+          outOfRange: {
+            color: '#999'
+          },
           inRange: {
             color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
           }
         },
         series: [{
-          name: 'Gaussian',
+          name: '距离:强度',
           type: 'heatmap',
+          // type: 'scatter',
           data: [],
+          largeThreshold: 200, // 点的大小
+          symbolSize: function(param) {
+            // 每个点是一个矩形，其[宽px, 高px]
+            return [6, 16]
+          },
           emphasis: {
             itemStyle: {
               borderColor: '#333',
@@ -262,7 +411,7 @@ export default {
       option.xAxis.data = this.xData
       option.yAxis.data = this.yData
       option.series[0].data = this.twoData
-      this.chart.setOption(option)
+      this.chart1.setOption(option)
     },
     createWs1() { // 二维振动ws
       if (window.WebSocket) {
@@ -272,8 +421,8 @@ export default {
         // 当有消息过来的时候触发
         const that = this
         this.websocket.onmessage = function(event) {
-          const data = JSON.parse(event.data)
-          that.getWsData(data)
+          // const data = JSON.parse(event.data)
+          that.getWsData1(event.data)
         }
 
         // 连接关闭的时候触发

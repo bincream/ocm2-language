@@ -99,19 +99,51 @@
             <tr>
               <td class="blackMark">电路主控板电流1：</td>
               <td class="width9">
-                <span>{{ info.DeviceParam_Current1 }}mA</span>
+                <el-input
+                  v-show="ope4Status == 'update4'"
+                  v-model="parameterEdit.DeviceParam_Current1"
+                  size="small"
+                  placeholder="请输入"
+                  style="width: 100px;"
+                />
+                <span v-show="ope4Status == 'info4'">{{ info.DeviceParam_Current1 }}</span>
+                <span>mA</span>
               </td>
               <td class="blackMark">电路主控板电流2：</td>
               <td class="width9">
-                <span>{{ info.DeviceParam_Current2 }}mA</span>
+                <el-input
+                  v-show="ope4Status == 'update4'"
+                  v-model="parameterEdit.DeviceParam_Current2"
+                  size="small"
+                  placeholder="请输入"
+                  style="width: 100px;"
+                />
+                <span v-show="ope4Status == 'info4'">{{ info.DeviceParam_Current2 }}</span>
+                <span>mA</span>
               </td>
               <td class="blackMark">电路主控板电流3：</td>
               <td class="width9">
-                <span>{{ info.DeviceParam_Current3 }}mA</span>
+                <el-input
+                  v-show="ope4Status == 'update4'"
+                  v-model="parameterEdit.DeviceParam_Current3"
+                  size="small"
+                  placeholder="请输入"
+                  style="width: 100px;"
+                />
+                <span v-show="ope4Status == 'info4'">{{ info.DeviceParam_Current3 }}</span>
+                <span>mA</span>
               </td>
               <td class="blackMark">电路主控板电流4：</td>
               <td class="width9">
-                <span>{{ info.DeviceParam_Current4 }}mA</span>
+                <el-input
+                  v-show="ope4Status == 'update4'"
+                  v-model="parameterEdit.DeviceParam_Current4"
+                  size="small"
+                  placeholder="请输入"
+                  style="width: 100px;"
+                />
+                <span v-show="ope4Status == 'info4'">{{ info.DeviceParam_Current4 }}</span>
+                <span>mA</span>
               </td>
             </tr>
             <tr>
@@ -433,8 +465,6 @@ export default {
       })
     },
     getDeviceParamSetting() {
-      console.log(this.settingParam)
-
       deviceParamSetting({ settingParam: this.settingParam }).then(response => {
         this.deviceParamSetting = response.data
         this.obj = this.deviceParamSetting

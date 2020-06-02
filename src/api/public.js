@@ -34,6 +34,14 @@ export function aiModelList(query) {
     params: query
   })
 }
+
+export function baseStandInfo(query) {
+  return request({
+    url: '/api-web/public/baseStandInfo',
+    method: 'get',
+    params: query
+  })
+}
 // 历史报警列表
 export function hisAlarmList(query) {
   return request({
