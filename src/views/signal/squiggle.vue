@@ -193,34 +193,34 @@ export default {
           name: '频谱',
           data: [],
           type: 'line'
-        }],
+        }]
         // 缩放
-        dataZoom: [
-          {
-            show: true,
-            height: 20,
-            xAxisIndex: [0],
-            bottom: 30,
-            start: 0,
-            end: 80,
-            handleIcon: 'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
-            handleSize: '110%',
-            handleStyle: {
-              color: '#675bba'
-            },
-            textStyle: {
-              color: '#fff'
-            },
-            borderColor: '#90979c'
-          },
-          {
-            type: 'inside',
-            show: true,
-            height: 15,
-            start: 1,
-            end: 35
-          }
-        ]
+        // dataZoom: [
+        //   {
+        //     show: true,
+        //     height: 20,
+        //     xAxisIndex: [0],
+        //     bottom: 30,
+        //     start: 0,
+        //     end: 80,
+        //     handleIcon: 'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
+        //     handleSize: '110%',
+        //     handleStyle: {
+        //       color: '#675bba'
+        //     },
+        //     textStyle: {
+        //       color: '#fff'
+        //     },
+        //     borderColor: '#90979c'
+        //   },
+        //   {
+        //     type: 'inside',
+        //     show: true,
+        //     height: 15,
+        //     start: 1,
+        //     end: 35
+        //   }
+        // ]
       }
       option.xAxis.data = this.xData
       // option.yAxis[0].data = this.yData
