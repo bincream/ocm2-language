@@ -168,7 +168,9 @@ export default {
       } else {
         audio.src = event
       }
+      console.log('解析')
       audio.autoplay = true
+      console.log('播放')
     },
 
     // 提交数据
