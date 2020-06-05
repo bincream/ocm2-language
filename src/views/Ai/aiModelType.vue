@@ -409,6 +409,7 @@
             <el-table-column label="操作" width="120">
               <template slot-scope="scope">
                 <el-button
+                  v-if="checkPermission(['aimodel/delete'])"
                   type="danger"
                   size="small"
                   @click.stop="audioDelete(scope.row)"

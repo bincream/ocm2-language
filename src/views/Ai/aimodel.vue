@@ -18,6 +18,7 @@
         @click="handleCreate"
       >模型添加</el-button>
       <el-button
+        v-if="checkPermission(['aimodel/uploadExcel'])"
         class="filter-item"
         style="position:absolute;right:0px"
         type="primary"
@@ -54,6 +55,7 @@
       <el-table-column label="操作" width="530">
         <template slot-scope="scope">
           <el-button
+            v-if="checkPermission(['aimodel/changeStatus'])"
             v-show="scope.row.enable == 0 && scope.row.userid !== 1"
             type="warning"
             size="small"
