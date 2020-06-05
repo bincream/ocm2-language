@@ -142,6 +142,15 @@ export const asyncRoutes = [
           title: '二维振动'
 
         }
+      },
+      {
+        path: 'OTDR',
+        component: () => import('@/views/signal/otdr'),
+        name: 'OTDR',
+        meta: {
+          title: 'OTDR'
+
+        }
       }
     ]
   },
@@ -298,6 +307,18 @@ export const asyncRoutes = [
 
       }
     }
+    ]
+  },
+  {
+    path: '/addRole',
+    component: Layout,
+    children: [
+      {
+        path: 'addRole',
+        component: () => import('@/views/addRole'),
+        name: 'AddRole',
+        meta: { title: '添加权限', icon: 'keyuan', noCache: true }
+      }
     ]
   },
   // {

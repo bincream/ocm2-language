@@ -50,3 +50,10 @@ export function hisAlarmList(query) {
     params: query
   })
 }
+export function alarmInfoList(query) {
+  return request({
+    url: '/api-web/public/alarmInfoList',
+    method: 'get',
+    params: query
+  })
+}

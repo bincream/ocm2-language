@@ -55,3 +55,10 @@ export function assPer(data) {
     data
   })
 }
+export function savePm(data) {
+  return request({
+    url: '/api-web/organization/sysRole/savePm',
+    method: 'post',
+    data
+  })
+}

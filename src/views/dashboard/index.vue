@@ -25,23 +25,17 @@
       highlight-current-row
       height="500"
     >
-      <el-table-column label="基站名称" prop="standName" />
-      <el-table-column label="告警名称" prop="alarmType" />
-      <el-table-column label="能量值" prop="amplitude" />
+      <el-table-column label="报警类型" prop="alarmType" />
+      <el-table-column label="通道号" prop="lineInfoChannel" />
+      <el-table-column label="距离" prop="distance" />
       <el-table-column label="开始点" prop="beginCol" />
       <el-table-column label="中心点" prop="centerCol" />
       <el-table-column label="结束点" prop="endCol" />
       <el-table-column label="开始时间" prop="beginTime" />
       <el-table-column label="结束时间" prop="endTime" />
-      <el-table-column label="是否报警" prop="isAlarm">
-        <template slot-scope="scope">{{ scope.row.isAlarm | isAlarm }}</template>
-      </el-table-column>
       <el-table-column label="震动次数" prop="freq" />
-      <el-table-column label="是否处理">
-        <template slot-scope="scope">
-          <span>{{ scope.row.type | type }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="强度" prop="amplitude" />
+      <el-table-column label="等级" prop="level" />
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button

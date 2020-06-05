@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'Vue Element Admin',
+  title: '分布式光纤传感系统',
 
   /**
    * @type {boolean} true | false

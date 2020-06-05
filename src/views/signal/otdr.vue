@@ -2,27 +2,74 @@
   <div class="app-container">
     <div class="chart-container">
       <div class="title">
-        <span>全线时序图</span>
+        <span>OTDR</span>
+        <!-- <label class="radio-label" style="position:absolute;right:740px">起点:</label> -->
+        <span class="radio-label" style="position:absolute;width:150px;right:530px">光纤长度:{{ otdrList.FiberLength }}</span>
+
+        <!-- <label class="radio-label" style="position:absolute;right:520px">终点:</label> -->
+        <span class="radio-label" style="position:absolute;width:180px;right:330px">总损耗:{{ otdrList.AllLoss }}db</span>
+
+        <!-- <label class="radio-label" style="position:absolute;right:280px">灵敏度:</label> -->
+        <span class="radio-label" style="position:absolute;width:200px;right:120px">总反射损耗:{{ otdrList.AllRefLoss }}</span>
+
         <el-button v-if="websocket == null" type="primary" @click="connect">连接</el-button>
         <el-button v-else type="danger" @click="disconnect">断开连接</el-button>
       </div>
+      <div id="myChart" style="width: 100%; height: 50%" />
 
-      <div id="myChart" style="width: 100%; height: 80%" />
+      <el-table
+        ref="multipleTable"
+        :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
+        :data="list"
+        stripe
+        :row-style="{textAlign: 'center'}"
+        highlight-current-row
+        height="500"
+      >
+        <el-table-column label="id" prop="id" />
+        <el-table-column label="位置(m)" prop="location" />
+        <el-table-column label="损耗" prop="loss" />
+        <el-table-column label="反射损耗" prop="refloss" />
+        <el-table-column label="累计损耗" prop="cumloss" />
+        <el-table-column label="事件类型">
+          <template slot-scope="scope">
+            <span>{{ scope.row.type | status }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
-
   </div>
 </template>
 
 <script>
 // import { list } from '@/api/signal/squiggle'
-import { rscQuery } from '@/api/signal/squiggle'
-import { baseStandInfo } from '@/api/public'
+import { otdrQuery } from '@/api/signal/otdr'
 import echarts from 'echarts'
 import checkPermission from '@/utils/permission' // 权限判断函数
 import waves from '@/directive/waves' // 水波纹指令
 import resize from '@/components/Charts/mixins/resize'
 export default {
   name: 'Dashboard',
+  filters: {
+    status: function(val) {
+      switch (val) {
+        case 0:
+          return '非反射事件'
+        case 1:
+          return '反射事件'
+        case 2:
+          return '光纤始端'
+        case 3:
+          return '光纤始端'
+        case 4:
+          return '光纤末端'
+        case 5:
+          return '其它事件'
+        default:
+          break
+      }
+    }
+  },
   directives: {
     waves
   },
@@ -30,13 +77,14 @@ export default {
   data() {
     return {
       listQuery: {},
-      accuracy: {},
+      list: [],
       infoCount: {
         noPassCount: 0,
         getPastCount: 0,
         passRate: 0
       },
       xData: [],
+      otdrList: {},
       yData: [],
       y1Data: [],
       y2Data: [],
@@ -51,7 +99,6 @@ export default {
   },
   created() { },
   mounted() {
-    this.getBaseStandInfo()
     this.initChart()
   },
   // beforeRouteEnter(to, from, next) {
@@ -59,7 +106,6 @@ export default {
   //     vm.getRsc()
   //   })
   // },
-
   beforeRouteLeave(to, from, next) {
     if (this.websocket) {
       this.websocket.close()
@@ -69,22 +115,16 @@ export default {
   },
   methods: {
     checkPermission,
-    getBaseStandInfo() {
-      baseStandInfo().then(response => {
-        this.accuracy = response.data
-        console.log(this.accuracy)
-      })
-    },
     connect() {
-      this.getRsc()
+      this.getOtdr()
     },
     disconnect() {
       this.websocket.close()
       this.websocket = null
     },
-    getRsc() {
-      rscQuery().then(response => {
-        this.rsc = response.data
+    getOtdr() {
+      otdrQuery().then(response => {
+        this.otdr = response.data
         this.createWs()
       })
     },
@@ -107,7 +147,7 @@ export default {
 
         // 连接打开的时候触发
         this.websocket.onopen = function(event) {
-          that.websocket.send(that.rsc)
+          that.websocket.send(that.otdr)
           console.log('建立连接')
         }
 
@@ -120,10 +160,12 @@ export default {
       }
     },
     getWsData(data) {
-      this.yData = data
+      this.otdrList = data
+      this.yData = data.WaveData
+      this.list = data.Events
       this.xData = []
-      for (let i = 0; i < data.length; i++) {
-        this.xData.push(i * this.accuracy.precisions)
+      for (let i = 0; i < data.WaveData.length; i++) {
+        this.xData.push(i)
       }
       console.log(this.xData, 'xdata')
       this.initChart()
@@ -133,9 +175,6 @@ export default {
       this.chart = echarts.init(document.getElementById('myChart'))
       const option = {
         backgroundColor: '#F2F6FC',
-        tooltip: {
-          trigger: 'axis'
-        },
         title: {
           left: 'center'
         },
@@ -158,12 +197,14 @@ export default {
             saveAsImage: {}
           }
         },
-
+        axisPointer: {
+          link: { xAxisIndex: 'all' }
+        },
         grid: {
           left: '5%',
           right: '5%',
           borderWidth: 0,
-          top: 150,
+          top: 80,
           bottom: 95,
           textStyle: {
             color: '#fff'
@@ -179,8 +220,6 @@ export default {
           // max: 1000
         },
         series: [{
-
-          name: '频谱',
           data: [],
           type: 'line',
           progressive: 1000,
@@ -214,6 +253,12 @@ export default {
   font-size:22px;
   color:rgba(0,0,0,1);
   line-height:42px;
+}
+.radio-label {
+  font-size: 14px;
+  color: #606266;
+  line-height: 40px;
+  padding: 0 10px 0 30px;
 }
 .panel-group {
   margin-top: 18px;

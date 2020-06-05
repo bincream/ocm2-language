@@ -4,13 +4,20 @@
     <div class="chart-container">
       <div class="title">
         <span>阀值设置下的二维振动</span>
-        <el-input v-model="monitorEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:120px" />
-        <el-button v-if="audioStatus == 0" type="primary" style="position:absolute;right:10px" @click="monitorStart">开始监听</el-button>
-        <el-button v-else type="primary" style="position:absolute;right:10px" @click="monitorEnd">结束监听</el-button>
-        <audio id="aud" />
+        <el-input v-model="monitorEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:220px" />
+        <el-button v-if="websocket1 == null" type="primary" style="position:absolute;right:100px" @click="monitorStart">开始监听</el-button>
+        <el-button v-else type="primary" style="position:absolute;right:100px" @click="monitorEnd">结束监听</el-button>
+        <audio id="audioPlayer" ref="audioPlayer">
+          <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
+          <!-- <source src="/static/img/warning.mp3" type="audio/mp3" > -->
+          <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
+          <!-- <source src="/static/img/warning.ogg" type="audio/ogg" > -->
+        </audio>
+        <el-button v-if="websocket == null" type="primary" @click="connect">连接</el-button>
+        <el-button v-else type="danger" @click="disconnect">断开连接</el-button>
       </div>
-      <div id="myChart" style="width:100%;height:30%" />
-      <div id="vibrateChart" style="  height:80%" />
+      <div id="myChart1" style="width:1600px;height:30%;margin:auto" />
+      <div id="vibrateChart" style="width:1600px;height:80%;margin:auto" />
       <!--
       <div class="title" style="position:relative">
         <span>预警恒警信息</span>
@@ -84,13 +91,20 @@ export default {
       twoData: [],
       baseStandInfo: [],
       chart: null,
-      chart1: null
+      websocket: null,
+      websocket1: null,
+      chart1: null,
+      contextAudio: null,
+      scheduleBuffersTimeout: null,
+      audioStack: [],
+      decodeAudioTimeout: null
+
     }
   },
   created() { },
   mounted() {
     this.initChart()
-    this.mychart()
+    this.myChart1()
     // this.warnChart()
     this.getStandList()
     this.getBaseStandInfo()
@@ -111,11 +125,10 @@ export default {
     this.sidebarElm = document.getElementsByClassName('sidebar-container')[0]
     this.sidebarElm && this.sidebarElm.addEventListener('transitionend', this.sidebarResizeHandler)
   },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.getVibQuery()
-    })
-  },
+  // beforeRouteEnter(to, from, next) {
+  //   next(vm => {
+  //   })
+  // },
 
   beforeRouteLeave(to, from, next) {
     this.destroyedWs()
@@ -135,6 +148,12 @@ export default {
   },
   methods: {
     checkPermission,
+    connect() {
+      this.getVibQuery()
+    },
+    disconnect() {
+      this.destroyedWs()
+    },
     getStandList() {
       standList().then(response => {
         this.standList = response.data
@@ -157,25 +176,162 @@ export default {
       for (let i = 0; i < data.length; i++) {
         this.xData.push(i * this.baseStandInfo.precisions)
       }
-
       this.initChart()
-      this.mychart(data)
+      this.myChart1(data)
     },
-    getWsData1(data) {
-      var audio = document.getElementById('aud')
-      if (window.URL) {
-        audio.src = window.URL.createObjectURL(event.data)
-      } else {
-        audio.src = event
+    getWsData1(event) {
+      // var audio = document.getElementById('audioPlayer')
+      // const blob = new Blob([event.data], { type: 'autio/wav' })
+      // if (window.URL) {
+      //   audio.src = window.URL.createObjectURL(blob)
+      // } else {
+      //   audio.src = event
+      // }
+      // console.log(audio.src)
+      // audio.autoplay = true
+      // console.log('播放')
+
+      let buffer = new ArrayBuffer(event)
+      let numberOfChannels = void 0
+      let sampleRate = void 0
+      let segment = void 0
+      console.log(buffer)
+
+      const audioStack = []
+      // 信道与调距提示判断
+      if (buffer.byteLength === 4) {
+        var msgView = new DataView(buffer)
+        var msgRate = msgView.getUint32(1, true)
+        if (msgRate === 0) { // 信道满
+          this.$message.error('监听信道已满,请稍后再试!')
+          this.contextAudioStop() // 停止
+        } else { // 调距
+          this.inputLength = msgRate * 10
+        }
+        return false
       }
-      console.log('解析')
-      audio.autoplay = true
-      console.log('播放')
+
+      var dataView = new DataView(buffer)
+      sampleRate = dataView.getUint32(1, true)
+      // 自己封装的头部，前四个字节是采样率，非标准wav头部
+      numberOfChannels = 1
+      buffer = buffer.slice(4) // 去掉自己封装的前4个字节
+      segment = {}
+
+      const that = this
+      // 解码，ArrayBuffer => audioBuffer
+      this.contextAudio.decodeAudioData(this.wavify(event.data, numberOfChannels, sampleRate)).then((audioBuffer) => {
+        segment.buffer = audioBuffer
+        that.audioStack.push(segment)
+        that.decodeAudioTimeout = setTimeout(() => {
+          that.scheduleBuffers(audioStack)
+        }, 50)
+      })
     },
+    scheduleBuffers() {
+      let nextTime = 0
+      clearTimeout(this.decodeAudioTimeout)
+      this.decodeAudioTimeout = null
+      clearTimeout(this.scheduleBuffersTimeout)
+      this.scheduleBuffersTimeout = null
 
-    // 提交数据
-    submit() {
+      while (this.audioStack.length > 0 && this.audioStack[0].buffer !== undefined) {
+        var currentTime = this.contextAudio.currentTime
+        var source = this.contextAudio.createBufferSource()
+        var segment = this.audioStack.shift()
+        if (this.audioStack.length > 1) {
+          segment = this.audioStack.shift()
+        }
+        source.loop = true
+        source.buffer = segment.buffer
+        source.connect(this.contextAudio.destination)
+        if (nextTime === 0) {
+          nextTime = currentTime + 0.3
+        }
+        var duration = source.buffer.duration
+        if (currentTime > nextTime) {
+          nextTime = currentTime
+        }
+        source.start(nextTime, 0)
 
+        source.stop(nextTime + duration)
+        nextTime += duration
+      }
+      const that = this
+      this.scheduleBuffersTimeout = setTimeout(() => {
+        that.scheduleBuffers()
+      }, 50)
+    },
+    concat(buffer1, buffer2) {
+      var tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength)
+
+      tmp.set(new Uint8Array(buffer1), 0)
+      tmp.set(new Uint8Array(buffer2), buffer1.byteLength)
+
+      return tmp.buffer
+    },
+    wavify(data, numberOfChannels, sampleRate) {
+      var header = new ArrayBuffer(44)
+
+      var d = new DataView(header)
+
+      d.setUint8(0, 'R'.charCodeAt(0))
+      d.setUint8(1, 'I'.charCodeAt(0))
+      d.setUint8(2, 'F'.charCodeAt(0))
+      d.setUint8(3, 'F'.charCodeAt(0))
+
+      d.setUint32(4, data.byteLength / 2 + 44, true)
+
+      d.setUint8(8, 'W'.charCodeAt(0))
+      d.setUint8(9, 'A'.charCodeAt(0))
+      d.setUint8(10, 'V'.charCodeAt(0))
+      d.setUint8(11, 'E'.charCodeAt(0))
+      d.setUint8(12, 'f'.charCodeAt(0))
+      d.setUint8(13, 'm'.charCodeAt(0))
+      d.setUint8(14, 't'.charCodeAt(0))
+      d.setUint8(15, ' '.charCodeAt(0))
+
+      d.setUint32(16, 16, true)
+      d.setUint16(20, 1, true)
+      d.setUint16(22, numberOfChannels, true)
+      d.setUint32(24, sampleRate, true)
+      d.setUint32(28, sampleRate * 1 * 2)
+      d.setUint16(32, numberOfChannels * 2)
+      d.setUint16(34, 16, true)
+
+      d.setUint8(36, 'd'.charCodeAt(0))
+      d.setUint8(37, 'a'.charCodeAt(0))
+      d.setUint8(38, 't'.charCodeAt(0))
+      d.setUint8(39, 'a'.charCodeAt(0))
+      d.setUint32(40, data.byteLength, true)
+
+      return this.concat(header, data)
+    },
+    contextAudioStop() {
+      console.log('停止声音流')
+
+      if (this.contextAudio && this.contextAudio.state === 'running') {
+        this.contextAudio.close()
+      }
+
+      if (this.websocket2 && this.websocket2.readyState === 1) {
+        this.websocket2.close()
+        this.websocket2 = null
+      }
+
+      this.isPlay = false
+
+      if (this.alarmList.length > 0) {
+        for (let i = 0; i < this.alarmList.length; i++) {
+          const item = this.alarmList[i]
+          item.alarmInfo.isPlay = false
+        }
+      }
+
+      clearTimeout(this.scheduleBuffersTimeout)
+      this.scheduleBuffersTimeout = null
+      this.decodeAudioTimeout = null
+      clearTimeout(this.decodeAudioTimeout)
     },
     // 监听
     monitorStart() {
@@ -184,14 +340,14 @@ export default {
         return false
       }
       realtimeAudioQuery(this.monitorEdit).then(response => {
-        this.data = response.data
-        this.audioStatus = 1
+        this.monitorData = response.data
         this.createWs1()
       })
     },
     monitorEnd() {
-      var audio = document.getElementById('aud')
-      this.audioStatus = 0
+      var audio = document.getElementById('audioPlayer')
+      this.websocket1.close()
+      this.websocket1 = null
       audio.pause()
     },
     // spectrogram() {
@@ -200,10 +356,13 @@ export default {
     //     this.createWs()
     //   })
     // },
-    mychart(data) {
-      this.chart = echarts.init(document.getElementById('myChart'))
+    myChart1(data) {
+      this.chart = echarts.init(document.getElementById('myChart1'))
       const option = {
         backgroundColor: '#F2F6FC',
+        tooltip: {
+          trigger: 'axis'
+        },
         grid: {
           height: '50%',
           bottom: '1%'
@@ -214,7 +373,7 @@ export default {
               return ''
             }
           },
-          // show: false,
+          show: false,
           type: 'category',
           data: []
         },
@@ -259,31 +418,25 @@ export default {
       if (arr === -1) {
         this.yData.push(now)
       }
-      if (this.yData.length > 100) {
+      if (this.yData.length > 30) {
         this.yData.shift()
       }
       console.log(this.yData)
 
       this.Data1.forEach((item, index) => {
-        if (item > 50) {
+        if (item > 500) {
           this.twoData.push([index, now, item])
         }
       })
-      if (this.twoData.length > 50000) {
-        this.twoData.splice(0, 2500)
-      }
-      // this.twoData.forEach((item, index) => {
-      //   if (index < this.xData.length) {
-      //     this.twoData.splice(item, 1)
-      //   }
-      // })
 
       console.log(this.twoData, '1')
       console.log(this.xData)
 
       this.chart1 = echarts.init(document.getElementById('vibrateChart'))
       const option = {
-        tooltip: {},
+        tooltip: {
+          trigger: 'item'
+        },
         backgroundColor: '#F2F6FC',
         grid: {
           height: '80%',
@@ -306,51 +459,8 @@ export default {
             saveAsImage: {}
           }
         },
-        // 缩放
-        // dataZoom: [
-        //   {
-        //     rangeMode: ['value'],
-        //     show: true,
-        //     height: 20,
-        //     xAxisIndex: [0],
-        //     bottom: 80,
-        //     startValue: this.dataZoom_start,
-        //     endValue: this.dataZoom_end,
-        //     handleIcon: 'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
-        //     handleSize: '110%',
-        //     handleStyle: {
-        //       color: '#675bba'
-        //     },
-        //     textStyle: {
-        //       color: '#fff'
-        //     },
-        //     borderColor: '#90979c'
-        //   },
-
-        //   {
-        //     type: 'inside',
-        //     show: true,
-        //     height: 15,
-        //     start: 1,
-        //     end: 35
-        //   }
-        // ],
-        // dataZoom: {
-        //   show: true,
-        //   yAxisIndex: false,
-        //   title: {
-        //     zoom: '区域选择',
-        //     back: '后退'
-        //   }, // 三角形图标: // 空图标:
-        //   icon: {
-        //     back: ''
-        //   },
-        //   minPoints: 20
-        // },
         visualMap: {
           type: 'piecewise',
-          // min: 0,
-          // max: 2000,
           calculable: true,
           orient: 'horizontal',
           left: 'center',
@@ -391,11 +501,11 @@ export default {
           }
         },
         series: [{
-          name: '距离:强度',
+          name: '强度',
           type: 'heatmap',
           // type: 'scatter',
+
           data: [],
-          largeThreshold: 200, // 点的大小
           symbolSize: function(param) {
             // 每个点是一个矩形，其[宽px, 高px]
             return [6, 16]
@@ -417,28 +527,29 @@ export default {
     },
     createWs1() { // 二维振动ws
       if (window.WebSocket) {
-        // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.199.108:9005/')
+        // this.WebSocket1 = new WebSocket1('ws://' + process.env.LINK_API)
+        this.websocket1 = new WebSocket('ws://192.168.199.108:9005/')
+        this.contextAudio = new AudioContext()
 
         // 当有消息过来的时候触发
         const that = this
-        this.websocket.onmessage = function(event) {
+        this.websocket1.onmessage = function(event) {
           // const data = JSON.parse(event.data)
-          that.getWsData1(event.data)
+          that.getWsData1(event)
         }
 
         // 连接关闭的时候触发
-        this.websocket.onclose = function(event) {
+        this.websocket1.onclose = function(event) {
           console.log('断开连接')
         }
 
         // 连接打开的时候触发
-        this.websocket.onopen = function(event) {
-          that.websocket.send(that.data)
+        this.websocket1.onopen = function(event) {
+          that.websocket1.send(that.monitorData)
           console.log('建立连接')
         }
 
-        this.websocket.onclose = function(event) {
+        this.websocket1.onclose = function(event) {
           console.log('连接断开')
           // that.contextAudioStop()
         }
@@ -482,6 +593,10 @@ export default {
         this.websocket.close()
         this.websocket = null
       }
+      if (this.websocket1) {
+        this.websocket1.close()
+        this.websocket1 = null
+      }
     }
   }
 }
@@ -502,7 +617,7 @@ export default {
   font-size:30px;
   font-weight:500;
   color:rgba(0,0,0,1);
-  margin-top: 80px
+  margin-top: 20px
 }
 
 .radio-label {
@@ -586,12 +701,4 @@ export default {
 
 }
 </style>
-<style>
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-}
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-</style>
+

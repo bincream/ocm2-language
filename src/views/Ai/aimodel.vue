@@ -201,7 +201,7 @@
         </div>
       </el-form>
       <div class="title">
-        <span>历史告警列表</span>
+        <span>实时告警列表</span>
       </div>
       <div class="filter-container" style="position:relative">
         <el-input
@@ -220,7 +220,7 @@
           value-format="yyyy-MM-dd HH-mm-ss"
           clearable
         />
-        <el-select
+        <!-- <el-select
           v-model="listQueryType.type"
           placeholder="请选择处理类型"
           style="width: 150px;"
@@ -234,14 +234,14 @@
             :label="item.value"
             :value="item.id"
           />
-        </el-select>
+        </el-select> -->
         <el-button class="filter-item" icon="el-icon-search" @click="handleTypeFilter" />
       </div>
       <el-table
         ref="historyTable"
         v-loading="listLoading"
         :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
-        :data="historyList"
+        :data="alarmInfoList"
         stripe
         highlight-current-row
         height="500"
@@ -249,18 +249,17 @@
         @selection-change="handleHistoryChange"
       >
         <el-table-column type="selection" width="55" reserve-selection />
-        <el-table-column label="基站" prop="standName" />
-        <el-table-column label="开始点" prop="startCol" />
+        <el-table-column label="报警类型" prop="alarmType" />
+        <el-table-column label="通道号" prop="lineInfoChannel" />
+        <el-table-column label="距离" prop="distance" />
+        <el-table-column label="开始点" prop="beginCol" />
         <el-table-column label="中心点" prop="centerCol" />
         <el-table-column label="结束点" prop="endCol" />
-        <el-table-column label="开始时间" prop="beginTime" width="110" />
-        <el-table-column label="结束时间" prop="endTime" width="110" />
+        <el-table-column label="开始时间" prop="beginTime" />
+        <el-table-column label="结束时间" prop="endTime" />
         <el-table-column label="震动次数" prop="freq" />
-        <el-table-column label="是否处理">
-          <template slot-scope="scope">
-            <span>{{ scope.row.type | type }}</span>
-          </template>
-        </el-table-column>
+        <el-table-column label="强度" prop="amplitude" />
+        <el-table-column label="等级" prop="level" />
         <el-table-column label="音频" width="320">
           <template slot-scope="scope">
             <audio :id="scope.row.id" controls="controls">
@@ -273,11 +272,11 @@
 
       <div class="pagination-container">
         <el-pagination
-          v-show="historyTotal>0"
+          v-show="alarmTotal>0"
           :current-page="listQueryType.page"
           :page-sizes="[10,20,30, 50]"
           :page-size="listQueryType.limit"
-          :total="historyTotal"
+          :total="alarmTotal"
           background
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChangeType"
@@ -533,7 +532,7 @@
 
 <script>
 import { getAllList, getInfo, saveType, update, save, deleteData, bindAlarm, practice, enable } from '@/api/AI/aimodel'
-import { aiModelTypeList, hisAlarmList } from '@/api/public'
+import { aiModelTypeList, alarmInfoList } from '@/api/public'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
 export default {
@@ -590,7 +589,7 @@ export default {
     return {
       list: [],
       total: null,
-      historyTotal: null,
+      alarmTotal: null,
       listLoading: true,
       dialogStatus: '',
       date: '',
@@ -620,7 +619,7 @@ export default {
       modelEdit: {},
       signEdit: {},
       typeEdit: {},
-      historyList: [],
+      alarmInfoList: [],
       weightlList: [{ id: 0, value: '0' }, { id: 1, value: '1' }],
       soluTypelList: [{ id: 0, value: '未处理' }, { id: 1, value: '已处理' }, { id: 2, value: '通讯失败' }],
       dialogFormVisible: false,
@@ -700,13 +699,20 @@ export default {
   mounted() {
     this.getList()
   },
+  beforeRouteLeave(to, from, next) {
+    if (this.websocket) {
+      this.websocket.close()
+      this.websocket = null
+    }
+    next()
+  },
   methods: {
     checkPermission,
     getHistoryList() {
       this.listLoading = true
-      hisAlarmList(this.listQueryType).then(response => {
-        this.historyList = response.data.list
-        this.historyTotal = response.data.total
+      alarmInfoList(this.listQueryType).then(response => {
+        this.alarmInfoList = response.data.list
+        this.alarmTotal = response.data.total
         this.listLoading = false
       })
     },
@@ -819,6 +825,7 @@ export default {
       enable({ id: row.id }).then(res => {
         if (res.data) {
           this.$message.success('操作成功')
+          this.AiWs(res.data)
           this.getList()
         } else {
           this.$message.error('操作失败')
@@ -969,6 +976,40 @@ export default {
         this.$message.error('上传大小不能超过 5MB!')
       }
       return isLt2M
+    },
+    AiWs(data) { // 二维振动ws
+      if (window.WebSocket) {
+        // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
+        this.websocket = new WebSocket('ws://192.168.199.247:9005/')
+
+        // 当有消息过来的时候触发
+        const that = this
+        this.websocket.onmessage = function(event) {
+          const data = JSON.parse(event.data)
+          that.getWsData(data)
+        }
+
+        // 连接关闭的时候触发
+        this.websocket.onclose = function(event) {
+          console.log('断开连接')
+        }
+
+        // 连接打开的时候触发
+        this.websocket.onopen = function(event) {
+          that.websocket.send(data)
+          console.log('建立连接')
+        }
+
+        this.websocket.onclose = function(event) {
+          console.log('连接断开')
+          // that.contextAudioStop()
+        }
+      } else {
+        this.$message.error('浏览器不支持WebSocket')
+      }
+    },
+    getWsData(data) {
+
     }
   }
 }

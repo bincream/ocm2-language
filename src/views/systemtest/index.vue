@@ -248,12 +248,12 @@
               <td class="width9">
                 <el-input
                   v-show="ope2Status == 'update2'"
-                  v-model="configurationEdit.SysCfg_TimeR"
+                  v-model="configurationEdit.SysConfig_SampleRate"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
                 />
-                <span v-show="ope2Status == 'info2'">{{ info.SysCfg_TimeR }}</span>
+                <span v-show="ope2Status == 'info2'">{{ info.SysConfig_SampleRate }}</span>
               </td>
               <td class="blackMark">
                 <span style="color: red">*</span>
@@ -262,12 +262,34 @@
               <td class="width9">
                 <el-input
                   v-show="ope2Status == 'update2'"
-                  v-model="configurationEdit.SysCfg_AvgTime"
+                  v-model="configurationEdit.SysConfig_MeanCount"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
                 />
-                <span v-show="ope2Status == 'info2'">{{ info.SysCfg_AvgTime }}</span>
+                <span v-show="ope2Status == 'info2'">{{ info.SysConfig_MeanCount }}</span>
+              </td>
+              <td class="blackMark">
+                <span style="color: red">*</span>
+                工作模式：
+              </td>
+              <td class="width9">
+                <el-select
+                  v-show="ope2Status == 'update2'"
+                  v-model="configurationEdit.SysConfig_WorkMode"
+                  size="small"
+                  style="width: 150px;"
+                  placeholder="请选择光纤长度"
+                  class="filter-item"
+                >
+                  <el-option
+                    v-for="item in modeList"
+                    :key="item.id"
+                    :value="item.id"
+                    :label="item.value"
+                  />
+                </el-select>
+                <span v-show="ope2Status == 'info2'">{{ info.SysConfig_WorkMode }}</span>
               </td>
               <td />
             </tr>
@@ -327,7 +349,7 @@
               <td class="width9">
                 <el-input
                   v-show="ope1Status == 'update1'"
-                  v-model="deviceEdit.RAMAN"
+                  v-model="deviceEdit.OptDevice_RamanPower"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
@@ -374,7 +396,7 @@
               <td class="width9">
                 <el-select
                   v-show="ope3Status == 'update3'"
-                  v-model="vibrationEdit.length"
+                  v-model="vibrationEdit.Cable_Length"
                   size="small"
                   style="width: 150px;"
                   placeholder="请选择光纤长度"
@@ -387,7 +409,7 @@
                     :label="item"
                   />
                 </el-select>
-                <span v-show="ope3Status == 'info3'">{{ info.length }}</span>
+                <span v-show="ope3Status == 'info3'">{{ info.Cable_Length }}</span>
               </td>
               <td />
             </tr>
@@ -395,12 +417,30 @@
         </div>
       </el-form>
     </div>
+    <div style="background:blue;height:2px" />
+
+    <div class="title" style="position:relative;margin-top:30px">
+      <span>预警恒警信息</span>
+      <label class="radio-label" style="position:absolute;right:740px">起点:</label>
+      <el-input v-model="warningEdit.origin" size="small" placeholder="请输入距离(米)" type="number" style="position:absolute;width:150px;right:580px" />
+
+      <label class="radio-label" style="position:absolute;right:520px">终点:</label>
+      <el-input v-model="warningEdit.destination" size="small" placeholder="请输入距离(米)" type="number" style="position:absolute;width:150px;right:360px" />
+
+      <label class="radio-label" style="position:absolute;right:280px">灵敏度:</label>
+      <el-input v-model="warningEdit.sensitivity" size="small" placeholder="请输入数字" type="number" style="position:absolute;width:150px;right:120px" />
+
+      <el-button type="primary" style="position:absolute;right:10px" @click="submit">提交数据</el-button>
+    </div>
+    <div id="warnChart" style="width:100%; height:600px" />
 
   </div>
 </template>
 
 <script>
 import { update, deviceParamQuery, deviceParamSetting } from '@/api/systemtest/index'
+import { baseStandInfo } from '@/api/public'
+import echarts from 'echarts'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
 export default {
@@ -416,17 +456,22 @@ export default {
       restEdit: {},
       vibrationEdit: {},
       deviceEdit: {},
+      warningEdit: {},
       configurationEdit: {},
       parameterEdit: {},
       info: [],
+      xData: [],
+      warnData: [],
       websocket: null,
       dialogImgVisible: false,
       dpq: '',
+      accuracy: {},
       ope1Status: 'info1',
       ope2Status: 'info2',
       ope3Status: 'info3',
       ope4Status: 'info4',
-      lengthList: ['30', '50', '70']
+      lengthList: ['30', '50', '70'],
+      modeList: [{ id: 0, value: '光缆振动监测模式' }, { id: 1, value: '光缆性能监测模式' }]
     }
   },
   computed: {
@@ -442,6 +487,7 @@ export default {
     this.ope2Status = 'info2'
     this.ope3Status = 'info3'
     this.ope4Status = 'info4'
+    this.getBaseStandInfo()
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -457,6 +503,13 @@ export default {
   // },
   methods: {
     checkPermission,
+    getBaseStandInfo() {
+      baseStandInfo().then(response => {
+        this.accuracy = response.data
+        console.log(this.accuracy)
+        this.warnChart()
+      })
+    },
     getDpq() {
       deviceParamQuery().then(response => {
         this.dpq = response.data
@@ -489,7 +542,21 @@ export default {
         }
       })
     },
-
+    submit() {
+      var sum1 = this.warningEdit.origin
+      var sum2 = this.warningEdit.destination
+      var sum3 = this.warningEdit.sensitivity
+      if (this.warnData.length > 0) {
+        for (let i = sum1; i < this.warnData.length; i++) {
+          this.warnData[i] = Number(sum3)
+          if (i === Number(sum2)) {
+            break
+          }
+        }
+      }
+      this.settingParam = JSON.stringify(this.warnData)
+      this.getDeviceParamSetting()
+    },
     test(formName) {
     },
     updateData1() {
@@ -519,7 +586,7 @@ export default {
     createWs() {
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.199.108:9005/')
+        this.websocket = new WebSocket('ws://192.168.199.247:9005/')
 
         // 当有消息过来的时候触发
         const that = this
@@ -553,40 +620,63 @@ export default {
         this.websocket = null
       }
     },
+
     getWsData(data) { // 报警消息数据处理
       this.info = data
-      // if (!data.param_list) {
-      //   return false
-      // }
-      // console.log(data.param_list)
-      // if (data.alarmInfo.freq <= 10) {
-      //   data.alarmInfo.freqColor = 1
-      // } else if (data.alarmInfo.freq > 10 && data.alarmInfo.freq < 50) {
-      //   data.alarmInfo.freqColor = 2
-      // } else if (data.alarmInfo.freq >= 50) {
-      //   data.alarmInfo.freqColor = 3
-      // }
+      this.warnData = data.Cable_AllLossAlarmThr
 
-      // data.alarmInfo.selfId = data.alarmInfo.standNo + '-' + data.alarmInfo.centerCol + '-' + data.alarmInfo.dangerLevel
-      // data.alarmInfo.isPlay = false
+      this.warnChart()
+    },
+    warnChart() {
+      console.log(this.warnData)
+      console.log(this.accuracy)
 
-      // data.alarmInfo.beginTime = this.timestampToTime(data.alarmInfo.beginTime)
-      // data.alarmInfo.endTime = this.timestampToTime(data.alarmInfo.endTime)
-      // data.alarmInfo.cableName = data.rscCable.cableName
-      // data.alarmInfo.standId = data.rscCable.standId
+      for (let i = 0; i < this.warnData.length; i++) {
+        this.xData.push(i * Number(this.accuracy.precisions))
+        console.log(this.xData)
+      }
+      this.warnchart = echarts.init(document.getElementById('warnChart'))
+      const option = {
+        title: {
+          text: '预警恒警'
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        legend: {
+          data: ['恒定预警']
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {}
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            name: '恒定预警',
+            type: 'line',
+            step: 'middle',
+            data: []
+          }
+        ]
+      }
 
-      // let lastPoint = {}
-      // let nextPoint = {}
-
-      // for (let i = 0; i < data.cablePointList.length; i++) {
-      //   if (data.alarmInfo.centerCol >= data.cablePointList[i].length && data.cablePointList[i + 1] && data.alarmInfo.centerCol < data.cablePointList[i + 1].length) {
-      //     lastPoint = data.cablePointList[i]
-      //     nextPoint = data.cablePointList[i + 1]
-      //   }
-      // }
-      // data.alarmInfo.lastPointLength = data.alarmInfo.centerCol - lastPoint.length
-
-      // data.alarmInfo.nextPointLength = nextPoint.length - data.alarmInfo.centerCol
+      option.xAxis.data = this.xData
+      option.series[0].data = this.warnData
+      this.warnchart.setOption(option)
     }
   }
 }
@@ -620,5 +710,14 @@ export default {
 .svg-icon{
   width: 20px;
   height: 20px;
+}
+</style>
+<style>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 </style>
