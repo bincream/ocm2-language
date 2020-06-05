@@ -262,10 +262,10 @@ export default {
     },
     // 详情页面
     handleDetail(row) {
-      // if (!checkPermission(['sysPerAndRole/getPmList'])) {
-      //   this.$message.error('没有详情权限!')
-      //   return false
-      // }
+      if (!checkPermission(['sysPer/getPmList'])) {
+        this.$message.error('没有详情权限!')
+        return false
+      }
       this.checkStrict = true
       this.$refs.multipleTable.clearSelection()
       this.$refs.multipleTable.toggleRowSelection(row)

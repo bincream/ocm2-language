@@ -64,6 +64,7 @@
               @click="updateData4"
             >确认</el-button>
             <el-button
+              v-if="checkPermission(['systemtest/deviceParamSetting'])"
               v-show="ope4Status == 'info4'"
               style="position:absolute;right:100px"
               type="warning"
@@ -217,6 +218,7 @@
               @click="updateData2"
             >确认</el-button>
             <el-button
+              v-if="checkPermission(['systemtest/deviceParamSetting'])"
               v-show="ope2Status == 'info2'"
               style="position:absolute;right:150px"
               type="warning"
@@ -289,7 +291,7 @@
                     :label="item.value"
                   />
                 </el-select>
-                <span v-show="ope2Status == 'info2'">{{ info.SysConfig_WorkMode }}</span>
+                <span v-show="ope2Status == 'info2'">{{ info.SysConfig_WorkMode | standMode }}</span>
               </td>
               <td />
             </tr>
@@ -313,6 +315,7 @@
               @click="updateData1('deviceEdit')"
             >确认</el-button>
             <el-button
+              v-if="checkPermission(['systemtest/deviceParamSetting'])"
               v-show="ope1Status == 'info1'"
               style="position:absolute;right:0px"
               type="warning"
@@ -380,6 +383,7 @@
               @click="updateData3"
             >确认</el-button>
             <el-button
+              v-if="checkPermission(['systemtest/deviceParamSetting'])"
               v-show="ope3Status == 'info3'"
               type="warning"
               style="position:absolute;right:0px"
@@ -430,7 +434,12 @@
       <label class="radio-label" style="position:absolute;right:280px">灵敏度:</label>
       <el-input v-model="warningEdit.sensitivity" size="small" placeholder="请输入数字" type="number" style="position:absolute;width:150px;right:120px" />
 
-      <el-button type="primary" style="position:absolute;right:10px" @click="submit">提交数据</el-button>
+      <el-button
+        v-if="checkPermission(['systemtest/deviceParamSetting'])"
+        type="primary"
+        style="position:absolute;right:10px"
+        @click="submit"
+      >提交数据</el-button>
     </div>
     <div id="warnChart" style="width:100%; height:600px" />
 
@@ -439,7 +448,7 @@
 
 <script>
 import { update, deviceParamQuery, deviceParamSetting } from '@/api/systemtest/index'
-import { baseStandInfo } from '@/api/public'
+import { baseStandInfo, baseStandUpdate } from '@/api/public'
 import echarts from 'echarts'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
@@ -449,7 +458,16 @@ export default {
     waves
   },
   filters: {
-
+    standMode: function(val) {
+      switch (val) {
+        case 0:
+          return '光纤振动监测模式'
+        case 1:
+          return '光纤性能检测模式'
+        default:
+          break
+      }
+    }
   },
   data() {
     return {
@@ -503,6 +521,10 @@ export default {
   // },
   methods: {
     checkPermission,
+    baseStandUpdate() {
+      baseStandUpdate({ settingParam: this.settingParam }).then(response => {
+      })
+    },
     getBaseStandInfo() {
       baseStandInfo().then(response => {
         this.accuracy = response.data
@@ -624,7 +646,9 @@ export default {
     getWsData(data) { // 报警消息数据处理
       this.info = data
       this.warnData = data.Cable_AllLossAlarmThr
-
+      if (data.SysConfig_WorkMode !== null) {
+        this.baseStandUpdate()
+      }
       this.warnChart()
     },
     warnChart() {

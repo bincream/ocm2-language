@@ -126,12 +126,11 @@ export const asyncRoutes = [
     },
     children: [
       {
-        path: 'squiggle',
+        path: 'squiggle/rscQuery',
         component: () => import('@/views/signal/squiggle'),
         name: 'Squiggle',
         meta: {
           title: '波形曲线'
-
         }
       },
       {
@@ -140,16 +139,14 @@ export const asyncRoutes = [
         name: 'TwoDimension',
         meta: {
           title: '二维振动'
-
         }
       },
       {
-        path: 'OTDR',
+        path: 'otdr/otdrQuery',
         component: () => import('@/views/signal/otdr'),
         name: 'OTDR',
         meta: {
           title: 'OTDR'
-
         }
       }
     ]
@@ -278,7 +275,7 @@ export const asyncRoutes = [
 
     },
     children: [{
-      path: 'systemUser',
+      path: 'systemUser/getList',
       component: () => import('@/views/system/sysUser'),
       name: 'sysUser',
       meta: {
@@ -288,7 +285,7 @@ export const asyncRoutes = [
       }
     },
     {
-      path: 'sysRole',
+      path: 'sysPer/getList',
       component: () => import('@/views/system/sysRole'),
       name: 'sysRole',
       meta: {
@@ -299,7 +296,7 @@ export const asyncRoutes = [
     },
 
     {
-      path: 'sysLog',
+      path: 'sysLog/getList',
       component: () => import('@/views/system/sysLog'),
       name: 'SysLog',
       meta: {

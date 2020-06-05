@@ -5,16 +5,38 @@
       <div class="title">
         <span>阀值设置下的二维振动</span>
         <el-input v-model="monitorEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:220px" />
-        <el-button v-if="websocket1 == null" type="primary" style="position:absolute;right:100px" @click="monitorStart">开始监听</el-button>
-        <el-button v-else type="primary" style="position:absolute;right:100px" @click="monitorEnd">结束监听</el-button>
+        <el-button
+          v-if="checkPermission(['twoDimension/realtimeAudioQuery'])"
+          v-show="websocket1 == null"
+          type="primary"
+          style="position:absolute;right:100px"
+          @click="monitorStart"
+        >开始监听</el-button>
+        <el-button
+          v-if="checkPermission(['twoDimension/realtimeAudioQuery'])"
+          v-show="websocket1 !== null"
+          type="primary"
+          style="position:absolute;right:100px"
+          @click="monitorEnd"
+        >结束监听</el-button>
         <audio id="audioPlayer" ref="audioPlayer">
           <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
           <!-- <source src="/static/img/warning.mp3" type="audio/mp3" > -->
           <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
           <!-- <source src="/static/img/warning.ogg" type="audio/ogg" > -->
         </audio>
-        <el-button v-if="websocket == null" type="primary" @click="connect">连接</el-button>
-        <el-button v-else type="danger" @click="disconnect">断开连接</el-button>
+        <el-button
+          v-if="checkPermission(['twoDimension/vibQuery'])"
+          v-show="websocket == null"
+          type="primary"
+          @click="connect"
+        >连接</el-button>
+        <el-button
+          v-if="checkPermission(['twoDimension/vibQuery'])"
+          v-show="websocket !== null"
+          type="danger"
+          @click="disconnect"
+        >断开连接</el-button>
       </div>
       <div id="myChart1" style="width:1600px;height:30%;margin:auto" />
       <div id="vibrateChart" style="width:1600px;height:80%;margin:auto" />
@@ -180,53 +202,53 @@ export default {
       this.myChart1(data)
     },
     getWsData1(event) {
-      // var audio = document.getElementById('audioPlayer')
-      // const blob = new Blob([event.data], { type: 'autio/wav' })
-      // if (window.URL) {
-      //   audio.src = window.URL.createObjectURL(blob)
-      // } else {
-      //   audio.src = event
-      // }
-      // console.log(audio.src)
-      // audio.autoplay = true
-      // console.log('播放')
-
-      let buffer = new ArrayBuffer(event)
-      let numberOfChannels = void 0
-      let sampleRate = void 0
-      let segment = void 0
-      console.log(buffer)
-
-      const audioStack = []
-      // 信道与调距提示判断
-      if (buffer.byteLength === 4) {
-        var msgView = new DataView(buffer)
-        var msgRate = msgView.getUint32(1, true)
-        if (msgRate === 0) { // 信道满
-          this.$message.error('监听信道已满,请稍后再试!')
-          this.contextAudioStop() // 停止
-        } else { // 调距
-          this.inputLength = msgRate * 10
-        }
-        return false
+      var audio = document.getElementById('audioPlayer')
+      const blob = new Blob([event.data], { type: 'autio/wave' })
+      if (window.URL) {
+        audio.src = window.URL.createObjectURL(blob)
+      } else {
+        audio.src = event
       }
+      console.log(audio.src)
+      audio.play()
+      console.log('播放')
 
-      var dataView = new DataView(buffer)
-      sampleRate = dataView.getUint32(1, true)
-      // 自己封装的头部，前四个字节是采样率，非标准wav头部
-      numberOfChannels = 1
-      buffer = buffer.slice(4) // 去掉自己封装的前4个字节
-      segment = {}
+      // let buffer = event
+      // let numberOfChannels = void 0
+      // let sampleRate = void 0
+      // let segment = void 0
+      // console.log(buffer)
 
-      const that = this
-      // 解码，ArrayBuffer => audioBuffer
-      this.contextAudio.decodeAudioData(this.wavify(event.data, numberOfChannels, sampleRate)).then((audioBuffer) => {
-        segment.buffer = audioBuffer
-        that.audioStack.push(segment)
-        that.decodeAudioTimeout = setTimeout(() => {
-          that.scheduleBuffers(audioStack)
-        }, 50)
-      })
+      // const audioStack = []
+      // // 信道与调距提示判断
+      // if (buffer.byteLength === 4) {
+      //   var msgView = new DataView(buffer)
+      //   var msgRate = msgView.getUint32(1, true)
+      //   if (msgRate === 0) { // 信道满
+      //     this.$message.error('监听信道已满,请稍后再试!')
+      //     this.contextAudioStop() // 停止
+      //   } else { // 调距
+      //     this.inputLength = msgRate * 10
+      //   }
+      //   return false
+      // }
+
+      // var dataView = new DataView(buffer)
+      // sampleRate = dataView.getUint32(1, true)
+      // // 自己封装的头部，前四个字节是采样率，非标准wav头部
+      // numberOfChannels = 1
+      // buffer = buffer.slice(4) // 去掉自己封装的前4个字节
+      // segment = {}
+
+      // const that = this
+      // // 解码，ArrayBuffer => audioBuffer
+      // this.contextAudio.decodeAudioData(this.wavify(event.data, numberOfChannels, sampleRate)).then((audioBuffer) => {
+      //   segment.buffer = audioBuffer
+      //   that.audioStack.push(segment)
+      //   that.decodeAudioTimeout = setTimeout(() => {
+      //     that.scheduleBuffers(audioStack)
+      //   }, 50)
+      // })
     },
     scheduleBuffers() {
       let nextTime = 0

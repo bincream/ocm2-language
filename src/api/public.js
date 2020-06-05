@@ -57,3 +57,11 @@ export function alarmInfoList(query) {
     params: query
   })
 }
+
+export function baseStandUpdate(data) {
+  return request({
+    url: '/api-web/public/baseStandUpdate',
+    method: 'post',
+    data
+  })
+}

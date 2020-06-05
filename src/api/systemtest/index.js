@@ -16,14 +16,6 @@ export function update(data) {
   })
 }
 
-export function info(query) {
-  return request({
-    url: '/api-web/sysRole/sysPer/getPmList',
-    method: 'get',
-    params: query
-  })
-}
-
 export function deviceParamQuery(query) {
   return request({
     url: '/api-web/systemtest/systemtest/deviceParamQuery',

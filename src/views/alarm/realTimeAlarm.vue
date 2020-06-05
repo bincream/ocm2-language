@@ -72,6 +72,20 @@
         <div class="title">光缆信息</div>
         <table>
           <tr>
+            <td class="blackMark">报警类型:</td>
+            <td class="width21">
+              <span v-text="alarmInfo.alarmType" />
+            </td>
+            <td class="blackMark">通道号:</td>
+            <td class="width21">
+              <span v-text="alarmInfo.lineInfoChannel" />
+            </td>
+            <td class="blackMark">距离:</td>
+            <td class="width21">
+              <span v-text="alarmInfo.distance" />
+            </td>
+          </tr>
+          <tr>
             <td class="blackMark">开始点:</td>
             <td class="width21">
               <span v-text="alarmInfo.beginCol" />
@@ -86,7 +100,7 @@
             </td>
           </tr>
           <tr>
-            <td class="blackMark">能量值:</td>
+            <td class="blackMark">强度:</td>
             <td class="width21">
               <span>{{ alarmInfo.amplitude }}</span>
             </td>
@@ -100,33 +114,45 @@
             </td>
           </tr>
           <tr>
-            <td class="blackMark">报警等级:</td>
+            <td class="blackMark">等级:</td>
             <td class="width21">
-              <span>{{ alarmInfo.dangerLevel }}</span>
+              <span>{{ alarmInfo.level }}</span>
             </td>
             <td class="blackMark">振动次数:</td>
             <td class="width21">
               <span>{{ alarmInfo.freq }}</span>
             </td>
-            <td class="blackMark">相似度:</td>
+            <td class="blackMark">损耗:</td>
             <td class="width21">
-              <span>{{ alarmInfo.similarity }}</span>
+              <span>{{ alarmInfo.loss }}</span>
             </td>
           </tr>
           <tr>
-            <td class="blackMark">报警类型:</td>
+            <td class="blackMark">反射损耗:</td>
             <td class="width21">
-              <span>{{ alarmInfo.isAlarm | isAlarm }}</span>
+              <span>{{ alarmInfo.refloss }}</span>
             </td>
-            <td class="blackMark">是否处理:</td>
+            <td class="blackMark">累计损耗:</td>
             <td class="width21">
-              <span>{{ alarmInfo.type | type }}</span>
+              <span>{{ alarmInfo.cumloss }}</span>
+            </td>
+            <td class="blackMark">事件类型:</td>
+            <td class="width21">
+              <span>{{ alarmInfo.eventType | eventType }}</span>
             </td>
           </tr>
           <tr>
-            <td class="blackMark">处理措施:</td>
-            <td class="width21" colspan="2">
-              <span>{{ alarmInfo.solution }}</span>
+            <td class="blackMark">总损耗:</td>
+            <td class="width21">
+              <span>{{ alarmInfo.allloss }}</span>
+            </td>
+            <td class="blackMark">总反射损耗:</td>
+            <td class="width21">
+              <span>{{ alarmInfo.allrefloss }}</span>
+            </td>
+            <td class="blackMark">振动类型:</td>
+            <td class="width21">
+              <span>{{ alarmInfo.vibType }}</span>
             </td>
           </tr>
         </table>
@@ -220,16 +246,25 @@ export default {
           break
       }
     },
-    white: function(val) {
+    eventType: function(val) {
       switch (val) {
         case 0:
-          return '不是白名单类型'
+          return '非反射事件'
         case 1:
-          return '是白名单类型'
+          return '反射事件'
+        case 2:
+          return '光纤始端'
+        case 3:
+          return '光纤始端'
+        case 4:
+          return '光纤末端'
+        case 5:
+          return '其它事件'
         default:
           break
       }
     }
+
   },
   data() {
     return {

@@ -350,10 +350,10 @@ export default {
     },
     // 修改
     handleUpdate(row) {
-      // if (!checkPermission(['userinfo/info'])) {
-      //   this.$message.error('没有详情权限')
-      //   return false
-      // }
+      if (!checkPermission(['systemUser/info'])) {
+        this.$message.error('没有详情权限')
+        return false
+      }
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       getInfo({ id: row.id }).then(response => {

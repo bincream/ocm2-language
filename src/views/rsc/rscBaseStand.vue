@@ -43,12 +43,12 @@
       </el-table-column>
       <el-table-column label="操作" width="260">
         <template slot-scope="scope">
-          <el-button
+          <!-- <el-button
             v-if="checkPermission(['baseStand/getPrecisions'])"
             type="primary"
             size="small"
             @click.stop="handlePre(scope.row)"
-          >获取精度</el-button>
+          >获取精度</el-button> -->
           <el-button
             v-if="checkPermission(['baseStand/update'])"
             type="primary"

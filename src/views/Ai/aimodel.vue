@@ -55,7 +55,7 @@
       <el-table-column label="操作" width="530">
         <template slot-scope="scope">
           <el-button
-            v-if="checkPermission(['aimodel/changeStatus'])"
+            v-if="checkPermission(['aiModel/enable'])"
             v-show="scope.row.enable == 0 && scope.row.userid !== 1"
             type="warning"
             size="small"
@@ -761,6 +761,10 @@ export default {
       this.getHistoryList()
     },
     handleDetail(row) {
+      if (!checkPermission(['aiModel/info'])) {
+        this.$message.error('您没有详情权限')
+        return false
+      }
       this.dialogDetVisible = true
       getInfo({ id: row.id }).then(response => {
         this.modelInfo = response.data

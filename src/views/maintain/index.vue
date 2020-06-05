@@ -78,7 +78,6 @@
 </template>
 
 <script>
-import { update, info } from '@/api/systemtest/index'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
 export default {
@@ -111,88 +110,13 @@ export default {
   },
   created() { },
   mounted() {
-    this.getInfo()
     this.ope2Status = 'info2'
     this.ope3Status = 'info3'
   },
   methods: {
     checkPermission,
+    reset() {
 
-    getInfo() {
-      info().then(response => {
-        this.info = response.data
-        this.restEdit = response.data
-      })
-    },
-    handleUpdate() {
-      this.opeStatus = 'update'
-      this.ope1Status = 'update1'
-      this.ope2Status = 'update2'
-      this.ope3Status = 'update3'
-    },
-
-    reset(formName) {
-      update(this.restEdit).then((response) => {
-        if (response.data) {
-          this.$message.success('修改成功!')
-          this.ope2Status = 'info2'
-          this.getInfo()
-        } else {
-          this.$message.error('修改失败!')
-        }
-      })
-    },
-    test(formName) {
-      if (!this.restEdit.trainReminderTime) {
-        this.$message.error(this.$t('system.config.timeIsNull1'))
-        return false
-      }
-      if (this.restEdit.trainReminderTime < 0) {
-        this.$message.error(this.$t('system.config.tip1'))
-        return false
-      }
-      update(this.restEdit).then((response) => {
-        if (response.data) {
-          this.$message.success('修改成功!')
-          this.getInfo()
-        } else {
-          this.$message.error('修改失败!')
-        }
-      })
-    },
-    updateData2() {
-      if (!this.restEdit.trainReminderTime) {
-        this.$message.error(this.$t('system.config.timeIsNull1'))
-        return false
-      }
-      if (this.restEdit.trainReminderTime < 0) {
-        this.$message.error(this.$t('system.config.tip1'))
-        return false
-      }
-      update(this.restEdit).then((response) => {
-        if (response.data) {
-          this.$message.success('修改成功!')
-          this.getInfo()
-        } else {
-          this.$message.error('修改失败!')
-        }
-      })
-    },
-    updateData3(formName) {
-      if (!this.restEdit.smsSign) {
-        this.$message.error(this.$t('system.config.timeIsNull3'))
-        return false
-      }
-
-      update(this.restEdit).then((response) => {
-        if (response.data) {
-          this.$message.success('修改成功!')
-          this.ope3Status = 'info3'
-          this.getInfo()
-        } else {
-          this.$message.error('修改失败!')
-        }
-      })
     }
   }
 }
