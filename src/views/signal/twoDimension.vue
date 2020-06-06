@@ -213,42 +213,42 @@ export default {
       audio.play()
       console.log('播放')
 
-      // let buffer = event
-      // let numberOfChannels = void 0
-      // let sampleRate = void 0
-      // let segment = void 0
-      // console.log(buffer)
+      let buffer = event
+      let numberOfChannels = void 0
+      let sampleRate = void 0
+      let segment = void 0
+      console.log(buffer)
 
-      // const audioStack = []
-      // // 信道与调距提示判断
-      // if (buffer.byteLength === 4) {
-      //   var msgView = new DataView(buffer)
-      //   var msgRate = msgView.getUint32(1, true)
-      //   if (msgRate === 0) { // 信道满
-      //     this.$message.error('监听信道已满,请稍后再试!')
-      //     this.contextAudioStop() // 停止
-      //   } else { // 调距
-      //     this.inputLength = msgRate * 10
-      //   }
-      //   return false
-      // }
+      const audioStack = []
+      // 信道与调距提示判断
+      if (buffer.byteLength === 2) {
+        var msgView = new DataView(buffer)
+        var msgRate = msgView.getUint32(1, true)
+        if (msgRate === 0) { // 信道满
+          this.$message.error('监听信道已满,请稍后再试!')
+          this.contextAudioStop() // 停止
+        } else { // 调距
+          this.inputLength = msgRate * 10
+        }
+        return false
+      }
 
-      // var dataView = new DataView(buffer)
-      // sampleRate = dataView.getUint32(1, true)
-      // // 自己封装的头部，前四个字节是采样率，非标准wav头部
-      // numberOfChannels = 1
-      // buffer = buffer.slice(4) // 去掉自己封装的前4个字节
-      // segment = {}
+      var dataView = new DataView(buffer)
+      sampleRate = dataView.getUint32(1, true)
+      // 自己封装的头部，前四个字节是采样率，非标准wav头部
+      numberOfChannels = 1
+      buffer = buffer.slice(2) // 去掉自己封装的前2个字节
+      segment = {}
 
-      // const that = this
-      // // 解码，ArrayBuffer => audioBuffer
-      // this.contextAudio.decodeAudioData(this.wavify(event.data, numberOfChannels, sampleRate)).then((audioBuffer) => {
-      //   segment.buffer = audioBuffer
-      //   that.audioStack.push(segment)
-      //   that.decodeAudioTimeout = setTimeout(() => {
-      //     that.scheduleBuffers(audioStack)
-      //   }, 50)
-      // })
+      const that = this
+      // 解码，ArrayBuffer => audioBuffer
+      this.contextAudio.decodeAudioData(this.wavify(event.data, numberOfChannels, sampleRate)).then((audioBuffer) => {
+        segment.buffer = audioBuffer
+        that.audioStack.push(segment)
+        that.decodeAudioTimeout = setTimeout(() => {
+          that.scheduleBuffers(audioStack)
+        }, 50)
+      })
     },
     scheduleBuffers() {
       let nextTime = 0
