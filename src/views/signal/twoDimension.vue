@@ -201,54 +201,71 @@ export default {
       this.initChart()
       this.myChart1(data)
     },
+
+    blob2Arrraybuffer(data) {
+      const reader = new FileReader()
+
+      reader.readAsArrayBuffer(data)
+      reader.onload = function(e) {
+        return e.currentTarget.result
+      }
+    },
+
     getWsData1(event) {
-      var audio = document.getElementById('audioPlayer')
-      const blob = new Blob([event.data], { type: 'autio/wave' })
-      if (window.URL) {
-        audio.src = window.URL.createObjectURL(blob)
-      } else {
-        audio.src = event
-      }
-      console.log(audio.src)
-      audio.play()
-      console.log('播放')
-
-      let buffer = event
-      let numberOfChannels = void 0
-      let sampleRate = void 0
-      let segment = void 0
-      console.log(buffer)
-
-      const audioStack = []
-      // 信道与调距提示判断
-      if (buffer.byteLength === 2) {
-        var msgView = new DataView(buffer)
-        var msgRate = msgView.getUint32(1, true)
-        if (msgRate === 0) { // 信道满
-          this.$message.error('监听信道已满,请稍后再试!')
-          this.contextAudioStop() // 停止
-        } else { // 调距
-          this.inputLength = msgRate * 10
-        }
-        return false
-      }
-
-      var dataView = new DataView(buffer)
-      sampleRate = dataView.getUint32(1, true)
-      // 自己封装的头部，前四个字节是采样率，非标准wav头部
-      numberOfChannels = 1
-      buffer = buffer.slice(2) // 去掉自己封装的前2个字节
-      segment = {}
+    //   var audio = document.getElementById('audioPlayer')
+    //   const blob = new Blob([event.data], { type: 'autio/wave' })
+      // if (window.URL) {
+      //   audio.src = window.URL.createObjectURL(blob)
+      // } else {
+      //   audio.src = event
+      // }
+      // console.log(audio.src)
+      // audio.play()
+      // console.log('播放')
 
       const that = this
-      // 解码，ArrayBuffer => audioBuffer
-      this.contextAudio.decodeAudioData(this.wavify(event.data, numberOfChannels, sampleRate)).then((audioBuffer) => {
-        segment.buffer = audioBuffer
-        that.audioStack.push(segment)
-        that.decodeAudioTimeout = setTimeout(() => {
-          that.scheduleBuffers(audioStack)
-        }, 50)
-      })
+
+      const reader = new FileReader()
+
+      reader.readAsArrayBuffer(event.data)
+      reader.onload = function(e) {
+        let buffer = e.currentTarget.result.slice(0)
+
+        let numberOfChannels = void 0
+        let sampleRate = void 0
+        let segment = void 0
+
+        const audioStack = []
+        // 信道与调距提示判断
+        if (buffer.byteLength === 2) {
+          var msgView = new DataView(buffer)
+          var msgRate = msgView.getUint32(1, true)
+          if (msgRate === 0) { // 信道满
+            that.$message.error('监听信道已满,请稍后再试!')
+            that.contextAudioStop() // 停止
+          } else { // 调距
+            that.inputLength = msgRate * 10
+          }
+          return false
+        }
+
+        var dataView = new DataView(buffer)
+
+        sampleRate = dataView.getUint32(1, true)
+        // 自己封装的头部，前2个字节是采样率，非标准wav头部
+        numberOfChannels = 1
+        buffer = buffer.slice(2) // 去掉自己封装的前2个字节
+        segment = {}
+
+        // 解码，ArrayBuffer => audioBuffer
+        that.contextAudio.decodeAudioData(that.wavify(buffer, numberOfChannels, sampleRate)).then((audioBuffer) => {
+          segment.buffer = audioBuffer
+          that.audioStack.push(segment)
+          that.decodeAudioTimeout = setTimeout(() => {
+            that.scheduleBuffers(audioStack)
+          }, 50)
+        })
+      }
     },
     scheduleBuffers() {
       let nextTime = 0
@@ -285,10 +302,15 @@ export default {
       }, 50)
     },
     concat(buffer1, buffer2) {
-      var tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength)
+      const tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength)
 
-      tmp.set(new Uint8Array(buffer1), 0)
-      tmp.set(new Uint8Array(buffer2), buffer1.byteLength)
+      const buffer12Unit8 = new Uint8Array(buffer1)
+      const buffer22Unit8 = new Uint8Array(buffer2)
+      tmp.set(buffer12Unit8, 0)
+
+      tmp.set(buffer22Unit8, buffer1.byteLength)
+      // console.log(Buffer.from(tmp, 'hex'), 'buffer.from')
+      // Buffer.from(unit8Array.buffer)
 
       return tmp.buffer
     },
@@ -330,8 +352,6 @@ export default {
       return this.concat(header, data)
     },
     contextAudioStop() {
-      console.log('停止声音流')
-
       if (this.contextAudio && this.contextAudio.state === 'running') {
         this.contextAudio.close()
       }
@@ -443,16 +463,12 @@ export default {
       if (this.yData.length > 30) {
         this.yData.shift()
       }
-      console.log(this.yData)
 
       this.Data1.forEach((item, index) => {
         if (item > 500) {
           this.twoData.push([index, now, item])
         }
       })
-
-      console.log(this.twoData, '1')
-      console.log(this.xData)
 
       this.chart1 = echarts.init(document.getElementById('vibrateChart'))
       const option = {
@@ -550,7 +566,7 @@ export default {
     createWs1() { // 二维振动ws
       if (window.WebSocket) {
         // this.WebSocket1 = new WebSocket1('ws://' + process.env.LINK_API)
-        this.websocket1 = new WebSocket('ws://192.168.199.108:9005/')
+        this.websocket1 = new WebSocket('ws://127.0.0.1:9005/')
         this.contextAudio = new AudioContext()
 
         // 当有消息过来的时候触发
@@ -582,7 +598,7 @@ export default {
     createWs() { // 二维振动ws
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.199.108:9005/')
+        this.websocket = new WebSocket('ws://127.0.0.1:9005/')
 
         // 当有消息过来的时候触发
         const that = this
