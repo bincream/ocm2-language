@@ -983,7 +983,7 @@ export default {
       }
       return isLt2M
     },
-    AiWs(data) { // 二维振动ws
+    AiWs(data) {
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
         this.websocket = new WebSocket('ws://192.168.199.247:9005/')

@@ -72,7 +72,6 @@ export default {
     getBaseStandInfo() {
       baseStandInfo().then(response => {
         this.accuracy = response.data
-        console.log(this.accuracy)
       })
     },
     connect() {
@@ -91,7 +90,7 @@ export default {
     createWs() { // 二维振动ws
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.199.108:9005/')
+        this.websocket = new WebSocket('ws://192.168.8.110:9005/')
 
         // 当有消息过来的时候触发
         const that = this
@@ -125,9 +124,7 @@ export default {
       for (let i = 0; i < data.length; i++) {
         this.xData.push(i * this.accuracy.precisions)
       }
-      console.log(this.xData, 'xdata')
       this.initChart()
-      console.log(this.yData, 'ydata')
     },
     initChart() {
       this.chart = echarts.init(document.getElementById('myChart'))
@@ -191,8 +188,6 @@ export default {
       option.xAxis.data = this.xData
       // option.yAxis[0].data = this.yData
       option.series[0].data = this.yData
-      console.log(this.yData, 'ydata2')
-
       this.chart.setOption(option)
     }
   }

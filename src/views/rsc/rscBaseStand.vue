@@ -41,6 +41,8 @@
           {{ scope.row.standMode | standMode }}
         </template>
       </el-table-column>
+      <el-table-column label="音频采样率" prop="samplingRate" />
+      <el-table-column label="报警预值" prop="alarmThreshold" />
       <el-table-column label="操作" width="260">
         <template slot-scope="scope">
           <!-- <el-button
@@ -119,6 +121,18 @@
               <td class="width33">
                 <el-form-item label="基站精度" prop="precisions">
                   <el-input v-model="standEdit.precisions" size="small" placeholder="请输入" />
+                </el-form-item>
+              </td>
+              <td class="width33">
+                <el-form-item label="音频采样率" prop="precisions">
+                  <el-input v-model="standEdit.samplingRate" size="small" placeholder="请输入" />
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td class="width33">
+                <el-form-item label="报警预值" prop="precisions">
+                  <el-input v-model="standEdit.alarmThreshold" size="small" placeholder="请输入" />
                 </el-form-item>
               </td>
             </tr>

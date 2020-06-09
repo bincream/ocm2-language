@@ -32,7 +32,7 @@
       <el-table-column label="中心点" prop="centerCol" />
       <el-table-column label="结束点" prop="endCol" />
       <el-table-column label="开始时间" prop="beginTime" />
-      <el-table-column label="结束时间" prop="endTime" />
+      <el-table-column label="报警时间" prop="alarmTime" />
       <el-table-column label="震动次数" prop="freq" />
       <el-table-column label="强度" prop="amplitude" />
       <el-table-column label="等级" prop="level" />

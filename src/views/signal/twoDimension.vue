@@ -40,41 +40,6 @@
       </div>
       <div id="myChart1" style="width:1600px;height:30%;margin:auto" />
       <div id="vibrateChart" style="width:1600px;height:80%;margin:auto" />
-      <!--
-      <div class="title" style="position:relative">
-        <span>预警恒警信息</span>
-        <label class="radio-label" style="position:absolute;right:890px">基站名:</label>
-        <el-select
-          v-model="warningEdit.standId"
-          filterable
-          clearable
-          placeholder="请选择基站"
-          style="position:absolute;width:150px;right:750px"
-          size="small"
-        >
-          <el-option
-            v-for="item in standList"
-            :key="item.id"
-            :value="item.id"
-            :label="item.standName"
-          />
-        </el-select>
-        <label class="radio-label" style="position:absolute;right:680px">起点:</label>
-        <el-input v-model="warningEdit.origin" size="small" placeholder="请输入距离(米)" type="number" style="position:absolute;width:150px;right:540px" />
-
-        <label class="radio-label" style="position:absolute;right:470px">终点:</label>
-        <el-input v-model="warningEdit.destination" size="small" placeholder="请输入距离(米)" type="number" style="position:absolute;width:150px;right:330px" />
-
-        <label class="radio-label" style="position:absolute;right:260px">灵敏度:</label>
-        <el-input v-model="warningEdit.sensitivity" size="small" placeholder="请输入数字" type="number" style="position:absolute;width:150px;right:120px" />
-
-        <el-button type="primary" style="position:absolute;right:10px" @click="submit">提交数据</el-button>
-      </div>
-      <div id="warnChart" style="width:100%; height:40%" /> -->
-      <!-- <div class="title">单点频谱图
-        <el-input v-model="spectrogramEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:120px" />
-        <el-button type="primary" style="position:absolute;right:10px" @click="spectrogram">开始</el-button>
-      </div> -->
     </div>
 
   </div>
@@ -83,7 +48,6 @@
 <script>
 import { realtimeAudioQuery, vibQuery } from '@/api/signal/twoDimension'
 import { standList, baseStandInfo } from '@/api/public'
-import { debounce } from '@/utils'
 import echarts from 'echarts'
 import checkPermission from '@/utils/permission' // 权限判断函数
 import waves from '@/directive/waves' // 水波纹指令
@@ -111,7 +75,7 @@ export default {
       xData: [],
       Data1: [],
       twoData: [],
-      baseStandInfo: [],
+      baseStandInfo: {},
       chart: null,
       websocket: null,
       websocket1: null,
@@ -119,33 +83,19 @@ export default {
       contextAudio: null,
       scheduleBuffersTimeout: null,
       audioStack: [],
-      decodeAudioTimeout: null
+      decodeAudioTimeout: null,
+      startX: 0,
+      endX: 2500
 
     }
   },
   created() { },
   mounted() {
-    this.initChart()
-    this.myChart1()
+    // this.initChart()
+    // this.myChart1()
     // this.warnChart()
     this.getStandList()
     this.getBaseStandInfo()
-
-    if (this.autoResize) {
-      this.__resizeHandler = debounce(() => {
-        if (this.chart) {
-          this.chart.resize()
-        }
-        if (this.chart1) {
-          this.chart1.resize()
-        }
-      }, 100)
-      window.addEventListener('resize', this.__resizeHandler)
-    }
-
-    // 监听侧边栏的变化
-    this.sidebarElm = document.getElementsByClassName('sidebar-container')[0]
-    this.sidebarElm && this.sidebarElm.addEventListener('transitionend', this.sidebarResizeHandler)
   },
   // beforeRouteEnter(to, from, next) {
   //   next(vm => {
@@ -212,17 +162,6 @@ export default {
     },
 
     getWsData1(event) {
-    //   var audio = document.getElementById('audioPlayer')
-    //   const blob = new Blob([event.data], { type: 'autio/wave' })
-      // if (window.URL) {
-      //   audio.src = window.URL.createObjectURL(blob)
-      // } else {
-      //   audio.src = event
-      // }
-      // console.log(audio.src)
-      // audio.play()
-      // console.log('播放')
-
       const that = this
 
       const reader = new FileReader()
@@ -239,7 +178,7 @@ export default {
         // 信道与调距提示判断
         if (buffer.byteLength === 2) {
           var msgView = new DataView(buffer)
-          var msgRate = msgView.getUint32(1, true)
+          var msgRate = msgView.getInt16(0, true)
           if (msgRate === 0) { // 信道满
             that.$message.error('监听信道已满,请稍后再试!')
             that.contextAudioStop() // 停止
@@ -248,10 +187,12 @@ export default {
           }
           return false
         }
+        // 获取采样率
+        // var dataView = new DataView(buffer)
+        // console.log(dataView)
+        // sampleRate = dataView.getInt16(0, true)
+        sampleRate = this.baseStandInfo.samplingRate
 
-        var dataView = new DataView(buffer)
-
-        sampleRate = dataView.getUint32(1, true)
         // 自己封装的头部，前2个字节是采样率，非标准wav头部
         numberOfChannels = 1
         buffer = buffer.slice(2) // 去掉自己封装的前2个字节
@@ -348,7 +289,7 @@ export default {
       d.setUint8(38, 't'.charCodeAt(0))
       d.setUint8(39, 'a'.charCodeAt(0))
       d.setUint32(40, data.byteLength, true)
-
+      console.log(d)
       return this.concat(header, data)
     },
     contextAudioStop() {
@@ -425,8 +366,7 @@ export default {
               return ''
             }
           },
-          type: 'value',
-          max: 2000
+          type: 'value'
         },
         series: [{
           name: '强度',
@@ -451,6 +391,7 @@ export default {
       option.series[0].data = data
       this.chart.setOption(option, true)
     },
+
     initChart() {
       var myDate = new Date()
       // var now = myDate.getHours() + ':' + myDate.getMinutes() + ':' + myDate.getSeconds()// 时分秒
@@ -460,15 +401,34 @@ export default {
       if (arr === -1) {
         this.yData.push(now)
       }
-      if (this.yData.length > 30) {
+      if (this.yData.length > 15) {
         this.yData.shift()
       }
+      const sum = this.endX - this.startX
+      console.log(sum)
 
-      this.Data1.forEach((item, index) => {
-        if (item > 500) {
-          this.twoData.push([index, now, item])
-        }
-      })
+      if (sum > 50) {
+        this.Data1.forEach((item, index) => {
+          const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 10 + 4])
+          if (x > this.baseStandInfo.alarmThreshold) {
+            this.twoData.push([index * 5, now, x])
+          }
+        })
+      } else {
+        this.Data1.forEach((item, index) => {
+          if (item > this.baseStandInfo.alarmThreshold && index > this.startX && index < this.endX) {
+            this.twoData.push([index, now, item])
+          }
+          // if (item > this.baseStandInfo.alarmThreshold && (index < this.startX || index > this.endX)) {
+          //   const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 10 + 4])
+          //   this.twoData.push([index * 5, now, x])
+          // }
+        })
+      }
+
+      if (this.twoData.length > 2500) {
+        this.twoData.splice(0, this.twoData.length - 2500)
+      }
 
       this.chart1 = echarts.init(document.getElementById('vibrateChart'))
       const option = {
@@ -480,6 +440,7 @@ export default {
           height: '80%',
           top: '0'
         },
+
         xAxis: {
           type: 'category',
           data: []
@@ -493,7 +454,6 @@ export default {
             dataZoom: {
               yAxisIndex: 'none'
             },
-            restore: {},
             saveAsImage: {}
           }
         },
@@ -503,34 +463,32 @@ export default {
           orient: 'horizontal',
           left: 'center',
           bottom: '5%',
-          // inRange: {
-          //   color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
-          // }
           splitNumber: 8,
-          pieces: [{
-            gt: 0,
-            lte: 200,
-            color: '#096'
-          }, {
-            gt: 200,
-            lte: 1000,
-            color: '#ffde33'
-          }, {
-            gt: 1000,
-            lte: 1500,
-            color: '#ff9933'
-          }, {
-            gt: 1500,
-            lte: 2000,
-            color: '#cc0033'
-          }, {
-            gt: 2000,
-            lte: 4000,
-            color: '#660099'
-          }, {
-            gt: 4000,
-            color: '#7e0023'
-          }],
+          pieces: [
+            {
+              gt: 2000,
+              lte: 4000,
+              color: '#6495ED'
+            }, {
+              gt: 4000,
+              lte: 6000,
+              color: '#0000FF'
+            }, {
+              gt: 6000,
+              lte: 8000,
+              color: '#FFD700'
+            }, {
+              gt: 8000,
+              lte: 10000,
+              color: '#FFA500'
+            }, {
+              gt: 10000,
+              lte: 12000,
+              color: '#FF4500'
+            }, {
+              gt: 12000,
+              color: '#FF0000'
+            }],
           outOfRange: {
             color: '#999'
           },
@@ -561,12 +519,29 @@ export default {
       option.xAxis.data = this.xData
       option.yAxis.data = this.yData
       option.series[0].data = this.twoData
+      const that = this
+
+      this.chart1.on('dataZoom', function(params) { // 选取的x轴值
+        var start = params.batch[0].startValue
+        var end = params.batch[0].endValue
+        // var startX = option.xAxis.data[start] / that.baseStandInfo.precisions
+        // var endX = option.xAxis.data[end] / that.baseStandInfo.precisions
+        if (start !== undefined) {
+          that.startX = start
+          that.endX = end
+        } else {
+          that.startX = 0
+          that.endX = that.Data1.length
+        }
+      })
+      console.log(that.startX)// 区间开始值："17-11-06"
+      console.log(that.endX)// 区间结束值："17-11-08"
       this.chart1.setOption(option)
     },
     createWs1() { // 二维振动ws
       if (window.WebSocket) {
         // this.WebSocket1 = new WebSocket1('ws://' + process.env.LINK_API)
-        this.websocket1 = new WebSocket('ws://127.0.0.1:9005/')
+        this.websocket1 = new WebSocket('ws://192.168.8.110:9005/')
         this.contextAudio = new AudioContext()
 
         // 当有消息过来的时候触发
@@ -598,7 +573,7 @@ export default {
     createWs() { // 二维振动ws
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://127.0.0.1:9005/')
+        this.websocket = new WebSocket('ws://192.168.8.110:9005/')
 
         // 当有消息过来的时候触发
         const that = this
