@@ -407,9 +407,9 @@ export default {
       const sum = this.endX - this.startX
       console.log(sum)
 
-      if (sum > 50) {
+      if (sum > 500) {
         this.Data1.forEach((item, index) => {
-          const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 10 + 4])
+          const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 5 + 4])
           if (x > this.baseStandInfo.alarmThreshold) {
             this.twoData.push([index * 5, now, x])
           }
@@ -541,7 +541,7 @@ export default {
     createWs1() { // 二维振动ws
       if (window.WebSocket) {
         // this.WebSocket1 = new WebSocket1('ws://' + process.env.LINK_API)
-        this.websocket1 = new WebSocket('ws://192.168.8.110:9005/')
+        this.websocket1 = new WebSocket('ws://127.0.0.1:9005/')
         this.contextAudio = new AudioContext()
 
         // 当有消息过来的时候触发
@@ -573,7 +573,7 @@ export default {
     createWs() { // 二维振动ws
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.8.110:9005/')
+        this.websocket = new WebSocket('ws://127.0.0.1:9005/')
 
         // 当有消息过来的时候触发
         const that = this
