@@ -11,14 +11,14 @@
       <el-button v-waves class="filter-item" icon="el-icon-search" @click="handleFilter" />
 
       <el-button
-        v-if="checkPermission(['aimodel/save'])"
+        v-if="checkPermission(['aiModel/save'])"
         class="filter-item"
         style="position:absolute;right:120px"
         type="primary"
         @click="handleCreate"
       >模型添加</el-button>
       <el-button
-        v-if="checkPermission(['aimodel/uploadExcel'])"
+        v-if="checkPermission(['aiModel/uploadExcel'])"
         class="filter-item"
         style="position:absolute;right:0px"
         type="primary"
@@ -265,7 +265,7 @@
         <el-table-column label="音频" width="320">
           <template slot-scope="scope">
             <audio :id="scope.row.id" controls="controls">
-              <source :src="scope.row.oggUrl">
+              <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath">
               <source :src="scope.row.fileName">
             </audio>
           </template>
@@ -812,7 +812,7 @@ export default {
         this.$message.error('至少需要选择一条数据')
         return false
       }
-      if (!this.typeId) {
+      if (!this.signEdit.typeId) {
         this.$message.error('请选择标记类型')
         return false
       }

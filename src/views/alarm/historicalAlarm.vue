@@ -66,7 +66,7 @@
         <template slot-scope="scope">
           <audio :id="scope.row.id" controls="controls">
             <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
-            <source :src="scope.row.oggUrl" >
+            <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath" >
             <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
             <source :src="scope.row.fileName" >
           </audio>
@@ -229,7 +229,7 @@ export default {
         this.total = response.data.total
         this.listLoading = false
         response.data.list.forEach((item, index) => {
-          this.$set(this.list[index], 'oggUrl', item.oggUrl)
+          this.$set(this.list[index], 'oggPath', item.oggPath)
           this.$set(this.list[index], 'fileName', item.fileName)
         })
         this.$forceUpdate()

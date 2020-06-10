@@ -346,14 +346,10 @@
             <td class="width21">
               <span>{{ item.centerCol }}</span>
             </td>
-            <td class="blackMark">基站精度：</td>
-            <td class="width21">
-              <span>{{ item.precisions }}</span>
-            </td>
             <td class="blackMark">音频：</td>
             <td class="width21">
               <audio :id="item.id" controls="controls">
-                <source :src="item.oggUrl">
+                <source :src="'http://192.168.8.100/uploadAudio/' + item.oggUrl">
                 <!-- <source :src="scope.row.fileName"> -->
               </audio>
             </td>
@@ -396,12 +392,11 @@
             :row-key="getRowKeys"
           >
             <el-table-column label="中心点" prop="centerCol" />
-            <el-table-column label="基站精度" prop="precisions" />
             <el-table-column label="识别类型" prop="typeId" />
             <el-table-column label="音频" width="320">
               <template slot-scope="scope">
                 <audio :id="scope.row.id" controls="controls">
-                  <source :src="scope.row.oggUrl">
+                  <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggUrl">
                   <source :src="scope.row.fileName">
                 </audio>
               </template>
@@ -637,7 +632,7 @@ export default {
       getInfo({ id: row.id }).then(response => {
         this.audioList = response.data.typeAlarmList
         response.data.typeAlarmList.forEach((item, index) => {
-          this.$set(this.audioList[index], 'oggUrl', item.oggUrl)
+          this.$set(this.audioList[index], 'oggPath', item.oggPath)
         })
       })
     },
@@ -646,7 +641,7 @@ export default {
       getInfo({ id: row.id }).then(response => {
         this.typeInfo = response.data
         response.data.typeAlarmList.forEach((item, index) => {
-          this.$set(this.typeInfo.typeAlarmList[index], 'oggUrl', item.oggUrl)
+          this.$set(this.typeInfo.typeAlarmList[index], 'oggPath', item.oggPath)
         })
       })
     },

@@ -24,6 +24,7 @@
       :row-style="{textAlign: 'center'}"
       highlight-current-row
       height="500"
+      @row-click="handleDetail"
     >
       <el-table-column label="报警类型" prop="alarmType" />
       <el-table-column label="通道号" prop="lineInfoChannel" />
@@ -36,19 +37,12 @@
       <el-table-column label="震动次数" prop="freq" />
       <el-table-column label="强度" prop="amplitude" />
       <el-table-column label="等级" prop="level" />
-      <el-table-column label="操作" width="200">
+      <el-table-column label="音频" width="320">
         <template slot-scope="scope">
-          <el-button
-            type="primary"
-            size="small"
-            @click.stop="handleDetail(scope.row)"
-          >详情</el-button>
-          <!-- <el-button
-            v-show="scope.row.type == 0"
-            type="warning"
-            size="small"
-            @click.stop="handleSolu(scope.row)"
-          >处理报警</el-button> -->
+          <audio :id="scope.row.id" controls="controls">
+            <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath">
+            <source :src="scope.row.fileName">
+          </audio>
         </template>
       </el-table-column>
     </el-table>
@@ -155,6 +149,14 @@
               <span>{{ alarmInfo.vibType }}</span>
             </td>
           </tr>
+          <!-- <tr>
+            <td class="blackMark">音频:</td>
+            <td class="width21">
+              <audio :id="alarmInfo.id" controls="controls">
+                <source :src="'http://192.168.8.100/uploadAudio/'+ alarmInfo.oggPath">
+              </audio>
+            </td>
+          </tr> -->
         </table>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -378,6 +380,8 @@ export default {
       this.dialogDetVisible = true
       getInfo({ id: row.id }).then(response => {
         this.alarmInfo = response.data
+        console.log(this.alarmInfo.oggPath
+        )
       })
     },
     // 新增
