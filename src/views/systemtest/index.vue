@@ -63,13 +63,13 @@
               style="position:absolute;right:100px"
               @click="updateData4"
             >确认</el-button>
-            <el-button
+            <!-- <el-button
               v-if="checkPermission(['systemtest/deviceParamSetting'])"
               v-show="ope4Status == 'info4'"
               style="position:absolute;right:100px"
               type="warning"
               @click="ope4Status = 'update4'"
-            >编辑</el-button>
+            >编辑</el-button> -->
             <el-button v-show="ope4Status == 'update4'" style="position:absolute;right:0px" @click="ope4Status = 'info4'">取消</el-button>
             <el-button
               v-show="ope4Status == 'info4'"
@@ -234,42 +234,42 @@
                 空间分辨率：
               </td>
               <td class="width9">
-                <el-input
+                <!-- <el-input
                   v-show="ope2Status == 'update2'"
                   v-model="configurationEdit.SysConfig_Resolution"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
-                />
-                <span v-show="ope2Status == 'info2'">{{ info.SysConfig_Resolution }}</span>
+                /> -->
+                <span>{{ info.SysConfig_Resolution }}</span>
               </td>
               <td class="blackMark">
                 <span style="color: red">*</span>
                 时间采样率：
               </td>
               <td class="width9">
-                <el-input
+                <!-- <el-input
                   v-show="ope2Status == 'update2'"
                   v-model="configurationEdit.SysConfig_SampleRate"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
-                />
-                <span v-show="ope2Status == 'info2'">{{ info.SysConfig_SampleRate }}</span>
+                /> -->
+                <span>{{ info.SysConfig_SampleRate }}</span>
               </td>
               <td class="blackMark">
                 <span style="color: red">*</span>
                 平均次数：
               </td>
               <td class="width9">
-                <el-input
+                <!-- <el-input
                   v-show="ope2Status == 'update2'"
                   v-model="configurationEdit.SysConfig_MeanCount"
                   size="small"
                   placeholder="请输入"
                   style="width: 100px;"
-                />
-                <span v-show="ope2Status == 'info2'">{{ info.SysConfig_MeanCount }}</span>
+                /> -->
+                <span>{{ info.SysConfig_MeanCount }}</span>
               </td>
               <td class="blackMark">
                 <span style="color: red">*</span>
@@ -281,7 +281,7 @@
                   v-model="configurationEdit.SysConfig_WorkMode"
                   size="small"
                   style="width: 150px;"
-                  placeholder="请选择光纤长度"
+                  placeholder="请选择"
                   class="filter-item"
                 >
                   <el-option
@@ -293,7 +293,28 @@
                 </el-select>
                 <span v-show="ope2Status == 'info2'">{{ info.SysConfig_WorkMode | standMode }}</span>
               </td>
-              <td />
+              <td class="blackMark">
+                <span style="color: red">*</span>
+                工作通道：
+              </td>
+              <td class="width9">
+                <el-select
+                  v-show="ope2Status == 'update2'"
+                  v-model="configurationEdit.SysConfig_WorkChannel"
+                  size="small"
+                  style="width: 150px;"
+                  placeholder="请选择"
+                  class="filter-item"
+                >
+                  <el-option
+                    v-for="item in workChanneList"
+                    :key="item.id"
+                    :value="item.id"
+                    :label="item.value"
+                  />
+                </el-select>
+                <span v-show="ope2Status == 'info2'">{{ info.SysConfig_WorkChannel | SysConfig_WorkChannel }}</span>
+              </td>
             </tr>
           </table>
         </div>
@@ -392,31 +413,53 @@
             <el-button v-show="ope3Status == 'update3'" style="position:absolute;right:0px" @click="ope3Status = 'info3'">取消</el-button>
           </div>
           <table class="table">
-            <tr>
-              <td class="blackMark">
-                <span style="color: red">*</span>
-                光纤长度：
-              </td>
-              <td class="width9">
-                <el-select
-                  v-show="ope3Status == 'update3'"
-                  v-model="vibrationEdit.Cable_Length"
-                  size="small"
-                  style="width: 150px;"
-                  placeholder="请选择光纤长度"
-                  class="filter-item"
-                >
-                  <el-option
-                    v-for="item in lengthList"
-                    :key="item"
-                    :value="item"
-                    :label="item"
-                  />
-                </el-select>
-                <span v-show="ope3Status == 'info3'">{{ info.Cable_Length }}</span>
-              </td>
-              <td />
-            </tr>
+            <el-row :gutter="20">
+              <el-col :span="6">
+                <div v-for="(item, index) in info.Cable_Length" :key="index" class="grid-content bg-purple">
+                  <tr>
+                    <td class="blackMark">
+                      <span>序号：</span>
+                    </td>
+                    <td class="width9">{{ index +1 }}</td>
+                    <td class="blackMark">
+                      <span style="color: red">*</span>
+                      光纤长度：
+                    </td>
+                    <td class="width9">
+                      <el-input
+                        v-show="ope3Status == 'update3'"
+                        v-model="vibrationEdit.Cable_Length"
+                        size="small"
+                        style="width: 150px;"
+                        placeholder="请选择光纤长度"
+                        class="filter-item"
+                      />
+                      <span v-show="ope3Status == 'info3'">{{ item }}</span>
+                    </td>
+                  </tr>
+                </div>
+              </el-col>
+              <el-col :span="6"><div v-for="(item, index) in info.Cable_AllLossAlarmThr" :key="index" class="grid-content bg-purple">
+                <tr>
+                  <td class="blackMark">
+                    <span style="color: red">*</span>
+                    光缆总损耗报警阈值：
+                  </td>
+                  <td class="width9">
+                    <el-input
+                      v-show="ope3Status == 'update3'"
+                      :v-model="item"
+                      size="small"
+                      style="width: 150px;"
+                      placeholder="请选择光缆总损耗报警阈值"
+                      class="filter-item"
+                    />
+                    <span v-show="ope3Status == 'info3'">{{ item }}</span>
+                  </td>
+                </tr>
+              </div>
+              </el-col>
+            </el-row>
           </table>
         </div>
       </el-form>
@@ -467,6 +510,28 @@ export default {
         default:
           break
       }
+    },
+    SysConfig_WorkChannel: function(val) {
+      switch (val) {
+        case 0:
+          return '通道1'
+        case 1:
+          return '通道2'
+        case 2:
+          return '通道3'
+        case 3:
+          return '通道4'
+        case 4:
+          return '通道5'
+        case 5:
+          return '通道6'
+        case 6:
+          return '通道7'
+        case 7:
+          return '通道8'
+        default:
+          break
+      }
     }
   },
   data() {
@@ -489,7 +554,8 @@ export default {
       ope3Status: 'info3',
       ope4Status: 'info4',
       lengthList: ['30', '50', '70'],
-      modeList: [{ id: 0, value: '光缆振动监测模式' }, { id: 1, value: '光缆性能监测模式' }]
+      modeList: [{ id: 0, value: '光缆振动监测模式' }, { id: 1, value: '光缆性能监测模式' }],
+      workChanneList: [{ id: 0, value: '通道1' }, { id: 1, value: '通道2' }, { id: 2, value: '通道3' }, { id: 3, value: '通道4' }, { id: 4, value: '通道5' }, { id: 5, value: '通道6' }, { id: 6, value: '通道7' }, { id: 7, value: '通道8' }]
     }
   },
   computed: {
@@ -522,7 +588,7 @@ export default {
   methods: {
     checkPermission,
     baseStandUpdate() {
-      baseStandUpdate({ settingParam: this.settingParam }).then(response => {
+      baseStandUpdate({ id: 1, standMode: this.info.SysConfig_WorkMode, precisions: this.info.SysConfig_Resolution }).then(response => {
       })
     },
     getBaseStandInfo() {
@@ -644,8 +710,12 @@ export default {
     },
 
     getWsData(data) { // 报警消息数据处理
+      this.configurationEdit.SysConfig_WorkChannel = data.SysConfig_WorkChannel
+      this.configurationEdit.SysConfig_WorkMode = data.SysConfig_WorkMode
+      this.deviceEdit.OptDevice_RamanPower = data.OptDevice_RamanPower
+      this.deviceEdit.OptDevice_EDFACurrent = data.OptDevice_EDFACurrent
       this.info = data
-      this.warnData = data.Cable_AllLossAlarmThr
+      this.warnData = data.Cable_VibThr
       if (data.SysConfig_WorkMode !== null) {
         this.baseStandUpdate()
       }

@@ -91,8 +91,8 @@ export default {
   },
   created() { },
   mounted() {
-    // this.initChart()
-    // this.myChart1()
+    this.initChart()
+    this.myChart1()
     // this.warnChart()
     this.getStandList()
     this.getBaseStandInfo()
@@ -191,7 +191,7 @@ export default {
         // var dataView = new DataView(buffer)
         // console.log(dataView)
         // sampleRate = dataView.getInt16(0, true)
-        sampleRate = this.baseStandInfo.samplingRate
+        sampleRate = that.baseStandInfo.samplingRate
 
         // 自己封装的头部，前2个字节是采样率，非标准wav头部
         numberOfChannels = 1
