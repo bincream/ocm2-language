@@ -3,20 +3,20 @@
 
     <div class="chart-container">
       <div class="title">
-        <span>阀值设置下的二维振动</span>
-        <el-input v-model="monitorEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:220px" />
+        <span>单点音频</span>
+        <el-input v-model="monitorEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:120px" />
         <el-button
           v-if="checkPermission(['twoDimension/realtimeAudioQuery'])"
           v-show="websocket1 == null"
           type="primary"
-          style="position:absolute;right:100px"
+          style="position:absolute;right:0px"
           @click="monitorStart"
         >开始监听</el-button>
         <el-button
           v-if="checkPermission(['twoDimension/realtimeAudioQuery'])"
           v-show="websocket1 !== null"
           type="primary"
-          style="position:absolute;right:100px"
+          style="position:absolute;right:0px"
           @click="monitorEnd"
         >结束监听</el-button>
         <audio id="audioPlayer" ref="audioPlayer">
@@ -25,6 +25,14 @@
           <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
           <!-- <source src="/static/img/warning.ogg" type="audio/ogg" > -->
         </audio>
+      </div>
+      <div style="background:blue;height:2px" />
+      <div class="title">
+        <span>阈值设置下的二维振动</span>
+        <span class="radio-label" style="width:160px;position:absolute;right:220px">Y轴范围：</span>
+        <el-input v-model="yMax" type="number" placeholder="请输入Y轴最大范围" style="width:160px;position:absolute;right:110px" @input="updataY" />
+
+        <!-- <el-button style="position:absolute;right:110px" type="primary" @click="updataY">修改</el-button> -->
         <el-button
           v-if="checkPermission(['twoDimension/vibQuery'])"
           v-show="websocket == null"
@@ -39,7 +47,7 @@
         >断开连接</el-button>
       </div>
       <div id="myChart1" style="width:1600px;height:30%;margin:auto" />
-      <div id="vibrateChart" style="width:1600px;height:80%;margin:auto" />
+      <div id="vibrateChart" style="width:1600px;height:70%;margin:auto" />
     </div>
 
   </div>
@@ -80,6 +88,7 @@ export default {
       websocket: null,
       websocket1: null,
       chart1: null,
+      yMax: 20,
       contextAudio: null,
       scheduleBuffersTimeout: null,
       audioStack: [],
@@ -91,11 +100,10 @@ export default {
   },
   created() { },
   mounted() {
-    this.initChart()
-    this.myChart1()
+    this.getBaseStandInfo()
+
     // this.warnChart()
     this.getStandList()
-    this.getBaseStandInfo()
   },
   // beforeRouteEnter(to, from, next) {
   //   next(vm => {
@@ -121,6 +129,10 @@ export default {
   methods: {
     checkPermission,
     connect() {
+      if (this.baseStandInfo.standMode !== 0) {
+        this.$message.error('性能模式下无法查看')
+        return false
+      }
       this.getVibQuery()
     },
     disconnect() {
@@ -134,6 +146,8 @@ export default {
     getBaseStandInfo() {
       baseStandInfo().then(response => {
         this.baseStandInfo = response.data
+        this.initChart()
+        this.myChart1()
       })
     },
     getVibQuery() {
@@ -318,6 +332,10 @@ export default {
     },
     // 监听
     monitorStart() {
+      if (this.baseStandInfo.standMode !== 0) {
+        this.$message.error('性能模式下无法监听')
+        return false
+      }
       if (!this.monitorEdit.col) {
         this.$message.error('请输入距离')
         return false
@@ -345,6 +363,15 @@ export default {
         backgroundColor: '#F2F6FC',
         tooltip: {
           trigger: 'axis'
+        },
+        toolbox: {
+          feature: {
+            dataZoom: {
+              yAxisIndex: 'none'
+            },
+            restore: {},
+            saveAsImage: {}
+          }
         },
         grid: {
           height: '50%',
@@ -398,39 +425,44 @@ export default {
       // var now = myDate.toLocaleString() // 日期+时间
       var now = myDate.toLocaleTimeString()// 时间
       var arr = this.yData.indexOf(now)
-      if (arr === -1) {
-        this.yData.push(now)
+      if (this.Data1.length > 0) {
+        if (arr === -1) {
+          this.yData.push(now)
+        }
       }
-      if (this.yData.length > 15) {
-        this.yData.shift()
+
+      if (this.yData.length > this.yMax) {
+        this.yData.splice(0, this.yData.length - this.yMax)
       }
       const sum = this.endX - this.startX
       console.log(sum)
 
-      if (sum > 500) {
-        this.Data1.forEach((item, index) => {
-          const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 5 + 4])
-          if (x > this.baseStandInfo.alarmThreshold) {
-            this.twoData.push([index * 5, now, x])
-          }
-        })
-      } else {
-        this.Data1.forEach((item, index) => {
-          if (item > this.baseStandInfo.alarmThreshold && index > this.startX && index < this.endX) {
-            this.twoData.push([index, now, item])
-          }
-          // if (item > this.baseStandInfo.alarmThreshold && (index < this.startX || index > this.endX)) {
-          //   const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 10 + 4])
-          //   this.twoData.push([index * 5, now, x])
-          // }
-        })
-      }
+      // if (sum > 500) {
+      this.Data1.forEach((item, index) => {
+        const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 5 + 4])
+        if (x > this.baseStandInfo.alarmThreshold) {
+          this.twoData.push([index * 5, now, x])
+        }
+      })
+      // } else {
+      //   this.Data1.forEach((item, index) => {
+      //     if (item > this.baseStandInfo.alarmThreshold && index > this.startX && index < this.endX) {
+      //       this.twoData.push([index, now, item])
+      //     }
+      // if (item > this.baseStandInfo.alarmThreshold && (index < this.startX || index > this.endX)) {
+      //   const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 10 + 4])
+      //   this.twoData.push([index * 5, now, x])
+      // }
+      //   })
+      // }
 
       if (this.twoData.length > 2500) {
         this.twoData.splice(0, this.twoData.length - 2500)
       }
 
       this.chart1 = echarts.init(document.getElementById('vibrateChart'))
+      console.log(this.baseStandInfo.tdColor2, 2)
+
       const option = {
         tooltip: {
           trigger: 'item'
@@ -454,6 +486,7 @@ export default {
             dataZoom: {
               yAxisIndex: 'none'
             },
+            restore: {},
             saveAsImage: {}
           }
         },
@@ -466,27 +499,27 @@ export default {
           splitNumber: 8,
           pieces: [
             {
-              gt: 2000,
-              lte: 4000,
+              gt: this.baseStandInfo.tdColor1,
+              lte: this.baseStandInfo.tdColor2,
               color: '#6495ED'
             }, {
-              gt: 4000,
-              lte: 6000,
+              gt: this.baseStandInfo.tdColor2,
+              lte: this.baseStandInfo.tdColor3,
               color: '#0000FF'
             }, {
-              gt: 6000,
-              lte: 8000,
+              gt: this.baseStandInfo.tdColor3,
+              lte: this.baseStandInfo.tdColor4,
               color: '#FFD700'
             }, {
-              gt: 8000,
-              lte: 10000,
+              gt: this.baseStandInfo.tdColor4,
+              lte: this.baseStandInfo.tdColor5,
               color: '#FFA500'
             }, {
-              gt: 10000,
-              lte: 12000,
+              gt: this.baseStandInfo.tdColor5,
+              lte: this.baseStandInfo.tdColor6,
               color: '#FF4500'
             }, {
-              gt: 12000,
+              gt: this.baseStandInfo.tdColor6,
               color: '#FF0000'
             }],
           outOfRange: {
@@ -572,7 +605,7 @@ export default {
     },
     createWs() { // 二维振动ws
       if (window.WebSocket) {
-        // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
+        // this.websocket = new WebSocket('ws://' + process.env.LIN K_API)
         this.websocket = new WebSocket('ws://192.168.8.100:9005/')
 
         // 当有消息过来的时候触发
@@ -610,6 +643,12 @@ export default {
         this.websocket1.close()
         this.websocket1 = null
       }
+    },
+    updataY() {
+      // if (this.yMax === '') {
+      //   this.yMax = 20
+      // }
+      console.log(this.yMax)
     }
   }
 }
@@ -634,7 +673,7 @@ export default {
 }
 
 .radio-label {
-  font-size: 14px;
+  font-size: 18px;
   color: #606266;
   line-height: 40px;
   padding: 0 12px 0 30px;
@@ -714,4 +753,12 @@ export default {
 
 }
 </style>
-
+<style>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+</style>

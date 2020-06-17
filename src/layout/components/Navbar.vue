@@ -5,6 +5,7 @@
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
+
       <template v-if="device!=='mobile'">
         <!-- <search id="header-search" class="right-menu-item" /> -->
 
@@ -20,6 +21,7 @@
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
+
           <span class="name" v-text="gettersName" />
           <span class="name">[{{ gettersUserName }}]</span>
           <i class="el-icon-caret-bottom" />
@@ -78,7 +80,6 @@
 
 <script>
 import { newPassword } from '@/api/user'
-
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'

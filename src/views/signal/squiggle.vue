@@ -2,7 +2,10 @@
   <div class="app-container">
     <div class="chart-container">
       <div class="title">
-        <span>全线时序图</span>
+        <span>全线光强图</span>
+        <span class="radio-label" style="width:160px;position:absolute;right:220px">Y轴范围：</span>
+        <el-input v-model="yMax" type="number" placeholder="请输入Y轴最大值" style="width:160px;position:absolute;right:110px" @input="updataY" />
+        <!-- <el-button style="position:absolute;right:110px" type="primary">修改</el-button> -->
         <el-button v-if="websocket == null" type="primary" @click="connect">连接</el-button>
         <el-button v-else type="danger" @click="disconnect">断开连接</el-button>
       </div>
@@ -46,6 +49,7 @@ export default {
       platformList: [],
       categoryList: [],
       trainJobList: [],
+      yMax: null,
       carrierList: []
     }
   },
@@ -75,6 +79,10 @@ export default {
       })
     },
     connect() {
+      if (this.accuracy.standMode !== 0) {
+        this.$message.error('性能模式下无法查看')
+        return false
+      }
       this.getRsc()
     },
     disconnect() {
@@ -142,10 +150,6 @@ export default {
         //     animation: false
         //   }
         // },
-        legend: {
-          data: ['频谱', '距离'],
-          left: 10
-        },
         toolbox: {
           feature: {
             dataZoom: {
@@ -155,7 +159,6 @@ export default {
             saveAsImage: {}
           }
         },
-
         grid: {
           left: '5%',
           right: '5%',
@@ -172,8 +175,8 @@ export default {
         },
         yAxis: {
           name: '强度',
-          type: 'value'
-          // max: 1000
+          type: 'value',
+          max: this.yMax
         },
         series: [{
 
@@ -189,6 +192,12 @@ export default {
       // option.yAxis[0].data = this.yData
       option.series[0].data = this.yData
       this.chart.setOption(option)
+    },
+    updataY() {
+      if (this.yMax === '') {
+        this.yMax = null
+      }
+      console.log(this.yMax)
     }
   }
 }
@@ -198,6 +207,12 @@ export default {
   width: 100%;
   height: calc(100vh - 84px);
   margin-bottom: 150px;
+}
+.radio-label {
+  font-size: 18px;
+  color: #606266;
+  line-height: 40px;
+  padding: 0 12px 0 30px;
 }
 .title {
   height: 40px;
@@ -281,5 +296,14 @@ export default {
       }
     }
   }
+}
+</style>
+<style>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 </style>

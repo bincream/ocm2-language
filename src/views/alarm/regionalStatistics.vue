@@ -23,7 +23,7 @@
         class="filter-item"
         start-placeholder="开始日期"
         range-separator="至"
-        end-placeholder="结束日期"
+        end-placeholder="告警时间"
         value-format="yyyy-MM-dd HH:mm:ss"
         clearable
       />

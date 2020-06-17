@@ -2,12 +2,22 @@
 <template>
   <div class="app-container">
     <div class="filter-container" style="position:relative">
+
       <el-input
-        v-model="listQuery.keywords"
-        placeholder="请输入账号"
+        v-model="listQuery.centerCol"
+        placeholder="请输入中心点"
         style="width: 200px;"
         class="filter-item"
-        @keyup.enter.native="handleFilter"
+        @keyup.enter.native="handleTypeFilter"
+      />
+      <el-date-picker
+        v-model="date"
+        style="width: 380px;margin-bottom: 10px;vertical-align: middle;"
+        type="datetimerange"
+        start-placeholder="开始日期"
+        end-placeholder="告警时间"
+        value-format="yyyy-MM-dd HH:mm:ss"
+        clearable
       />
       <el-button v-waves class="filter-item" icon="el-icon-search" @click="handleFilter" />
     </div>
@@ -29,8 +39,8 @@
       <el-table-column label="中心点" prop="centerCol" />
       <el-table-column label="结束点" prop="endCol" />
       <el-table-column label="开始时间" prop="beginTime" />
-      <el-table-column label="结束时间" prop="endTime" />
-      <el-table-column label="震动次数" prop="freq" />
+      <el-table-column label="告警时间" prop="endTime" />
+      <el-table-column label="振动次数" prop="freq" />
       <el-table-column label="强度" prop="amplitude" />
       <el-table-column label="等级" prop="level" />
       <el-table-column label="操作" width="200">
@@ -108,7 +118,7 @@
             <td class="width21">
               <span v-text="alarmInfo.beginTime" />
             </td>
-            <td class="blackMark">结束时间:</td>
+            <td class="blackMark">告警时间:</td>
             <td class="width21">
               <span>{{ alarmInfo.endTime }}</span>
             </td>
@@ -275,6 +285,7 @@ export default {
         page: 1,
         limit: 20
       },
+      date: '',
       dialogDetVisible: false,
       alarmInfo: {},
       solutionEdit: {},
@@ -325,6 +336,13 @@ export default {
     handleFilter() {
       if (this.listQuery.keywords === '') {
         this.listQuery.keywords = undefined
+      }
+      if (this.date && this.date.length > 0) {
+        this.listQuery.beginTime = this.date[0]
+        this.listQuery.endTime = this.date[1]
+      } else {
+        this.listQuery.beginTime = undefined
+        this.listQuery.endTime = undefined
       }
       this.listQuery.page = 1
       this.getList()

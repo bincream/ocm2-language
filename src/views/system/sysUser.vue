@@ -54,7 +54,7 @@
           <span>{{ scope.row.status | status(translate) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="330">
+      <el-table-column label="操作" width="350">
         <template slot-scope="scope">
           <el-button
             v-if="checkPermission(['systemUser/changeStatus'])"

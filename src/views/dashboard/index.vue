@@ -6,11 +6,16 @@
     <div class="block">
       <el-slider
         v-model="value"
-        range
         :marks="marks"
         :max="36000"
-        @change="slider"
       />
+      <!-- <el-slider
+        v-model="value"
+        :marks="marks"
+        range
+        :max="36000"
+        @change="slider"
+      /> -->
     </div>
     <div class="optical">
       <span class="text">实时报警列表</span>
@@ -34,7 +39,7 @@
       <el-table-column label="结束点" prop="endCol" />
       <el-table-column label="开始时间" prop="beginTime" />
       <el-table-column label="报警时间" prop="alarmTime" />
-      <el-table-column label="震动次数" prop="freq" />
+      <el-table-column label="振动次数" prop="freq" />
       <el-table-column label="强度" prop="amplitude" />
       <el-table-column label="等级" prop="level" />
       <el-table-column label="音频" width="320">
@@ -102,7 +107,7 @@
             <td class="width21">
               <span v-text="alarmInfo.beginTime" />
             </td>
-            <td class="blackMark">结束时间:</td>
+            <td class="blackMark">告警时间:</td>
             <td class="width21">
               <span>{{ alarmInfo.endTime }}</span>
             </td>
@@ -288,22 +293,8 @@ export default {
       rules: {
         solution: [{ required: true, message: '请输入', trigger: 'change' }]
       },
-      value: [0, 36000],
-
+      value: 36000,
       marks: {
-        0: '0',
-        3000: '3000',
-        6000: '6000',
-        9000: '9000',
-        12000: '12000',
-        15000: '15000',
-        18000: '18000',
-        21000: '21000',
-        24000: '24000',
-        27000: '27000',
-        30000: '30000',
-        33000: '33000',
-        36000: '36000以上'
       }
     }
   },
@@ -359,6 +350,14 @@ export default {
         this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false
+        this.marks = {}
+        this.list.forEach(item => {
+          var key = item.centerCol
+          var value = item.centerCol
+          this.marks[key] = value.toString()
+          console.log(this.marks)
+          // this.value = response.data.list[0].centerCol
+        })
       })
     },
     handleSizeChange(val) {
@@ -438,5 +437,27 @@ export default {
   margin: 10px;
   height: 55px;
   padding-bottom: 10px;
+}
+
+</style>
+
+<style lang="css">
+.el-slider__runway{
+      background-color: #1890ff;
+}
+.el-slider__runway.disabled .el-slider__bar{
+  background-color: #1890ff
+}
+.el-slider__runway.disabled .el-slider__button {
+    opacity: 0.0;
+}
+.el-slider__button {
+   opacity: 0.0;
+}
+.el-slider__stop {
+  background-color: red;
+  margin-top: -2.5px;
+  height: 10px;
+  width: 10px;
 }
 </style>

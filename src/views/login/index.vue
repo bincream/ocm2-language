@@ -12,9 +12,9 @@
         status-icon
       >
         <div class="title-container">
-          <div class="title-left">
+          <!-- <div class="title-left">
             <img src="@/assets/login_image/logo.png" alt>
-          </div>
+          </div> -->
           <div class="title-right">
             <div class="title">分布式光纤传感系统通用软件平台</div>
           </div>

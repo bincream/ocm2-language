@@ -24,10 +24,10 @@ export function deviceParamQuery(query) {
   })
 }
 
-export function deviceParamSetting(query) {
+export function deviceParamSetting(data) {
   return request({
     url: '/api-web/systemtest/systemtest/deviceParamSetting',
-    method: 'get',
-    params: query
+    method: 'post',
+    data
   })
 }

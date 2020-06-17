@@ -6,11 +6,10 @@
         style="width: 380px;margin-bottom: 10px;vertical-align: middle;"
         type="datetimerange"
         start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        value-format="yyyy-MM-dd HH-mm-ss"
+        end-placeholder="告警时间"
+        value-format="yyyy-MM-dd HH:mm:ss"
         clearable
       />
-
       <el-select
         v-model="listQuery.type"
         placeholder="请选择处理类型"
@@ -55,8 +54,8 @@
       <el-table-column label="结束点" prop="endCol" />
       <el-table-column label="识别类型" prop="typeId" />
       <el-table-column label="开始时间" prop="beginTime" width="110" />
-      <el-table-column label="结束时间" prop="endTime" width="110" />
-      <el-table-column label="震动次数" prop="freq" />
+      <el-table-column label="告警时间" prop="endTime" width="110" />
+      <el-table-column label="振动次数" prop="freq" />
       <el-table-column label="是否处理">
         <template slot-scope="scope">
           <span>{{ scope.row.type | type }}</span>
@@ -358,7 +357,7 @@ export default {
           }
         })
         import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['基站', '开始点', '中心点', '结束点', '识别类型', '开始时间', '结束时间', '震动次数', '是否处理', '处理方式', '']
+          const tHeader = ['基站', '开始点', '中心点', '结束点', '识别类型', '开始时间', '告警时间', '振动次数', '是否处理', '处理方式', '']
           const filterVal = ['standName', 'startCol', 'centerCol', 'endCol', 'typeId', 'beginTime', 'endTime', 'freq', 'type', 'solution']
           const data = this.formatJson(filterVal, list)
           excel.export_json_to_excel({

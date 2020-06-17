@@ -22,3 +22,11 @@ export function resolve(data) {
     data
   })
 }
+
+export function shutdown(data) {
+  return request({
+    url: '/api-web/index/index/shutdown',
+    method: 'post',
+    data
+  })
+}

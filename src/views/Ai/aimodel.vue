@@ -13,17 +13,11 @@
       <el-button
         v-if="checkPermission(['aiModel/save'])"
         class="filter-item"
-        style="position:absolute;right:120px"
+        style="position:absolute;right:0px"
         type="primary"
         @click="handleCreate"
       >模型添加</el-button>
-      <el-button
-        v-if="checkPermission(['aiModel/uploadExcel'])"
-        class="filter-item"
-        style="position:absolute;right:0px"
-        type="primary"
-        @click="handleImport"
-      >模型导入</el-button>
+
     </div>
 
     <el-table
@@ -50,9 +44,9 @@
         </template>
       </el-table-column>
       <el-table-column label="类型数量" prop="typeCount" />
-      <el-table-column label="模型存放路径" prop="path" />
+      <!-- <el-table-column label="模型存放路径" prop="path" /> -->
       <el-table-column label="模型置信度" prop="score" />
-      <el-table-column label="操作" width="530">
+      <el-table-column label="操作" width="630">
         <template slot-scope="scope">
           <el-button
             v-if="checkPermission(['aiModel/enable'])"
@@ -92,6 +86,12 @@
             size="small"
             @click.stop="handleAdd(scope.row)"
           >添加类型</el-button>
+          <el-button
+            v-if="checkPermission(['aiModel/uploadFile'])"
+            type="primary"
+            size="small"
+            @click.stop="handleImport(scope.row)"
+          >导入</el-button>
           <el-button
             v-if="checkPermission(['aiModel/exportZip'])"
             type="primary"
@@ -207,7 +207,7 @@
       </div>
       <div class="filter-container" style="position:relative">
         <el-input
-          v-model="listQueryType.keywords"
+          v-model="listQueryType.centerCol"
           placeholder="请输入中心点"
           style="width: 200px;"
           class="filter-item"
@@ -218,8 +218,8 @@
           style="width: 380px;margin-bottom: 10px;vertical-align: middle;"
           type="datetimerange"
           start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          value-format="yyyy-MM-dd HH-mm-ss"
+          end-placeholder="告警时间"
+          value-format="yyyy-MM-dd HH:mm:ss"
           clearable
         />
         <!-- <el-select
@@ -258,8 +258,8 @@
         <el-table-column label="中心点" prop="centerCol" />
         <el-table-column label="结束点" prop="endCol" />
         <el-table-column label="开始时间" prop="beginTime" />
-        <el-table-column label="结束时间" prop="endTime" />
-        <el-table-column label="震动次数" prop="freq" />
+        <el-table-column label="告警时间" prop="endTime" />
+        <el-table-column label="振动次数" prop="freq" />
         <el-table-column label="强度" prop="amplitude" />
         <el-table-column label="等级" prop="level" />
         <el-table-column label="音频" width="320">
@@ -454,7 +454,9 @@
         :on-progress="uploadExcelProcess"
         :on-error="importError"
         :on-success="importSuccess"
+        :before-upload="beforeAvatarUpload1"
         :headers="headers"
+        :data="params"
         class="uploadExcel"
         drag
       >
@@ -493,10 +495,10 @@
             </td>
           </tr>
           <tr>
-            <td class="blackMark">模型存放路径：</td>
+            <!-- <td class="blackMark">模型存放路径：</td>
             <td class="width21">
               <span>{{ modelInfo.path }}</span>
-            </td>
+            </td> -->
             <td class="blackMark">置信度：</td>
             <td class="width21">
               <span>{{ modelInfo.score }}</span>
@@ -603,6 +605,7 @@ export default {
         page: 1,
         limit: 20
       },
+      params: {},
       listQueryType: {
         page: 1,
         limit: 20
@@ -612,7 +615,7 @@ export default {
       dialogAddVisible: false,
       uploadVisible: false,
       excelFlag: false,
-      importUrl: process.env.VUE_APP_BASE_API + 'api-web/rsc/rscCable/uploadExcel',
+      importUrl: process.env.VUE_APP_BASE_API + 'api-web/ai/aiModel/uploadFile',
       uploadUrl: process.env.VUE_APP_BASE_API + 'api-web/public/uploadFile',
       fileList: [],
       ids: [],
@@ -779,8 +782,15 @@ export default {
       this.listQueryType.limit = val
       this.getHistoryList()
     },
-    handleImport() {
-      this.uploadVisible = true
+    handleImport(row) {
+      this.$confirm('导入前会删除AITrain文件夹中的所有文件，请谨慎操作！', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.uploadVisible = true
+        this.params.id = row.id
+      })
     },
     handleHistoryChange(val) {
       this.ids = []
@@ -938,11 +948,9 @@ export default {
         this.excelFlag = false
         this.$message.error(response.msg)
       } else {
-        this.dialogFormVisible = true
+        this.$message.success('导入成功！')
         this.excelFlag = false
         this.uploadVisible = false
-        this.dialogStatus = 'create'
-        this.cableEdit = response.data
       }
     },
     importError(err, file, fileList) {
@@ -983,10 +991,17 @@ export default {
       }
       return isLt2M
     },
+    beforeAvatarUpload1(file) {
+      const isLt2M = file.size / 1024 / 1024 < 5
+      if (!isLt2M) {
+        this.$message.error('上传大小不能超过 5MB!')
+      }
+      return isLt2M
+    },
     AiWs(data) {
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.199.247:9005/')
+        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
 
         // 当有消息过来的时候触发
         const that = this

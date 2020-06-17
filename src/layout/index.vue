@@ -2,6 +2,12 @@
   <div :class="classObj" class="app-wrapper">
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
     <sidebar class="sidebar-container" />
+    <el-button
+      v-if="checkPermission(['index/shutdown'])"
+      type="danger"
+      class="submit"
+      @click.stop="shutdown"
+    >关机</el-button>
     <div :class="{hasTagsView:needTagsView}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar />
@@ -19,11 +25,16 @@
 <script>
 // import RightPanel from '@/components/RightPanel'
 import { AppMain, Navbar, Sidebar, TagsView } from './components'
+import { shutdown } from '@/api/index'
 import ResizeMixin from './mixin/ResizeHandler'
 import { mapState } from 'vuex'
-
+import waves from '@/directive/waves' // 水波纹指令
+import checkPermission from '@/utils/permission' // 权限判断函数
 export default {
   name: 'Layout',
+  directives: {
+    waves
+  },
   components: {
     AppMain,
     Navbar,
@@ -51,9 +62,15 @@ export default {
     }
   },
   methods: {
+    checkPermission,
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
     }
+  },
+  shutdown() {
+    shutdown().then((response) => {
+
+    })
   }
 }
 </script>
@@ -100,4 +117,11 @@ export default {
   .mobile .fixed-header {
     width: 100%;
   }
+  .submit {
+  position: absolute;
+  right: 160px;
+  z-index: 11;
+  top: 8px;
+  border-radius: 15px;
+}
 </style>

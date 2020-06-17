@@ -44,6 +44,7 @@
 <script>
 // import { list } from '@/api/signal/squiggle'
 import { otdrQuery } from '@/api/signal/otdr'
+import { baseStandInfo } from '@/api/public'
 import echarts from 'echarts'
 import checkPermission from '@/utils/permission' // 权限判断函数
 import waves from '@/directive/waves' // 水波纹指令
@@ -77,6 +78,7 @@ export default {
   data() {
     return {
       listQuery: {},
+      baseStandInfo: {},
       list: [],
       infoCount: {
         noPassCount: 0,
@@ -100,6 +102,7 @@ export default {
   created() { },
   mounted() {
     this.initChart()
+    this.getBaseStandInfo()
   },
   // beforeRouteEnter(to, from, next) {
   //   next(vm => {
@@ -115,7 +118,16 @@ export default {
   },
   methods: {
     checkPermission,
+    getBaseStandInfo() {
+      baseStandInfo().then(response => {
+        this.accuracy = response.data
+      })
+    },
     connect() {
+      if (this.accuracy.standMode !== 1) {
+        this.$message.error('振动模式下无法查看')
+        return false
+      }
       this.getOtdr()
     },
     disconnect() {
