@@ -339,10 +339,10 @@ export default {
       }
       if (this.date && this.date.length > 0) {
         this.listQuery.beginTime = this.date[0]
-        this.listQuery.endTime = this.date[1]
+        this.listQuery.alarmTime = this.date[1]
       } else {
         this.listQuery.beginTime = undefined
-        this.listQuery.endTime = undefined
+        this.listQuery.alarmTime = undefined
       }
       this.listQuery.page = 1
       this.getList()

@@ -755,10 +755,10 @@ export default {
       }
       if (this.date && this.date.length > 0) {
         this.listQueryType.beginTime = this.date[0]
-        this.listQueryType.endTime = this.date[1]
+        this.listQueryType.alarmTime = this.date[1]
       } else {
         this.listQueryType.beginTime = undefined
-        this.listQueryType.endTime = undefined
+        this.listQueryType.alarmTime = undefined
       }
       this.listQueryType.page = 1
       this.getHistoryList()
