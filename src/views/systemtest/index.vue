@@ -364,7 +364,7 @@
                 <span>{{ scope.row.index }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="光纤长度" width="180">
+            <el-table-column label="光纤长度(米)" width="180">
               <template slot-scope="scope">
                 <el-input v-if="ope3Status == 'update3'" v-model="scope.row.length" placeholder="请输入" size="small" type="number" />
                 <span v-else>{{ scope.row.length }}</span>
@@ -583,7 +583,7 @@ export default {
         this.$message.error('起点、终点、灵敏度都不能为空')
         return false
       }
-      var sum1 = this.warningEdit.origin
+      var sum1 = this.warningEdit.origin / this.accuracy.precisions
       var sum2 = this.warningEdit.destination
       var sum3 = this.warningEdit.sensitivity
       if (this.warnData.length > 0) {
@@ -597,6 +597,8 @@ export default {
       }
       this.warnEdit.Cable_VibThr = this.warnData
       this.settingParam = JSON.stringify(this.warnEdit)
+      console.log(this.settingParam)
+
       this.getDeviceParamSetting()
     },
     test(formName) {
@@ -631,6 +633,10 @@ export default {
       this.getDeviceParamSetting()
     },
     createWs() {
+      if (this.websocket) {
+        this.websocket.close()
+        this.websocket = null
+      }
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
         this.websocket = new WebSocket('ws://192.168.8.100:9005/')
@@ -701,6 +707,14 @@ export default {
         }
         this.warnData = data.Cable_VibThr
         this.warnChart()
+      }
+      if (this.sort === 4 && data.Cable_VibThr === true) {
+        this.$message.success('修改成功！')
+        this.connect4()
+      }
+      if (this.sort === 4 && data.Cable_VibThr === false) {
+        this.$message.error('修改失败！')
+        this.connect4()
       }
       if (this.sort === 2 && this.configurationInfo.SysConfig_Resolution) {
         this.baseStandUpdate1()
