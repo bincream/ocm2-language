@@ -15,37 +15,37 @@
           <table class="table">
             <tr>
               <td class="width5">
-                <svg-icon v-if="statusInfo.DeviceStatus_Power == 0" icon-class="open" />
+                <svg-icon v-if="info.DeviceStatus_Power == 0" icon-class="open" />
                 <svg-icon v-else icon-class="close" />
               </td>
               <td class="width9">电源
               </td>
               <td class="width5">
-                <svg-icon v-if="statusInfo.DeviceStatus_Net == 0" icon-class="open" />
+                <svg-icon v-if="info.DeviceStatus_Net == 0" icon-class="open" />
                 <svg-icon v-else icon-class="close" />
               </td>
               <td class="width9">网络通信
               </td>
               <td class="width5">
-                <svg-icon v-if="statusInfo.DeviceStatus_AcqCard == 0" icon-class="open" />
+                <svg-icon v-if="info.DeviceStatus_AcqCard == 0" icon-class="open" />
                 <svg-icon v-else icon-class="close" />
               </td>
               <td class="width9">采集卡
               </td>
               <td class="width5">
-                <svg-icon v-if="statusInfo.DeviceStatus_Alarm == 0" icon-class="open" />
+                <svg-icon v-if="info.DeviceStatus_Alarm == 0" icon-class="open" />
                 <svg-icon v-else icon-class="close" />
               </td>
               <td class="width9">报警状态
               </td>
               <td class="width5">
-                <svg-icon v-if="statusInfo.DeviceStatus_OSrc == 0" icon-class="open" />
+                <svg-icon v-if="info.DeviceStatus_OSrc == 0" icon-class="open" />
                 <svg-icon v-else icon-class="close" />
               </td>
               <td class="width9">光源
               </td>
               <td class="width5">
-                <svg-icon v-if="statusInfo.DeviceStatus_OSwitch == 0" icon-class="open" />
+                <svg-icon v-if="info.DeviceStatus_OSwitch == 0" icon-class="open" />
                 <svg-icon v-else icon-class="close" />
               </td>
               <td class="width9">光开关
@@ -73,47 +73,47 @@
             <tr>
               <td class="blackMark">光源电压：</td>
               <td class="width9">
-                <span v-if="parameterInfo.DeviceParam_OSrcVoltage">{{ parameterInfo.DeviceParam_OSrcVoltage }}V</span>
+                <span v-if="info.DeviceParam_OSrcVoltage || info.DeviceParam_OSrcVoltage == 0">{{ info.DeviceParam_OSrcVoltage }}V</span>
                 <span v-else>null</span>
               </td>
               <td class="blackMark">机箱温度：</td>
               <td class="width9">
-                <span v-if="parameterInfo.DeviceParam_Temperature">{{ parameterInfo.DeviceParam_Temperature }}℃</span>
+                <span v-if="info.DeviceParam_Temperature || info.DeviceParam_Temperature == 0">{{ info.DeviceParam_Temperature }}℃</span>
                 <span v-else>null</span>
               </td>
               <td class="blackMark">光功率：</td>
               <td class="width9">
-                <span v-if="parameterInfo.DeviceParam_OSrcPower">{{ parameterInfo.DeviceParam_OSrcPower }}mW</span>
+                <span v-if="info.DeviceParam_OSrcPower || info.DeviceParam_OSrcPower == 0">{{ info.DeviceParam_OSrcPower }}mW</span>
                 <span v-else>null</span>
               </td>
               <td class="blackMark">通道数：</td>
               <td class="width9">
-                <span v-if="parameterInfo.trainReminderTime">{{ parameterInfo.trainReminderTime }}</span>
+                <span v-if="info.trainReminderTime || info.trainReminderTime == 0">{{ info.trainReminderTime }}</span>
                 <span v-else>8</span>
               </td>
             </tr>
             <tr>
               <td class="blackMark">电路主控板电流1：</td>
               <td class="width9">
-                <span v-if="parameterInfo.DeviceParam_Current1">{{ parameterInfo.DeviceParam_Current1 }}</span>
+                <span v-if="info.DeviceParam_Current1 || info.DeviceParam_Current1 == 0">{{ info.DeviceParam_Current1 }}</span>
                 <span v-else>null</span>
                 <span>mA</span>
               </td>
               <td class="blackMark">电路主控板电流2：</td>
               <td class="width9">
-                <span v-if="parameterInfo.DeviceParam_Current2">{{ parameterInfo.DeviceParam_Current2 }}</span>
+                <span v-if="info.DeviceParam_Current2 || info.DeviceParam_Current2 == 0">{{ info.DeviceParam_Current2 }}</span>
                 <span v-else>null</span>
                 <span>mA</span>
               </td>
               <td class="blackMark">电路主控板电流3：</td>
               <td class="width9">
-                <span v-if="parameterInfo.DeviceParam_Current3">{{ parameterInfo.DeviceParam_Current3 }}</span>
+                <span v-if="info.DeviceParam_Current3 || info.DeviceParam_Current3 == 0">{{ info.DeviceParam_Current3 }}</span>
                 <span v-else>null</span>
                 <span>mA</span>
               </td>
               <td class="blackMark">电路主控板电流4：</td>
               <td class="width9">
-                <span v-if="parameterInfo.DeviceParam_Current4">{{ parameterInfo.DeviceParam_Current4 }}</span>
+                <span v-if="info.DeviceParam_Current4 || info.DeviceParam_Current4 == 0">{{ info.DeviceParam_Current4 }}</span>
                 <span v-else>null</span>
                 <span>mA</span>
               </td>
@@ -121,25 +121,25 @@
             <tr>
               <td class="blackMark">衰减器1：</td>
               <td class="width9">
-                <span v-if="parameterInfo.DeviceParam_Attenuator1">{{ parameterInfo.DeviceParam_Attenuator1 }}</span>
+                <span v-if="info.DeviceParam_Attenuator1 || info.DeviceParam_Attenuator1 == 0">{{ info.DeviceParam_Attenuator1 }}</span>
                 <span v-else>null</span>
                 <span>dB</span>
               </td>
               <td class="blackMark">衰减器2：</td>
               <td class="width9">
-                <span v-if="parameterInfo.DeviceParam_Attenuator2">{{ parameterInfo.DeviceParam_Attenuator2 }}</span>
+                <span v-if="info.DeviceParam_Attenuator2 || info.DeviceParam_Attenuator2 == 0">{{ info.DeviceParam_Attenuator2 }}</span>
                 <span v-else>null</span>
                 <span>dB</span>
               </td>
               <td class="blackMark">衰减器3：</td>
               <td class="width9">
-                <span v-if="parameterInfo.DeviceParam_Attenuator3">{{ parameterInfo.DeviceParam_Attenuator3 }}</span>
+                <span v-if="info.DeviceParam_Attenuator3 || info.DeviceParam_Attenuator3 == 0">{{ info.DeviceParam_Attenuator3 }}</span>
                 <span v-else>null</span>
                 <span>dB</span>
               </td>
               <td class="blackMark">衰减器4：</td>
               <td class="width9">
-                <span v-if="parameterInfo.DeviceParam_Attenuator4">{{ parameterInfo.DeviceParam_Attenuator4 }}</span>
+                <span v-if="info.DeviceParam_Attenuator4 || info.DeviceParam_Attenuator4 == 0">{{ info.DeviceParam_Attenuator4 }}</span>
                 <span v-else>null</span>
                 <span>dB</span>
               </td>
@@ -153,7 +153,6 @@
     <div class="content">
       <el-form
         ref="configurationEdit"
-        :model="configurationInfo"
       >
         <div class="basic">
           <div class="title">
@@ -185,14 +184,7 @@
                 空间分辨率：
               </td>
               <td class="width9">
-                <!-- <el-input
-                  v-show="ope2Status == 'update2'"
-                  v-model="configurationEdit.SysConfig_Resolution"
-                  size="small"
-                  placeholder="请输入"
-                  style="width: 100px;"
-                /> -->
-                <span v-if="configurationInfo.SysConfig_Resolution">{{ configurationInfo.SysConfig_Resolution }}</span>
+                <span v-if="info.SysConfig_Resolution || info.SysConfig_Resolution == 0">{{ info.SysConfig_Resolution }}</span>
                 <span v-else>null</span>
                 <span>m</span>
               </td>
@@ -201,14 +193,7 @@
                 时间采样率：
               </td>
               <td class="width9">
-                <!-- <el-input
-                  v-show="ope2Status == 'update2'"
-                  v-model="configurationEdit.SysConfig_SampleRate"
-                  size="small"
-                  placeholder="请输入"
-                  style="width: 100px;"
-                /> -->
-                <span v-if="configurationInfo.SysConfig_SampleRate">{{ configurationInfo.SysConfig_SampleRate }}</span>
+                <span v-if="info.SysConfig_SampleRate || info.SysConfig_SampleRate == 0">{{ info.SysConfig_SampleRate }}</span>
                 <span v-else>null</span>
                 <span>Hz</span>
               </td>
@@ -217,14 +202,7 @@
                 平均次数：
               </td>
               <td class="width9">
-                <!-- <el-input
-                  v-show="ope2Status == 'update2'"
-                  v-model="configurationEdit.SysConfig_MeanCount"
-                  size="small"
-                  placeholder="请输入"
-                  style="width: 100px;"
-                /> -->
-                <span v-if="configurationInfo.SysConfig_MeanCount">{{ configurationInfo.SysConfig_MeanCount }}</span>
+                <span v-if="info.SysConfig_MeanCount || info.SysConfig_MeanCount == 0">{{ info.SysConfig_MeanCount }}</span>
                 <span v-else>null</span>
               </td>
               <td class="blackMark">
@@ -247,7 +225,7 @@
                     :label="item.value"
                   />
                 </el-select>
-                <span v-show="ope2Status == 'info2'" v-if="configurationInfo.SysConfig_WorkMode==1 || configurationInfo.SysConfig_WorkMode==0">{{ configurationInfo.SysConfig_WorkMode | standMode }}</span>
+                <span v-show="ope2Status == 'info2'" v-if="info.SysConfig_WorkMode==1 || info.SysConfig_WorkMode==0">{{ info.SysConfig_WorkMode | standMode }}</span>
                 <span v-show="ope2Status == 'info2'" v-else>null</span>
               </td>
               <td class="blackMark">
@@ -270,7 +248,7 @@
                     :label="item.value"
                   />
                 </el-select>
-                <span v-show="ope2Status == 'info2'" v-if="configurationInfo.SysConfig_WorkChannel">{{ configurationInfo.SysConfig_WorkChannel | SysConfig_WorkChannel }}</span>
+                <span v-show="ope2Status == 'info2'" v-if="info.SysConfig_WorkChannel || info.SysConfig_WorkChannel == 0">{{ info.SysConfig_WorkChannel | SysConfig_WorkChannel }}</span>
                 <span v-show="ope2Status == 'info2'" v-else>null</span>
               </td>
             </tr>
@@ -299,7 +277,7 @@
                 EDFA：
               </td>
               <td class="width9">
-                <span v-if="deviceInfo.OptDevice_EDFACurrent">{{ deviceInfo.OptDevice_EDFACurrent }}</span>
+                <span v-if="info.OptDevice_EDFACurrent || info.OptDevice_EDFACurrent == 0">{{ info.OptDevice_EDFACurrent }}</span>
                 <span v-else>null</span>
                 <span>mA</span>
               </td>
@@ -313,7 +291,7 @@
                 RAMAN：
               </td>
               <td class="width9">
-                <span v-if="deviceInfo.OptDevice_RamanPower">{{ deviceInfo.OptDevice_RamanPower }}</span>
+                <span v-if="info.OptDevice_RamanPower || info.OptDevice_RamanPower == 0">{{ info.OptDevice_RamanPower }}</span>
                 <span v-else>null</span>
                 <span>dB</span>
               </td>
@@ -493,6 +471,7 @@ export default {
     this.ope3Status = 'info3'
     this.ope4Status = 'info4'
     this.getBaseStandInfo()
+    this.connectAll()
     // for (let i = 0; i < 8; i++) {
     //   this.tableData.push({ index: 'null', length: 'null', allLossAlarmThr: 'null' })
     // }
@@ -517,7 +496,7 @@ export default {
       })
     },
     baseStandUpdate1() {
-      baseStandUpdate({ id: 1, precisions: this.configurationInfo.SysConfig_Resolution }).then(response => {
+      baseStandUpdate({ id: 1, precisions: this.info.SysConfig_Resolution }).then(response => {
       })
     },
     getBaseStandInfo() {
@@ -561,6 +540,10 @@ export default {
       this.sort = 4
       this.getDpq()
     },
+    connectAll() {
+      this.sort = null
+      this.getDpq()
+    },
     handleUpdate() {
       this.opeStatus = 'update'
       this.ope1Status = 'update1'
@@ -597,7 +580,6 @@ export default {
       }
       this.warnEdit.Cable_VibThr = this.warnData
       this.settingParam = JSON.stringify(this.warnEdit)
-      console.log(this.settingParam)
 
       this.getDeviceParamSetting()
     },
@@ -639,7 +621,7 @@ export default {
       }
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
+        this.websocket = new WebSocket('ws://192.168.3.3:9005/')
 
         // 当有消息过来的时候触发
         const that = this
@@ -675,58 +657,59 @@ export default {
     },
 
     getWsData(data) { // 报警消息数据处理
-      if (this.sort === 2 && data.SysConfig_WorkChannel === true && data.SysConfig_WorkMode === true) {
+      for (var key in data) {
+        this.$set(this.info, key, data[key])
+      }
+      console.log(this.info)
+      if (this.info.SysConfig_WorkChannel === true && this.info.SysConfig_WorkMode === true) {
+        this.$message.success('修改成功！')
         this.baseStandUpdate()
       }
-      if (this.sort === 0) {
-        this.statusInfo = data
+      if (this.info.SysConfig_WorkChannel === false || this.info.SysConfig_WorkMode === false) {
+        this.$message.error('修改失败！')
+        this.connect2()
       }
-      if (this.sort === 1) {
-        this.parameterInfo = data
+      if (this.info.SysConfig_WorkChannel && this.info.SysConfig_WorkMode) {
+        this.$set(this.configurationEdit, 'SysConfig_WorkChannel', this.info.SysConfig_WorkChannel)
+        this.$set(this.configurationEdit, 'SysConfig_WorkMode', this.info.SysConfig_WorkMode)
       }
-      if (this.sort === 2) {
-        this.$set(this.configurationEdit, 'SysConfig_WorkChannel', data.SysConfig_WorkChannel)
-        this.$set(this.configurationEdit, 'SysConfig_WorkMode', data.SysConfig_WorkMode)
-        this.configurationInfo = data
-      }
-      if (this.sort === 3) {
-        this.$set(this.deviceEdit, 'OptDevice_RamanPower', data.OptDevice_RamanPower)
-        this.$set(this.deviceEdit, 'OptDevice_EDFACurrent', data.OptDevice_EDFACurrent)
-        this.deviceInfo = data
-      }
-      if (this.sort === 4) {
-        this.info = data
-        this.tableData = []
-        if (this.info.Cable_AllLossAlarmThr) {
-          for (let i = 0; i < this.info.Cable_AllLossAlarmThr.length; i++) {
-            for (let a = 0; a < this.info.Cable_Length.length; a++) {
-              this.tableData.push({ edit: false, index: i + 1, length: this.info.Cable_Length[a], allLossAlarmThr: this.info.Cable_AllLossAlarmThr[i] })
-              break
-            }
+      this.tableData = []
+      if (this.info.Cable_AllLossAlarmThr) {
+        for (let i = 0; i < this.info.Cable_AllLossAlarmThr.length; i++) {
+          for (let a = 0; a < this.info.Cable_Length.length; a++) {
+            this.tableData.push({ edit: false, index: i + 1, length: this.info.Cable_Length[a], allLossAlarmThr: this.info.Cable_AllLossAlarmThr[i] })
+            break
           }
         }
-        this.warnData = data.Cable_VibThr
+        this.warnData = this.info.Cable_VibThr
         this.warnChart()
       }
-      if (this.sort === 4 && data.Cable_VibThr === true) {
+
+      if (this.info.Cable_Length === true) {
         this.$message.success('修改成功！')
         this.connect4()
       }
-      if (this.sort === 4 && data.Cable_VibThr === false) {
+      if (this.info.Cable_Length === false) {
         this.$message.error('修改失败！')
         this.connect4()
       }
-      if (this.sort === 2 && this.configurationInfo.SysConfig_Resolution) {
+      if (this.info.Cable_VibThr === true) {
+        this.$message.success('修改成功！')
+        this.connect4()
+      }
+      if (this.info.Cable_VibThr === false) {
+        this.$message.error('修改失败！')
+        this.connect4()
+      }
+      if (this.info.SysConfig_Resolution) {
         this.baseStandUpdate1()
       }
-      console.log(this.sort)
     },
     warnChart() {
       this.xData = []
       if (this.warnData.length) {
         for (let i = 0; i < this.warnData.length; i++) {
           this.xData.push(i * this.accuracy.precisions)
-          console.log(this.xData)
         }
       }
 

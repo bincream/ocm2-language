@@ -142,6 +142,15 @@
                   </el-select>
                 </el-form-item>
               </td>
+              <td width="33%">
+                <el-form-item label="真实姓名" prop="realname">
+                  <el-input
+                    v-model="sysUserEdit.realname"
+                    size="small"
+                    placeholder="请输入"
+                  />
+                </el-form-item>
+              </td>
             </tr>
             <tr>
               <td width="33%">

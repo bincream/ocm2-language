@@ -264,8 +264,6 @@ export default {
       tmp.set(buffer12Unit8, 0)
 
       tmp.set(buffer22Unit8, buffer1.byteLength)
-      // console.log(Buffer.from(tmp, 'hex'), 'buffer.from')
-      // Buffer.from(unit8Array.buffer)
 
       return tmp.buffer
     },
@@ -351,12 +349,6 @@ export default {
       this.websocket1 = null
       audio.pause()
     },
-    // spectrogram() {
-    //   realtimeAudioQuery(this.spectrogramEdit).then(response => {
-    //     this.data = response.data
-    //     this.createWs()
-    //   })
-    // },
     myChart1(data) {
       this.chart = echarts.init(document.getElementById('myChart1'))
       const option = {
@@ -384,6 +376,9 @@ export default {
             }
           },
           show: false,
+          splitLine: {// 去除网格线
+            show: false
+          },
           type: 'category',
           data: []
         },
@@ -392,6 +387,9 @@ export default {
             formatter: function() {
               return ''
             }
+          },
+          splitLine: {// 去除网格线
+            show: false
           },
           type: 'value'
         },
@@ -416,13 +414,11 @@ export default {
       option.xAxis.data = this.xData
       option.yAxis.data = data
       option.series[0].data = data
-      this.chart.setOption(option, true)
+      this.chart.setOption(option)
     },
 
     initChart() {
       var myDate = new Date()
-      // var now = myDate.getHours() + ':' + myDate.getMinutes() + ':' + myDate.getSeconds()// 时分秒
-      // var now = myDate.toLocaleString() // 日期+时间
       var now = myDate.toLocaleTimeString()// 时间
       var arr = this.yData.indexOf(now)
       if (this.Data1.length > 0) {
