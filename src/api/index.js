@@ -23,10 +23,10 @@ export function resolve(data) {
   })
 }
 
-export function shutdown(data) {
+export function shutdown(query) {
   return request({
     url: '/api-web/index/index/shutdown',
-    method: 'post',
-    data
+    method: 'get',
+    params: query
   })
 }

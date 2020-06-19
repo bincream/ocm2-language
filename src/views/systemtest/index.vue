@@ -472,21 +472,27 @@ export default {
     this.ope4Status = 'info4'
     this.getBaseStandInfo()
     this.connectAll()
+    if (localStorage.getItem('info')) {
+      const info1 = localStorage.getItem('info')
+      this.info = JSON.parse(info1)
+      this.getWsData(this.info)
+    }
     // for (let i = 0; i < 8; i++) {
     //   this.tableData.push({ index: 'null', length: 'null', allLossAlarmThr: 'null' })
     // }
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
+
     })
   },
   beforeRouteLeave(to, from, next) {
     this.destroyedWs()
     next()
   },
-  // beforeDestroy() {
-  //   this.destroyedWs()
-  // },
+  beforeDestroy() {
+    localStorage.setItem('info', JSON.stringify(this.info))
+  },
   methods: {
     checkPermission,
     baseStandUpdate() {

@@ -25,8 +25,8 @@
 <script>
 // import RightPanel from '@/components/RightPanel'
 import { AppMain, Navbar, Sidebar, TagsView } from './components'
-import { shutdown } from '@/api/index'
 import ResizeMixin from './mixin/ResizeHandler'
+import { shutdown } from '@/api/index'
 import { mapState } from 'vuex'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
@@ -65,13 +65,18 @@ export default {
     checkPermission,
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+    },
+    shutdown() {
+      shutdown().then((response) => {
+        if (response.data === true) {
+          this.$message.success('关机成功！')
+        } else {
+          this.$message.error('关机失败！')
+        }
+      })
     }
-  },
-  shutdown() {
-    shutdown().then((response) => {
-
-    })
   }
+
 }
 </script>
 

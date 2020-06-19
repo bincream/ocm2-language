@@ -46,8 +46,8 @@
           @click="disconnect"
         >断开连接</el-button>
       </div>
-      <div id="myChart1" style="width:1600px;height:30%;margin:auto" />
-      <div id="vibrateChart" style="width:1600px;height:70%;margin:auto" />
+      <div id="myChart1" style="width:100%;height:29%;margin:auto" />
+      <div id="vibrateChart" style="width:100%;height:68%;margin:auto" />
     </div>
 
   </div>
@@ -56,6 +56,7 @@
 <script>
 import { realtimeAudioQuery, vibQuery } from '@/api/signal/twoDimension'
 import { standList, baseStandInfo } from '@/api/public'
+import { debounce } from '@/utils'
 import echarts from 'echarts'
 import checkPermission from '@/utils/permission' // 权限判断函数
 import waves from '@/directive/waves' // 水波纹指令
@@ -84,10 +85,10 @@ export default {
       Data1: [],
       twoData: [],
       baseStandInfo: {},
-      chart: null,
+      sidebarElm: null,
+      autoResize: true,
       websocket: null,
       websocket1: null,
-      chart1: null,
       yMax: 20,
       contextAudio: null,
       scheduleBuffersTimeout: null,
@@ -101,31 +102,40 @@ export default {
   created() { },
   mounted() {
     this.getBaseStandInfo()
-
-    // this.warnChart()
     this.getStandList()
+    if (this.autoResize) {
+      this.__resizeHandler = debounce(() => {
+        if (this.chart1) {
+          this.chart1.resize()
+        }
+      }, 100)
+      window.addEventListener('resize', this.__resizeHandler)
+    }
+    // 监听侧边栏的变化
+    this.sidebarElm = document.getElementsByClassName('sidebar-container')[0]
+    this.sidebarElm && this.sidebarElm.addEventListener('transitionend', this.sidebarResizeHandler)
   },
-  // beforeRouteEnter(to, from, next) {
-  //   next(vm => {
-  //   })
-  // },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.getBaseStandInfo()
+    })
+  },
 
-  beforeRouteLeave(to, from, next) {
-    this.destroyedWs()
-    next()
-  },
-  beforeDestroy() {
-    if (!this.chart) {
-      return
-    }
-    this.chart.dispose()
-    this.chart = null
-    if (!this.chart1) {
-      return
-    }
-    this.chart1.dispose()
-    this.chart1 = null
-  },
+  // beforeRouteLeave(to, from, next) {
+  //   // this.destroyedWs()
+  //   if (!this.chart1) {
+  //     return
+  //   }
+  //   if (this.autoResize) {
+  //     window.removeEventListener('resize', this.__resizeHandler)
+  //   }
+  //   this.sidebarElm && this.sidebarElm.removeEventListener('transitionend', this.sidebarResizeHandler)
+
+  //   this.chart1.dispose()
+  //   next()
+  // },
+  // beforeDestroy() {
+  // },
   methods: {
     checkPermission,
     connect() {
@@ -138,6 +148,11 @@ export default {
     disconnect() {
       this.destroyedWs()
     },
+    sidebarResizeHandler(e) {
+      if (e.propertyName === 'width') {
+        this.__resizeHandler()
+      }
+    },
     getStandList() {
       standList().then(response => {
         this.standList = response.data
@@ -146,8 +161,10 @@ export default {
     getBaseStandInfo() {
       baseStandInfo().then(response => {
         this.baseStandInfo = response.data
-        this.initChart()
-        this.myChart1()
+        setTimeout(() => {
+          this.initChart()
+          this.myChart1()
+        }, 500)
       })
     },
     getVibQuery() {
@@ -416,7 +433,6 @@ export default {
       option.series[0].data = data
       this.chart.setOption(option)
     },
-
     initChart() {
       var myDate = new Date()
       var now = myDate.toLocaleTimeString()// 时间
@@ -426,39 +442,23 @@ export default {
           this.yData.push(now)
         }
       }
-
       if (this.yData.length > this.yMax) {
         this.yData.splice(0, this.yData.length - this.yMax)
       }
       const sum = this.endX - this.startX
       console.log(sum)
 
-      // if (sum > 500) {
       this.Data1.forEach((item, index) => {
         const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 5 + 4])
         if (x > this.baseStandInfo.alarmThreshold) {
           this.twoData.push([index * 5, now, x])
         }
       })
-      // } else {
-      //   this.Data1.forEach((item, index) => {
-      //     if (item > this.baseStandInfo.alarmThreshold && index > this.startX && index < this.endX) {
-      //       this.twoData.push([index, now, item])
-      //     }
-      // if (item > this.baseStandInfo.alarmThreshold && (index < this.startX || index > this.endX)) {
-      //   const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 10 + 4])
-      //   this.twoData.push([index * 5, now, x])
-      // }
-      //   })
-      // }
 
       if (this.twoData.length > 2500) {
         this.twoData.splice(0, this.twoData.length - 2500)
       }
-
       this.chart1 = echarts.init(document.getElementById('vibrateChart'))
-      console.log(this.baseStandInfo.tdColor2, 2)
-
       const option = {
         tooltip: {
           trigger: 'item'
@@ -630,6 +630,7 @@ export default {
         this.$message.error('浏览器不支持WebSocket')
       }
     },
+
     destroyedWs() {
       if (this.websocket) {
         this.websocket.close()

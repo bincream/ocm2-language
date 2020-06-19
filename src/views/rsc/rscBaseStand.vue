@@ -274,6 +274,24 @@ export default {
         standChannel: [
           { required: true, message: '请输入', trigger: 'blur' }
         ],
+        tdColor1: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
+        tdColor2: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
+        tdColor3: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
+        tdColor4: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
+        tdColor5: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
+        tdColor6: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
         standIp: [
           { required: true, message: '请输入', trigger: 'blur' },
           { required: true, validator: validIp, trigger: 'blur' }
