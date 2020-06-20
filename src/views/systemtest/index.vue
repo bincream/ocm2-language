@@ -572,7 +572,7 @@ export default {
         this.$message.error('起点、终点、灵敏度都不能为空')
         return false
       }
-      var sum1 = this.warningEdit.origin / this.accuracy.precisions
+      var sum1 = Math.floor(this.warningEdit.origin / this.accuracy.precisions)
       var sum2 = this.warningEdit.destination
       var sum3 = this.warningEdit.sensitivity
       if (this.warnData.length > 0) {
