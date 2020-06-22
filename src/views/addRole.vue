@@ -11,6 +11,28 @@
           <table class="width33">
             <tr>
               <td>
+                <el-form-item label="上级id" prop="pId">
+                  <el-input
+                    v-model="pmEdit.pId"
+                    placeholder="请输入"
+                    clearable
+                  />
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <el-form-item label="上级名称" prop="pName">
+                  <el-input
+                    v-model="pmEdit.pName"
+                    placeholder="请输入"
+                    clearable
+                  />
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td>
                 <el-form-item label="名称" prop="pmName">
                   <el-input
                     v-model="pmEdit.pmName"
@@ -24,6 +46,7 @@
               <td>
                 <el-form-item label="url" prop="pmUrl">
                   <el-input
+                    style="width: 400px"
                     v-model="pmEdit.pmUrl"
                     placeholder="请输入"
                     clearable
@@ -67,6 +90,7 @@
               :check-on-click-node="true"
               :props="defaultProps"
               :expand-on-click-node="false"
+              :default-expand-all="true"
               @node-click="checkChange"
             />
           </div>
@@ -104,6 +128,7 @@ export default {
 
     checkChange(data) {
       this.pmEdit.pId = data.id
+      this.pmEdit.pName = data.label
       this.$set(this.pmEdit, 'pmName', data.label)
     },
     save() {
