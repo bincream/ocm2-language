@@ -210,6 +210,12 @@ export default {
       if (this.yMin === '') {
         this.yMin = null
       }
+      if (this.xMax === '') {
+        this.xMax = null
+      }
+      if (this.xMin === '') {
+        this.xMin = null
+      }
     }
   }
 }

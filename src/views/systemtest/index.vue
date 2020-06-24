@@ -757,7 +757,7 @@ export default {
         },
         series: [
           {
-            name: '恒定预警',
+            name: '灵敏度',
             type: 'line',
             step: 'middle',
             data: []
