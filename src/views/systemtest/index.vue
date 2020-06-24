@@ -499,6 +499,7 @@ export default {
       baseStandUpdate({ id: 1, standMode: this.SysConfig_WorkMode, standChannel: this.SysConfig_WorkChannel }).then(response => {
         this.sort = 2
         this.getDpq()
+        this.getBaseStandInfo()
       })
     },
     baseStandUpdate1() {
@@ -508,6 +509,8 @@ export default {
     getBaseStandInfo() {
       baseStandInfo().then(response => {
         this.accuracy = response.data
+        this.$set(this.info, 'SysConfig_WorkMode', response.data.standMode)
+        this.$set(this.configurationEdit, 'SysConfig_WorkMode', response.data.standMode)
         this.warnChart()
       })
     },
@@ -667,24 +670,28 @@ export default {
         this.$set(this.info, key, data[key])
       }
       console.log(this.info)
-      if (this.info.SysConfig_WorkChannel === true && this.info.SysConfig_WorkMode === true) {
+      if (data.SysConfig_WorkChannel === true && data.SysConfig_WorkMode === true) {
         this.$message.success('修改成功！')
         this.baseStandUpdate()
       }
-      if (this.info.SysConfig_WorkChannel === false || this.info.SysConfig_WorkMode === false) {
+      if (data.SysConfig_WorkChannel === false || data.SysConfig_WorkMode === false) {
         this.$message.error('修改失败！')
+        this.getBaseStandInfo()
         this.connect2()
       }
-      if (this.info.SysConfig_WorkChannel && this.info.SysConfig_WorkMode) {
+      if (this.info.SysConfig_WorkChannel) {
         this.$set(this.configurationEdit, 'SysConfig_WorkChannel', this.info.SysConfig_WorkChannel)
+      }
+      if (this.info.SysConfig_WorkMode) {
         this.$set(this.configurationEdit, 'SysConfig_WorkMode', this.info.SysConfig_WorkMode)
       }
       this.tableData = []
       if (this.info.Cable_AllLossAlarmThr) {
         for (let i = 0; i < this.info.Cable_AllLossAlarmThr.length; i++) {
           for (let a = 0; a < this.info.Cable_Length.length; a++) {
-            this.tableData.push({ edit: false, index: i + 1, length: this.info.Cable_Length[a], allLossAlarmThr: this.info.Cable_AllLossAlarmThr[i] })
-            break
+            if (a === i) {
+              this.tableData.push({ edit: false, index: i + 1, length: this.info.Cable_Length[a], allLossAlarmThr: this.info.Cable_AllLossAlarmThr[i] })
+            }
           }
         }
         this.warnData = this.info.Cable_VibThr

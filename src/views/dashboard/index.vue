@@ -355,7 +355,6 @@ export default {
           var key = item.centerCol
           var value = item.centerCol
           this.marks[key] = value.toString()
-          console.log(this.marks)
           // this.value = response.data.list[0].centerCol
         })
       })
@@ -379,8 +378,8 @@ export default {
       this.dialogDetVisible = true
       getInfo({ id: row.id }).then(response => {
         this.alarmInfo = response.data
-        console.log(this.alarmInfo.oggPath
-        )
+        // console.log(this.alarmInfo.oggPath
+        // )
       })
     },
     // 新增
@@ -410,7 +409,7 @@ export default {
       })
     },
     slider() {
-      console.log(this.value)
+      // console.log(this.value)
       this.listQuery.beginCol = this.value[0]
       this.listQuery.endCol = this.value[1]
       this.getList()

@@ -3,8 +3,14 @@
     <div class="chart-container">
       <div class="title">
         <span>全线光强图</span>
-        <span class="radio-label" style="width:160px;position:absolute;right:220px">Y轴范围：</span>
-        <el-input v-model="yMax" type="number" placeholder="请输入Y轴最大值" style="width:160px;position:absolute;right:110px" @input="updataY" />
+        <span class="radio-label" style="width:160px;position:absolute;right:290px">Y轴范围：</span>
+        <el-input v-model="yMin" type="number" placeholder="Y轴最小值" style="width:100px;position:absolute;right:240px" @input="updata" />
+        <span style="position:absolute;right:220px">~</span>
+        <el-input v-model="yMax" type="number" placeholder="Y轴最大值" style="width:100px;position:absolute;right:110px" @input="updata" />
+        <span class="radio-label" style="width:160px;position:absolute;right:610px">X轴范围：</span>
+        <el-input v-model="xMin" type="number" placeholder="X轴最小值" style="width:100px;position:absolute;right:560px" @input="updata" />
+        <span style="position:absolute;right:540px">~</span>
+        <el-input v-model="xMax" type="number" placeholder="X轴最大值" style="width:100px;position:absolute;right:430px" @input="updata" />
         <!-- <el-button style="position:absolute;right:110px" type="primary">修改</el-button> -->
         <el-button v-if="websocket == null" type="primary" @click="connect">连接</el-button>
         <el-button v-else type="danger" @click="disconnect">断开连接</el-button>
@@ -50,6 +56,9 @@ export default {
       categoryList: [],
       trainJobList: [],
       yMax: null,
+      yMin: null,
+      xMax: null,
+      xMin: null,
       carrierList: []
     }
   },
@@ -98,7 +107,7 @@ export default {
     createWs() { // 二维振动ws
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
+        this.websocket = new WebSocket('ws://192.168.3.15:9005/')
 
         // 当有消息过来的时候触发
         const that = this
@@ -171,33 +180,36 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: []
+          data: [],
+          max: this.xMax,
+          min: this.xMin
         },
         yAxis: {
           name: '强度',
           type: 'value',
-          max: this.yMax
+          max: this.yMax,
+          min: this.yMin
         },
         series: [{
-
           name: '频谱',
           data: [],
           type: 'line',
           progressive: 1000,
           animation: false
         }]
-
       }
       option.xAxis.data = this.xData
       // option.yAxis[0].data = this.yData
       option.series[0].data = this.yData
       this.chart.setOption(option)
     },
-    updataY() {
+    updata() {
       if (this.yMax === '') {
         this.yMax = null
       }
-      console.log(this.yMax)
+      if (this.yMin === '') {
+        this.yMin = null
+      }
     }
   }
 }
