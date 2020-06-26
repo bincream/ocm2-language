@@ -445,13 +445,18 @@ export default {
       if (this.yData.length > this.yMax) {
         this.yData.splice(0, this.yData.length - this.yMax)
       }
-      const sum = this.endX - this.startX
-      console.log(sum)
-
+      var key = 0
+      var mx = this.Data1[0]
       this.Data1.forEach((item, index) => {
-        const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 5 + 4])
-        if (x > this.baseStandInfo.alarmThreshold) {
-          this.twoData.push([index * 5, now, x])
+        for (let i = index * 5; i < index * 5 + 4; i++) {
+          if (this.Data1[i] > this.Data1[0]) {
+            mx = this.Data1[i]
+            key = i
+          }
+        }
+        // const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 5 + 4])
+        if (mx > this.baseStandInfo.alarmThreshold) {
+          this.twoData.push([key, now, mx])
         }
       })
 
@@ -471,7 +476,9 @@ export default {
 
         xAxis: {
           type: 'category',
-          data: []
+          data: [],
+          min: this.startX,
+          max: this.endX
         },
         yAxis: {
           type: 'category',
@@ -479,10 +486,10 @@ export default {
         },
         toolbox: {
           feature: {
-            dataZoom: {
-              yAxisIndex: 'none'
-            },
-            restore: {},
+            // dataZoom: {
+            //   yAxisIndex: 'none'
+            // },
+            // restore: {},
             saveAsImage: {}
           }
         },
