@@ -16,9 +16,9 @@ export function getInfo(query) {
   })
 }
 
-export function resolve(data) {
+export function handle(data) {
   return request({
-    url: '/api-web/alarm/alarmInfo/resolve',
+    url: '/api-web/alarm/alarmInfo/handle',
     method: 'post',
     data
   })

@@ -7,12 +7,13 @@
       <el-slider
         v-model="value"
         :marks="marks"
+        range
+        disabled
         :max="36000"
       />
       <!-- <el-slider
         v-model="value"
         :marks="marks"
-        range
         :max="36000"
         @change="slider"
       /> -->
@@ -42,12 +43,27 @@
       <el-table-column label="振动次数" prop="freq" />
       <el-table-column label="强度" prop="amplitude" />
       <el-table-column label="等级" prop="level" />
+      <el-table-column label="处理状态">
+        <template slot-scope="scope">
+          <span>{{ scope.row.solution |solution }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="音频" width="320">
         <template slot-scope="scope">
           <audio :id="scope.row.id" controls="controls">
             <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath">
             <source :src="scope.row.fileName">
           </audio>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="200">
+        <template slot-scope="scope">
+          <el-button
+            v-show="scope.row.solution == 0"
+            type="warning"
+            size="small"
+            @click.stop="handleSolu(scope.row)"
+          >处理报警</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -169,7 +185,7 @@
       </div>
     </el-dialog>
 
-    <!--新增编辑页面 -->
+    <!-- 新增编辑页面
     <el-dialog title="处理告警" :visible.sync="dialogFormVisible" width="30%">
       <el-form
         ref="solutionEdit"
@@ -205,7 +221,7 @@
         >确认</el-button>
         <el-button @click="dialogFormVisible = false">取消</el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -219,7 +235,7 @@ export default {
     waves
   },
   filters: {
-    type: function(val) {
+    solution: function(val) {
       switch (val) {
         case 0:
           return '未处理'
@@ -293,8 +309,21 @@ export default {
       rules: {
         solution: [{ required: true, message: '请输入', trigger: 'change' }]
       },
-      value: 36000,
+      ids: [],
+      value: [0, 36000],
       marks: {
+        0: {
+          style: {
+            color: '#1989FA'
+          },
+          label: this.$createElement('strong', '0')
+        },
+        36000: {
+          style: {
+            color: '#1989FA'
+          },
+          label: this.$createElement('strong', '36000')
+        }
       }
     }
   },
@@ -350,7 +379,18 @@ export default {
         this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false
-        this.marks = {}
+        this.marks = { 0: {
+          style: {
+            color: '#1989FA'
+          },
+          label: this.$createElement('strong', '0')
+        },
+        36000: {
+          style: {
+            color: '#1989FA'
+          },
+          label: this.$createElement('strong', '36000')
+        }}
         this.list.forEach(item => {
           var key = item.centerCol
           var value = item.centerCol
@@ -385,28 +425,20 @@ export default {
     // 新增
     handleSolu(row) {
       this.solutionEdit.id = row.id
-      this.solutionEdit.type = 1
-      this.dialogFormVisible = true
+      this.ids = []
+      this.ids.push(row.id)
+      resolve({ ids: this.ids }).then((response) => {
+        if (response.data) {
+          this.$message.success('操作成功')
+          this.getList()
+        } else {
+          this.$message.error('操作失败')
+        }
+      })
     },
     handleSeeSolu(row) {
       this.solutionEdit.solution = row.solution
       this.dialogFormVisible = true
-    },
-    // 新增提交
-    createData(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          resolve(this.solutionEdit).then((response) => {
-            if (response.data) {
-              this.$message.success('操作成功')
-              this.dialogFormVisible = false
-              this.getList()
-            } else {
-              this.$message.error('操作失败')
-            }
-          })
-        }
-      })
     },
     slider() {
       // console.log(this.value)
@@ -448,10 +480,20 @@ export default {
   background-color: #1890ff
 }
 .el-slider__runway.disabled .el-slider__button {
-    opacity: 0.0;
+    /* opacity: 0.0; */
 }
 .el-slider__button {
-   opacity: 0.0;
+   width: 10px;
+    height: 10px;
+    border: solid 2px #1890ff;
+    background-color: #fff;
+    border-radius: 50%;
+    -webkit-transition: .2s;
+    transition: .2s;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .el-slider__stop {
   background-color: red;

@@ -19,7 +19,7 @@ export function getNew(query) {
 
 export function resolve(data) {
   return request({
-    url: '/api-web/alarm/alarmHis/resolve',
+    url: '/api-web/alarm/alarmHis/handle',
     method: 'post',
     data
   })

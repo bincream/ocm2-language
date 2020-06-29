@@ -48,17 +48,20 @@
       highlight-current-row
       height="500"
     >
-      <el-table-column label="基站" prop="standName" />
-      <el-table-column label="开始点" prop="startCol" />
+      <el-table-column label="报警类型" prop="alarmType" />
+      <el-table-column label="通道号" prop="lineInfoChannel" />
+      <el-table-column label="距离" prop="distance" />
+      <el-table-column label="开始点" prop="beginCol" />
       <el-table-column label="中心点" prop="centerCol" />
       <el-table-column label="结束点" prop="endCol" />
-      <el-table-column label="识别类型" prop="typeId" />
-      <el-table-column label="开始时间" prop="beginTime" width="110" />
-      <el-table-column label="告警时间" prop="endTime" width="110" />
+      <el-table-column label="开始时间" prop="beginTime" />
+      <el-table-column label="告警时间" prop="alarmTime" />
       <el-table-column label="振动次数" prop="freq" />
-      <el-table-column label="是否处理">
+      <el-table-column label="强度" prop="amplitude" />
+      <el-table-column label="等级" prop="level" />solution
+      <el-table-column label="处理状态">
         <template slot-scope="scope">
-          <span>{{ scope.row.type | type }}</span>
+          <span>{{ scope.row.solution | solution }}</span>
         </template>
       </el-table-column>
       <el-table-column label="音频" width="320">
@@ -71,24 +74,24 @@
           </audio>
         </template>
       </el-table-column>
-      <!-- <el-table-column label="操作" width="140">
-        <template slot-scope="scope"> -->
-      <!-- <el-button
-            v-if="checkPermission(['alarmHis/resolve'])"
-            v-show="scope.row.type == 0"
+      <el-table-column label="操作" width="140">
+        <template slot-scope="scope">
+          <el-button
+            v-if="checkPermission(['alarmHis/handle'])"
+            v-show="scope.row.solution == 0"
             type="warning"
             size="small"
             @click.stop="handleSolu(scope.row)"
-          >处理报警</el-button> -->
-      <!-- <el-button
+          >处理报警</el-button>
+          <!-- <el-button
             v-if="checkPermission(['alarmHis/resolve'])"
             v-show="scope.row.type == 1"
             type="primary"
             size="small"
             @click.stop="handleSeeSolu(scope.row)"
           >查看处理措施</el-button> -->
-      <!-- </template>
-      </el-table-column> -->
+        </template>
+      </el-table-column>
     </el-table>
 
     <div class="pagination-container">
@@ -171,7 +174,7 @@ export default {
           break
       }
     },
-    type: function(val) {
+    solution: function(val) {
       switch (val) {
         case 0:
           return '未处理'
@@ -320,11 +323,18 @@ export default {
         this.getList()
       })
     },
-    // 新增
+    // 处理
     handleSolu(row) {
-      this.solutionEdit.id = row.id
-      this.solutionEdit.type = 1
-      this.dialogFormVisible = true
+      this.ids = []
+      this.ids.push(row.id)
+      resolve({ ids: this.ids }).then((response) => {
+        if (response.data) {
+          this.$message.success('操作成功')
+          this.getList()
+        } else {
+          this.$message.error('操作失败')
+        }
+      })
     },
     handleSeeSolu(row) {
       this.solutionEdit.solution = row.solution

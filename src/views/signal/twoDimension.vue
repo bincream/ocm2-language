@@ -95,7 +95,7 @@ export default {
       audioStack: [],
       decodeAudioTimeout: null,
       startX: 0,
-      endX: 2500
+      endX: null
 
     }
   },
@@ -178,6 +178,9 @@ export default {
       this.xData = []
       for (let i = 0; i < data.length; i++) {
         this.xData.push(i * this.baseStandInfo.precisions)
+      }
+      if (this.endX === null) {
+        this.endX = data.length
       }
       this.initChart()
       this.myChart1(data)
@@ -375,10 +378,10 @@ export default {
         },
         toolbox: {
           feature: {
-            dataZoom: {
-              yAxisIndex: 'none'
-            },
-            restore: {},
+            // dataZoom: {
+            //   yAxisIndex: 'none'
+            // },
+            // restore: {},
             saveAsImage: {}
           }
         },
@@ -397,7 +400,9 @@ export default {
             show: false
           },
           type: 'category',
-          data: []
+          data: [],
+          min: this.startX,
+          max: this.endX
         },
         yAxis: {
           axisLabel: {
@@ -453,13 +458,20 @@ export default {
             mx = this.Data1[i]
             key = i
           }
+          if (mx > this.baseStandInfo.alarmThreshold) {
+            this.twoData.push([key, now, mx])
+          }
         }
         // const x = Math.max(this.Data1[index * 5], this.Data1[index * 5 + 1], this.Data1[index * 5 + 2], this.Data1[index * 5 + 3], this.Data1[index * 5 + 4])
-        if (mx > this.baseStandInfo.alarmThreshold) {
-          this.twoData.push([key, now, mx])
-        }
       })
-
+      for (var i = 0; i < this.twoData.length; i++) {
+        for (var j = i + 1; j < this.twoData.length; j++) {
+          if (this.twoData[i][0] === this.twoData[j][0] && this.twoData[i][1] === this.twoData[j][1] && this.twoData[i][2] === this.twoData[j][2]) {
+            this.twoData.splice(j, 1)
+            j--
+          }
+        }
+      }
       if (this.twoData.length > 2500) {
         this.twoData.splice(0, this.twoData.length - 2500)
       }
@@ -473,12 +485,9 @@ export default {
           height: '80%',
           top: '0'
         },
-
         xAxis: {
           type: 'category',
-          data: [],
-          min: this.startX,
-          max: this.endX
+          data: []
         },
         yAxis: {
           type: 'category',
@@ -486,10 +495,10 @@ export default {
         },
         toolbox: {
           feature: {
-            // dataZoom: {
-            //   yAxisIndex: 'none'
-            // },
-            // restore: {},
+            dataZoom: {
+              yAxisIndex: 'none'
+            },
+            restore: {},
             saveAsImage: {}
           }
         },
@@ -555,8 +564,15 @@ export default {
       option.xAxis.data = this.xData
       option.yAxis.data = this.yData
       option.series[0].data = this.twoData
+      console.log(this.xData)
+      console.log(this.twoData)
+
       const that = this
 
+      this.chart1.on('restore', function(params) { // 选取的x轴值
+        that.startX = 0
+        that.endX = that.Data1.length
+      })
       this.chart1.on('dataZoom', function(params) { // 选取的x轴值
         var start = params.batch[0].startValue
         var end = params.batch[0].endValue
@@ -574,7 +590,7 @@ export default {
       console.log(that.endX)// 区间结束值："17-11-08"
       this.chart1.setOption(option)
     },
-    createWs1() { // 二维振动ws
+    createWs1() { // 监听
       if (window.WebSocket) {
         // this.WebSocket1 = new WebSocket1('ws://' + process.env.LINK_API)
         this.websocket1 = new WebSocket('ws://192.168.8.100:9005/')
@@ -609,7 +625,7 @@ export default {
     createWs() { // 二维振动ws
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LIN K_API)
-        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
+        this.websocket = new WebSocket('ws://192.168.3.15:9005/')
 
         // 当有消息过来的时候触发
         const that = this

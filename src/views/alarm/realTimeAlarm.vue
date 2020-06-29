@@ -42,7 +42,12 @@
       <el-table-column label="告警时间" prop="alarmTime" />
       <el-table-column label="振动次数" prop="freq" />
       <el-table-column label="强度" prop="amplitude" />
-      <el-table-column label="等级" prop="level" />
+      <el-table-column label="等级" prop="level" />solution
+      <el-table-column label="处理状态">
+        <template slot-scope="scope">
+          <span>{{ scope.row.solution | solution }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button
@@ -52,8 +57,8 @@
             @click.stop="handleDetail(scope.row)"
           >详情</el-button>
           <el-button
-            v-if="checkPermission(['alarmInfo/resolve'])"
-            v-show="scope.row.type == 0"
+            v-if="checkPermission(['alarmInfo/handle'])"
+            v-show="scope.row.solution == 0"
             type="warning"
             size="small"
             @click.stop="handleSolu(scope.row)"
@@ -213,7 +218,7 @@
 </template>
 
 <script>
-import { getAllList, getInfo, resolve } from '@/api/alarm/alarmInfo'
+import { getAllList, getInfo, handle } from '@/api/alarm/alarmInfo'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
 export default {
@@ -222,7 +227,7 @@ export default {
     waves
   },
   filters: {
-    type: function(val) {
+    solution: function(val) {
       switch (val) {
         case 0:
           return '未处理'
@@ -295,7 +300,8 @@ export default {
         solution: [
           { required: true, message: '请输入', trigger: 'blur' }
         ]
-      }
+      },
+      ids: []
     }
   },
   watch: {
@@ -356,18 +362,22 @@ export default {
     // 新增
     handleSolu(row) {
       this.solutionEdit.id = row.id
-      this.solutionEdit.type = 1
-      this.dialogFormVisible = true
-    },
-    handleSeeSolu(row) {
-      this.solutionEdit.solution = row.solution
-      this.dialogFormVisible = true
+      this.ids = []
+      this.ids.push(row.id)
+      handle({ ids: this.ids }).then((response) => {
+        if (response.data) {
+          this.$message.success('操作成功')
+          this.getList()
+        } else {
+          this.$message.error('操作失败')
+        }
+      })
     },
     // 新增提交
     createData(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          resolve(this.solutionEdit).then((response) => {
+          handle(this.solutionEdit).then((response) => {
             if (response.data) {
               this.$message.success('操作成功')
               this.dialogFormVisible = false
