@@ -2,21 +2,6 @@
   <div class="lineChartArea">
     <div class="top">
       <el-select
-        v-model="listQuery.baseStandId"
-        placeholder="请选择基站"
-        style="width: 200px;margin-left: 10px;"
-        class="filter-item"
-        clearable
-        filterable
-      >
-        <el-option
-          v-for="item in standList"
-          :key="item.id"
-          :label="item.standName"
-          :value="item.id"
-        />
-      </el-select>
-      <el-select
         v-model="listQuery.type"
         style="width: 200px;margin-left: 10px;"
         class="filter-item"

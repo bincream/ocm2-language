@@ -1,21 +1,6 @@
 <template>
   <div class="lineChartArea">
     <div class="top">
-      <el-select
-        v-model="listQuery.baseStandId"
-        placeholder="请选择基站"
-        style="width: 200px;margin-left: 10px;"
-        class="filter-item"
-        clearable
-        filterable
-      >
-        <el-option
-          v-for="item in standList"
-          :key="item.id"
-          :label="item.standName"
-          :value="item.id"
-        />
-      </el-select>
       <el-date-picker
         v-model="date"
         style="width: 400px;margin-left: 10px;"
@@ -166,6 +151,8 @@ export default {
             this.xData.push(item.distance)
             this.yData.push(item.count)
           })
+          this.xData.push(50000)
+          this.yData.push(0)
           this.initChart()
         } else {
           this.$message.error('该搜索条件下没有报警信息')

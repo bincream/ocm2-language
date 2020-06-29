@@ -4,12 +4,14 @@
       <span class="text">光纤长度</span>
     </div>
     <div class="block">
+      <el-tooltip v-for="(item,index) in pointList" :key="index" effect="dark" :content="item.value" placement="top">
+        <div class="point" :style="{'margin-left': item.left + '%'}" />
+      </el-tooltip>
       <el-slider
         v-model="value"
         :marks="marks"
-        range
+        :max="50000"
         disabled
-        :max="36000"
       />
       <!-- <el-slider
         v-model="value"
@@ -17,6 +19,7 @@
         :max="36000"
         @change="slider"
       /> -->
+
     </div>
     <div class="optical">
       <span class="text">实时报警列表</span>
@@ -299,7 +302,7 @@ export default {
         page: 1,
         limit: 20,
         beginCol: 0,
-        endCol: 36000
+        endCol: 50000
       },
       dialogDetVisible: false,
       alarmInfo: {},
@@ -310,21 +313,23 @@ export default {
         solution: [{ required: true, message: '请输入', trigger: 'change' }]
       },
       ids: [],
-      value: [0, 36000],
+      pointList: [],
+      value: 50000,
       marks: {
-        0: {
-          style: {
-            color: '#1989FA'
-          },
-          label: this.$createElement('strong', '0')
-        },
-        36000: {
-          style: {
-            color: '#1989FA'
-          },
-          label: this.$createElement('strong', '36000')
-        }
-      }
+        0: '0',
+        5000: '5000',
+        10000: '10000',
+        15000: '15000',
+        20000: '20000',
+        25000: '25000',
+        30000: '30000',
+        35000: '35000',
+        40000: '40000',
+        45000: '45000',
+        50000: '50000'
+      },
+      point: '5',
+      left: null
     }
   },
   watch: {
@@ -379,24 +384,12 @@ export default {
         this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false
-        this.marks = { 0: {
-          style: {
-            color: '#1989FA'
-          },
-          label: this.$createElement('strong', '0')
-        },
-        36000: {
-          style: {
-            color: '#1989FA'
-          },
-          label: this.$createElement('strong', '36000')
-        }}
+        this.pointList = []
         this.list.forEach(item => {
-          var key = item.centerCol
-          var value = item.centerCol
-          this.marks[key] = value.toString()
-          // this.value = response.data.list[0].centerCol
+          this.left = (item.centerCol / 500)
+          this.pointList.push({ value: item.centerCol.toString(), left: this.left })
         })
+        console.log(this.pointList)
       })
     },
     handleSizeChange(val) {
@@ -418,8 +411,6 @@ export default {
       this.dialogDetVisible = true
       getInfo({ id: row.id }).then(response => {
         this.alarmInfo = response.data
-        // console.log(this.alarmInfo.oggPath
-        // )
       })
     },
     // 新增
@@ -427,13 +418,19 @@ export default {
       this.solutionEdit.id = row.id
       this.ids = []
       this.ids.push(row.id)
-      resolve({ ids: this.ids }).then((response) => {
-        if (response.data) {
-          this.$message.success('操作成功')
-          this.getList()
-        } else {
-          this.$message.error('操作失败')
-        }
+      this.$confirm('是否确认该条告警已处理？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        resolve({ ids: this.ids }).then((response) => {
+          if (response.data) {
+            this.$message.success('操作成功')
+            this.getList()
+          } else {
+            this.$message.error('操作失败')
+          }
+        })
       })
     },
     handleSeeSolu(row) {
@@ -465,6 +462,7 @@ export default {
   margin-top: 5px;
   }
 .block{
+  position: relative;
   margin: 10px;
   height: 55px;
   padding-bottom: 10px;
@@ -474,31 +472,34 @@ export default {
 
 <style lang="css">
 .el-slider__runway{
-      background-color: #1890ff;
+  background-color: #1890ff;
 }
 .el-slider__runway.disabled .el-slider__bar{
   background-color: #1890ff
 }
 .el-slider__runway.disabled .el-slider__button {
-    /* opacity: 0.0; */
+    opacity: 0.0;
 }
 .el-slider__button {
-   width: 10px;
-    height: 10px;
-    border: solid 2px #1890ff;
-    background-color: #fff;
-    border-radius: 50%;
-    -webkit-transition: .2s;
-    transition: .2s;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    opacity: 0.0;
 }
-.el-slider__stop {
-  background-color: red;
-  margin-top: -2.5px;
-  height: 10px;
-  width: 10px;
+.line{
+  width: 99%;
+  height: 2px;
+  background-color: #1890ff;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  position: absolute;
+}
+.point{
+    position: absolute;
+    z-index: 999;
+    height: 10px;
+    width: 10px;
+    border-radius: 100%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    background-color: red;
+    top: 14px;
 }
 </style>

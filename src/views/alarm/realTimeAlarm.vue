@@ -364,13 +364,19 @@ export default {
       this.solutionEdit.id = row.id
       this.ids = []
       this.ids.push(row.id)
-      handle({ ids: this.ids }).then((response) => {
-        if (response.data) {
-          this.$message.success('操作成功')
-          this.getList()
-        } else {
-          this.$message.error('操作失败')
-        }
+      this.$confirm('是否确认该条告警已处理？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        handle({ ids: this.ids }).then((response) => {
+          if (response.data) {
+            this.$message.success('操作成功')
+            this.getList()
+          } else {
+            this.$message.error('操作失败')
+          }
+        })
       })
     },
     // 新增提交
