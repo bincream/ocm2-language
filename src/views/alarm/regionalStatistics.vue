@@ -146,7 +146,7 @@ export default {
       this.xData = []
       this.yData = []
       getAllList(this.listQuery).then(response => {
-        if (response.data && response.data.length > 1) {
+        if (response.data && response.data.length > 0) {
           response.data.forEach(item => {
             this.xData.push(item.distance)
             this.yData.push(item.count)

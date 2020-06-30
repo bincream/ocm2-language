@@ -442,6 +442,7 @@ export default {
       xData: [],
       warnData: [],
       websocket: null,
+      time: null,
       dialogImgVisible: false,
       dpq: '',
       accuracy: {},
@@ -501,6 +502,11 @@ export default {
         this.getDpq()
         this.getBaseStandInfo()
       })
+    },
+    timer() {
+      this.time = setTimeout(() => {
+        this.$message.error('连接失败！')
+      }, 5000)
     },
     baseStandUpdate1() {
       baseStandUpdate({ id: 1, precisions: this.info.SysConfig_Resolution }).then(response => {
@@ -589,7 +595,6 @@ export default {
       }
       this.warnEdit.Cable_VibThr = this.warnData
       this.settingParam = JSON.stringify(this.warnEdit)
-
       this.getDeviceParamSetting()
     },
     test(formName) {
@@ -647,9 +652,12 @@ export default {
         // 连接打开的时候触发
         this.websocket.onopen = function(event) {
           that.websocket.send(that.obj)
+          that.timer()
           console.log('建立连接')
         }
-
+        this.websocket.onerror = function(event) {
+          console.log('cuwu')
+        }
         this.websocket.onclose = function(event) {
           console.log('连接断开')
           // that.contextAudioStop()
@@ -664,8 +672,8 @@ export default {
         this.websocket = null
       }
     },
-
     getWsData(data) { // 报警消息数据处理
+      clearTimeout(this.time)
       for (var key in data) {
         this.$set(this.info, key, data[key])
       }
@@ -697,7 +705,6 @@ export default {
         this.warnData = this.info.Cable_VibThr
         this.warnChart()
       }
-
       if (this.info.Cable_Length === true) {
         this.$message.success('修改成功！')
         this.connect4()

@@ -80,6 +80,7 @@ export default {
       listQuery: {},
       baseStandInfo: {},
       list: [],
+      accuracy: {},
       infoCount: {
         noPassCount: 0,
         getPastCount: 0,
