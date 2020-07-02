@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div v-loading="loading" class="app-container">
     <!--新增编辑页面 -->
     <div class="content">
       <el-form>
@@ -381,7 +381,7 @@
 </template>
 
 <script>
-import { update, deviceParamQuery, deviceParamSetting } from '@/api/systemtest/index'
+import { deviceParamQuery, deviceParamSetting } from '@/api/systemtest/index'
 import { baseStandInfo, baseStandUpdate } from '@/api/public'
 import echarts from 'echarts'
 import waves from '@/directive/waves' // 水波纹指令
@@ -444,6 +444,7 @@ export default {
       websocket: null,
       time: null,
       dialogImgVisible: false,
+      loading: false,
       dpq: '',
       accuracy: {},
       warnEdit: {},
@@ -476,7 +477,7 @@ export default {
     if (localStorage.getItem('info')) {
       const info1 = localStorage.getItem('info')
       this.info = JSON.parse(info1)
-      this.getWsData(this.info)
+      // this.getWsData(this.info)
     }
     // for (let i = 0; i < 8; i++) {
     //   this.tableData.push({ index: 'null', length: 'null', allLossAlarmThr: 'null' })
@@ -506,17 +507,18 @@ export default {
     timer() {
       this.time = setTimeout(() => {
         this.$message.error('连接失败！')
-      }, 5000)
+      }, 10000)
     },
     baseStandUpdate1() {
       baseStandUpdate({ id: 1, precisions: this.info.SysConfig_Resolution }).then(response => {
+        this.getBaseStandInfo()
       })
     },
     getBaseStandInfo() {
       baseStandInfo().then(response => {
         this.accuracy = response.data
-        this.$set(this.info, 'SysConfig_WorkMode', response.data.standMode)
-        this.$set(this.configurationEdit, 'SysConfig_WorkMode', response.data.standMode)
+        // this.$set(this.info, 'SysConfig_WorkMode', response.data.standMode)
+        // this.$set(this.configurationEdit, 'SysConfig_WorkMode', response.data.standMode)
         this.warnChart()
       })
     },
@@ -567,15 +569,6 @@ export default {
       this.ope4Status = 'update4'
     },
 
-    reset(formName) {
-      update(this.restEdit).then((response) => {
-        if (response.data) {
-          this.$message.success('修改成功!')
-        } else {
-          this.$message.error('修改失败!')
-        }
-      })
-    },
     submit() {
       if (!this.warningEdit.origin || !this.warningEdit.destination || !this.warningEdit.sensitivity) {
         this.$message.error('起点、终点、灵敏度都不能为空')
@@ -629,18 +622,19 @@ export default {
       this.getDeviceParamSetting()
     },
     createWs() {
+      this.loading = true
       if (this.websocket) {
         this.websocket.close()
         this.websocket = null
       }
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
-
+        this.websocket = new WebSocket('ws://192.168.3.15:9005/')
         // 当有消息过来的时候触发
         const that = this
         this.websocket.onmessage = function(event) {
           const data = JSON.parse(event.data)
+          that.loading = false
           that.getWsData(data)
         }
 
@@ -681,18 +675,16 @@ export default {
       if (data.SysConfig_WorkChannel === true && data.SysConfig_WorkMode === true) {
         this.$message.success('修改成功！')
         this.baseStandUpdate()
+      } else {
+        this.$message.success('参数已更新！')
       }
       if (data.SysConfig_WorkChannel === false || data.SysConfig_WorkMode === false) {
         this.$message.error('修改失败！')
         this.getBaseStandInfo()
         this.connect2()
       }
-      if (this.info.SysConfig_WorkChannel) {
-        this.$set(this.configurationEdit, 'SysConfig_WorkChannel', this.info.SysConfig_WorkChannel)
-      }
-      if (this.info.SysConfig_WorkMode) {
-        this.$set(this.configurationEdit, 'SysConfig_WorkMode', this.info.SysConfig_WorkMode)
-      }
+      this.$set(this.configurationEdit, 'SysConfig_WorkChannel', this.info.SysConfig_WorkChannel)
+      this.$set(this.configurationEdit, 'SysConfig_WorkMode', this.info.SysConfig_WorkMode)
       this.tableData = []
       if (this.info.Cable_AllLossAlarmThr) {
         for (let i = 0; i < this.info.Cable_AllLossAlarmThr.length; i++) {

@@ -67,11 +67,11 @@ export default {
     this.getBaseStandInfo()
     this.initChart()
   },
-  // beforeRouteEnter(to, from, next) {
-  //   next(vm => {
-  //     vm.getRsc()
-  //   })
-  // },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.getBaseStandInfo()
+    })
+  },
 
   beforeRouteLeave(to, from, next) {
     if (this.websocket) {
@@ -88,7 +88,7 @@ export default {
       })
     },
     connect() {
-      if (this.accuracy.standMode !== 0) {
+      if (this.accuracy.standMode === 1) {
         this.$message.error('性能模式下无法查看')
         return false
       }

@@ -105,11 +105,11 @@ export default {
     this.initChart()
     this.getBaseStandInfo()
   },
-  // beforeRouteEnter(to, from, next) {
-  //   next(vm => {
-  //     vm.getRsc()
-  //   })
-  // },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.getBaseStandInfo()
+    })
+  },
   beforeRouteLeave(to, from, next) {
     if (this.websocket) {
       this.websocket.close()
@@ -125,7 +125,8 @@ export default {
       })
     },
     connect() {
-      if (this.accuracy.standMode !== 1) {
+      console.log(this.accuracy.standMode)
+      if (this.accuracy.standMode === 0) {
         this.$message.error('振动模式下无法查看')
         return false
       }
@@ -191,12 +192,12 @@ export default {
         title: {
           left: 'center'
         },
-        // tooltip: {
-        //   trigger: 'axis',
+        tooltip: {
+          trigger: 'axis'
         //   axisPointer: {
         //     animation: false
         //   }
-        // },
+        },
         legend: {
           data: ['频谱', '距离'],
           left: 10

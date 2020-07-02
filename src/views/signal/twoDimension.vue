@@ -139,7 +139,7 @@ export default {
   methods: {
     checkPermission,
     connect() {
-      if (this.baseStandInfo.standMode !== 0) {
+      if (this.baseStandInfo.standMode === 1) {
         this.$message.error('性能模式下无法查看')
         return false
       }
