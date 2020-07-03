@@ -50,7 +50,15 @@
         <template slot-scope="scope">
           <el-button
             v-if="checkPermission(['aiModel/enable'])"
-            v-show="scope.row.enable == 0 && scope.row.userid !== 1"
+            v-show="scope.row.enable == 1"
+            type="primary"
+            size="small"
+            disabled
+            @click.stop="handleChangeStatus(scope.row)"
+          >停用</el-button>
+          <el-button
+            v-if="checkPermission(['aiModel/enable'])"
+            v-show="scope.row.enable == 0"
             type="warning"
             size="small"
             @click.stop="handleChangeStatus(scope.row)"
@@ -117,7 +125,7 @@
     </div>
 
     <!--新增编辑页面 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="25%">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="80%">
       <el-form
         ref="modelEdit"
         :rules="rules"
@@ -139,18 +147,79 @@
                   />
                 </el-form-item>
               </td>
-            </tr>
-            <tr>
               <td class="width33">
                 <el-form-item label="描述" prop="modelDesc">
                   <el-input
                     v-model="modelEdit.modelDesc"
                     style="width:60%"
                     type="textarea"
-                    :rows="2"
                     size="small"
                     placeholder="请输入模型描述"
                   />
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td width="33%">
+                <el-form-item label="红色报警图标">
+                  <el-upload
+                    :show-file-list="false"
+                    :on-success="uploadAvatarSuccess2"
+                    :before-upload="beforeAvatarUpload"
+                    :headers="headers"
+                    :action="uploadUrl"
+                    class="avatar-uploader"
+                  >
+                    <img v-if="modelEdit.alarmIconRed" :src="modelEdit.alarmIconRed" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon" />
+                  </el-upload>
+                </el-form-item>
+              </td>
+              <td width="33%">
+                <el-form-item label="橙色报警图标">
+                  <el-upload
+                    :show-file-list="false"
+                    :on-success="uploadAvatarSuccess3"
+                    :before-upload="beforeAvatarUpload"
+                    :headers="headers"
+                    :action="uploadUrl"
+                    class="avatar-uploader"
+                  >
+                    <img v-if="modelEdit.alarmIconOrange" :src="modelEdit.alarmIconOrange" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon" />
+                  </el-upload>
+                </el-form-item>
+              </td>
+              <td width="33%">
+                <el-form-item label="黄色报警图标">
+                  <el-upload
+                    :show-file-list="false"
+                    :on-success="uploadAvatarSuccess4"
+                    :before-upload="beforeAvatarUpload"
+                    :headers="headers"
+                    :action="uploadUrl"
+                    class="avatar-uploader"
+                  >
+                    <img v-if="modelEdit.alarmIconYellow" :src="modelEdit.alarmIconYellow" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon" />
+                  </el-upload>
+                </el-form-item>
+              </td>
+            </tr>
+            <tr>
+              <td width="33%">
+                <el-form-item label="蓝色报警图标">
+                  <el-upload
+                    :show-file-list="false"
+                    :on-success="uploadAvatarSuccess5"
+                    :before-upload="beforeAvatarUpload"
+                    :headers="headers"
+                    :action="uploadUrl"
+                    class="avatar-uploader"
+                  >
+                    <img v-if="modelEdit.alarmIconBlue" :src="modelEdit.alarmIconBlue" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon" />
+                  </el-upload>
                 </el-form-item>
               </td>
             </tr>
@@ -203,16 +272,9 @@
         </div>
       </el-form>
       <div class="title">
-        <span>实时告警列表</span>
+        <span>历史告警列表</span>
       </div>
       <div class="filter-container" style="position:relative">
-        <el-input
-          v-model="listQueryType.centerCol"
-          placeholder="请输入中心点"
-          style="width: 200px;"
-          class="filter-item"
-          @keyup.enter.native="handleTypeFilter"
-        />
         <el-date-picker
           v-model="date"
           style="width: 380px;margin-bottom: 10px;vertical-align: middle;"
@@ -222,7 +284,7 @@
           value-format="yyyy-MM-dd HH:mm:ss"
           clearable
         />
-        <!-- <el-select
+        <el-select
           v-model="listQueryType.type"
           placeholder="请选择处理类型"
           style="width: 150px;"
@@ -236,14 +298,14 @@
             :label="item.value"
             :value="item.id"
           />
-        </el-select> -->
+        </el-select>
         <el-button class="filter-item" icon="el-icon-search" @click="handleTypeFilter" />
       </div>
       <el-table
         ref="historyTable"
         v-loading="listLoading"
         :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
-        :data="alarmInfoList"
+        :data="alarmHisList"
         stripe
         highlight-current-row
         height="500"
@@ -262,9 +324,14 @@
         <el-table-column label="振动次数" prop="freq" />
         <el-table-column label="强度" prop="amplitude" />
         <el-table-column label="等级" prop="level" />
+        <el-table-column label="处理状态">
+          <template slot-scope="scope">
+            <span>{{ scope.row.solution | solution }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="音频" width="320">
           <template slot-scope="scope">
-            <audio :id="scope.row.id" controls="controls">
+            <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="scope.row.id" controls="controls">
               <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath">
               <source :src="scope.row.fileName">
             </audio>
@@ -313,17 +380,17 @@
                     v-model="typeEdit.typeEnName"
                     style="width:60%"
                     size="small"
-                    placeholder="请输入模型名称"
+                    placeholder="请输入类型名称"
                   />
                 </el-form-item>
               </td>
               <td class="width33">
-                <el-form-item label="模型中文名" prop="typeZhName">
+                <el-form-item label="类型中文名" prop="typeZhName">
                   <el-input
                     v-model="typeEdit.typeZhName"
                     style="width:60%"
                     size="small"
-                    placeholder="请输入模型描述"
+                    placeholder="请输入类型名称"
                   />
                 </el-form-item>
               </td>
@@ -504,6 +571,60 @@
               <span>{{ modelInfo.score }}</span>
             </td>
           </tr>
+          <tr>
+            <td class="blackMark">类型图标：</td>
+            <td width="21%">
+              <img
+                v-show="modelInfo.typeIcon"
+                :src="modelInfo.typeIcon"
+                alt
+                class="border"
+                @click="bigImg(modelInfo.typeIcon)"
+              >
+            </td>
+            <td class="blackMark">红色报警图标：</td>
+            <td width="21%">
+              <img
+                v-show="modelInfo.alarmIconRed"
+                :src="modelInfo.alarmIconRed"
+                alt
+                class="border"
+                @click="bigImg(modelInfo.alarmIconRed)"
+              >
+            </td>
+            <td class="blackMark">橙色报警图标：</td>
+            <td width="21%">
+              <img
+                v-show="modelInfo.alarmIconOrange"
+                :src="modelInfo.alarmIconOrange"
+                alt
+                class="border"
+                @click="bigImg(modelInfo.alarmIconOrange)"
+              >
+            </td>
+          </tr>
+          <tr>
+            <td class="blackMark">黄色报警图标：</td>
+            <td width="21%">
+              <img
+                v-show="modelInfo.alarmIconYellow"
+                :src="modelInfo.alarmIconYellow"
+                alt
+                class="border"
+                @click="bigImg(modelInfo.alarmIconYellow)"
+              >
+            </td>
+            <td class="blackMark">蓝色报警图标：</td>
+            <td width="21%">
+              <img
+                v-show="modelInfo.alarmIconBlue"
+                :src="modelInfo.alarmIconBlue"
+                alt
+                class="border"
+                @click="bigImg(modelInfo.alarmIconBlue)"
+              >
+            </td>
+          </tr>
         </table>
         <div class="title">类型信息</div>
         <table>
@@ -536,7 +657,7 @@
 
 <script>
 import { getAllList, getInfo, saveType, update, save, deleteData, bindAlarm, practice, enable } from '@/api/AI/aimodel'
-import { aiModelTypeList, alarmInfoList } from '@/api/public'
+import { aiModelTypeList, alarmHisList } from '@/api/public'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
 export default {
@@ -624,7 +745,7 @@ export default {
       modelEdit: {},
       signEdit: {},
       typeEdit: {},
-      alarmInfoList: [],
+      alarmHisList: [],
       weightlList: [{ id: 0, value: '0' }, { id: 1, value: '1' }],
       soluTypelList: [{ id: 0, value: '未处理' }, { id: 1, value: '已处理' }, { id: 2, value: '通讯失败' }],
       dialogFormVisible: false,
@@ -715,8 +836,8 @@ export default {
     checkPermission,
     getHistoryList() {
       this.listLoading = true
-      alarmInfoList(this.listQueryType).then(response => {
-        this.alarmInfoList = response.data.list
+      alarmHisList(this.listQueryType).then(response => {
+        this.alarmHisList = response.data.list
         this.alarmTotal = response.data.total
         this.listLoading = false
       })
@@ -964,27 +1085,27 @@ export default {
     },
     // 上传图片
     uploadAvatarSuccess1(response, file, fileList) {
-      this.$set(this.typeEdit, 'typeIcon', response.data)
+      this.$set(this.modelEdit, 'typeIcon', response.data)
     },
     uploadAvatarSuccess2(response, file, fileList) {
-      this.$set(this.typeEdit, 'alarmIconRed', response.data)
+      this.$set(this.modelEdit, 'alarmIconRed', response.data)
     },
     uploadAvatarSuccess3(response, file, fileList) {
-      this.$set(this.typeEdit, 'alarmIconOrange', response.data)
+      this.$set(this.modelEdit, 'alarmIconOrange', response.data)
     },
     uploadAvatarSuccess4(response, file, fileList) {
-      this.$set(this.typeEdit, 'alarmIconYellow', response.data)
+      this.$set(this.modelEdit, 'alarmIconYellow', response.data)
     },
     uploadAvatarSuccess5(response, file, fileList) {
-      this.$set(this.typeEdit, 'alarmIconBlue', response.data)
+      this.$set(this.modelEdit, 'alarmIconBlue', response.data)
     },
 
     // 文件大小限制提示
     beforeAvatarUpload(file) {
-      if (!checkPermission(['ossUpload/**'])) {
-        this.$message.error('您没有文件上传权限')
-        return false
-      }
+      // if (!checkPermission(['ossUpload/**'])) {
+      //   this.$message.error('您没有文件上传权限')
+      //   return false
+      // }
       const isLt2M = file.size / 1024 / 1024 < 5
       if (!isLt2M) {
         this.$message.error('上传大小不能超过 5MB!')

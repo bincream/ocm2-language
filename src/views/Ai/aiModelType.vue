@@ -186,68 +186,6 @@
                   </el-upload>
                 </el-form-item>
               </td>
-              <td width="33%">
-                <el-form-item label="红色报警图标">
-                  <el-upload
-                    :show-file-list="false"
-                    :on-success="uploadAvatarSuccess2"
-                    :before-upload="beforeAvatarUpload"
-                    :headers="headers"
-                    :action="uploadUrl"
-                    class="avatar-uploader"
-                  >
-                    <img v-if="typeEdit.alarmIconRed" :src="typeEdit.alarmIconRed" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon" />
-                  </el-upload>
-                </el-form-item>
-              </td>
-              <td width="33%">
-                <el-form-item label="橙色报警图标">
-                  <el-upload
-                    :show-file-list="false"
-                    :on-success="uploadAvatarSuccess3"
-                    :before-upload="beforeAvatarUpload"
-                    :headers="headers"
-                    :action="uploadUrl"
-                    class="avatar-uploader"
-                  >
-                    <img v-if="typeEdit.alarmIconOrange" :src="typeEdit.alarmIconOrange" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon" />
-                  </el-upload>
-                </el-form-item>
-              </td>
-            </tr>
-            <tr>
-              <td width="33%">
-                <el-form-item label="黄色报警图标">
-                  <el-upload
-                    :show-file-list="false"
-                    :on-success="uploadAvatarSuccess4"
-                    :before-upload="beforeAvatarUpload"
-                    :headers="headers"
-                    :action="uploadUrl"
-                    class="avatar-uploader"
-                  >
-                    <img v-if="typeEdit.alarmIconYellow" :src="typeEdit.alarmIconYellow" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon" />
-                  </el-upload>
-                </el-form-item>
-              </td>
-              <td width="33%">
-                <el-form-item label="蓝色报警图标">
-                  <el-upload
-                    :show-file-list="false"
-                    :on-success="uploadAvatarSuccess5"
-                    :before-upload="beforeAvatarUpload"
-                    :headers="headers"
-                    :action="uploadUrl"
-                    class="avatar-uploader"
-                  >
-                    <img v-if="typeEdit.alarmIconBlue" :src="typeEdit.alarmIconBlue" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon" />
-                  </el-upload>
-                </el-form-item>
-              </td>
             </tr>
           </table>
         </div>
@@ -348,7 +286,7 @@
             </td>
             <td class="blackMark">音频：</td>
             <td class="width21">
-              <audio :id="item.id" controls="controls">
+              <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="item.id" controls="controls">
                 <source :src="'http://192.168.8.100/uploadAudio/' + item.oggUrl">
                 <!-- <source :src="scope.row.fileName"> -->
               </audio>
@@ -395,7 +333,7 @@
             <el-table-column label="识别类型" prop="typeId" />
             <el-table-column label="音频" width="320">
               <template slot-scope="scope">
-                <audio :id="scope.row.id" controls="controls">
+                <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="scope.row.id" controls="controls">
                   <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggUrl">
                   <source :src="scope.row.fileName">
                 </audio>

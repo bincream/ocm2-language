@@ -43,9 +43,9 @@ export function baseStandInfo(query) {
   })
 }
 // 历史报警列表
-export function hisAlarmList(query) {
+export function alarmHisList(query) {
   return request({
-    url: '/api-web/public/hisAlarmList',
+    url: '/api-web/public/alarmHisList',
     method: 'get',
     params: query
   })

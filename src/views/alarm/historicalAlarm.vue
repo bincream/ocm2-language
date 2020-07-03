@@ -66,7 +66,7 @@
       </el-table-column>
       <el-table-column label="音频" width="320">
         <template slot-scope="scope">
-          <audio :id="scope.row.id" controls="controls">
+          <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="scope.row.id" controls="controls">
             <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
             <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath" >
             <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
