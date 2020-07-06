@@ -152,7 +152,7 @@
                   <el-input
                     v-model="modelEdit.modelDesc"
                     style="width:60%"
-                    type="textarea"
+                    type="text"
                     size="small"
                     placeholder="请输入模型描述"
                   />
@@ -430,68 +430,6 @@
                   </el-upload>
                 </el-form-item>
               </td>
-              <td width="33%">
-                <el-form-item label="红色报警图标">
-                  <el-upload
-                    :show-file-list="false"
-                    :on-success="uploadAvatarSuccess2"
-                    :before-upload="beforeAvatarUpload"
-                    :headers="headers"
-                    :action="uploadUrl"
-                    class="avatar-uploader"
-                  >
-                    <img v-if="typeEdit.alarmIconRed" :src="typeEdit.alarmIconRed" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon" />
-                  </el-upload>
-                </el-form-item>
-              </td>
-              <td width="33%">
-                <el-form-item label="橙色报警图标">
-                  <el-upload
-                    :show-file-list="false"
-                    :on-success="uploadAvatarSuccess3"
-                    :before-upload="beforeAvatarUpload"
-                    :headers="headers"
-                    :action="uploadUrl"
-                    class="avatar-uploader"
-                  >
-                    <img v-if="typeEdit.alarmIconOrange" :src="typeEdit.alarmIconOrange" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon" />
-                  </el-upload>
-                </el-form-item>
-              </td>
-            </tr>
-            <tr>
-              <td width="33%">
-                <el-form-item label="黄色报警图标">
-                  <el-upload
-                    :show-file-list="false"
-                    :on-success="uploadAvatarSuccess4"
-                    :before-upload="beforeAvatarUpload"
-                    :headers="headers"
-                    :action="uploadUrl"
-                    class="avatar-uploader"
-                  >
-                    <img v-if="typeEdit.alarmIconYellow" :src="typeEdit.alarmIconYellow" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon" />
-                  </el-upload>
-                </el-form-item>
-              </td>
-              <td width="33%">
-                <el-form-item label="蓝色报警图标">
-                  <el-upload
-                    :show-file-list="false"
-                    :on-success="uploadAvatarSuccess5"
-                    :before-upload="beforeAvatarUpload"
-                    :headers="headers"
-                    :action="uploadUrl"
-                    class="avatar-uploader"
-                  >
-                    <img v-if="typeEdit.alarmIconBlue" :src="typeEdit.alarmIconBlue" class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon" />
-                  </el-upload>
-                </el-form-item>
-              </td>
             </tr>
           </table>
         </div>
@@ -572,16 +510,6 @@
             </td>
           </tr>
           <tr>
-            <td class="blackMark">类型图标：</td>
-            <td width="21%">
-              <img
-                v-show="modelInfo.typeIcon"
-                :src="modelInfo.typeIcon"
-                alt
-                class="border"
-                @click="bigImg(modelInfo.typeIcon)"
-              >
-            </td>
             <td class="blackMark">红色报警图标：</td>
             <td width="21%">
               <img
@@ -602,8 +530,6 @@
                 @click="bigImg(modelInfo.alarmIconOrange)"
               >
             </td>
-          </tr>
-          <tr>
             <td class="blackMark">黄色报警图标：</td>
             <td width="21%">
               <img
@@ -614,6 +540,8 @@
                 @click="bigImg(modelInfo.alarmIconYellow)"
               >
             </td>
+          </tr>
+          <tr>
             <td class="blackMark">蓝色报警图标：</td>
             <td width="21%">
               <img

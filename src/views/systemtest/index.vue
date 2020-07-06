@@ -736,16 +736,20 @@ export default {
         legend: {
           // data: ['恒定预警']
         },
+        toolbox: {
+          feature: {
+            dataZoom: {
+              yAxisIndex: 'none'
+            },
+            restore: {},
+            saveAsImage: {}
+          }
+        },
         grid: {
           left: '3%',
           right: '4%',
           bottom: '3%',
           containLabel: true
-        },
-        toolbox: {
-          feature: {
-            saveAsImage: {}
-          }
         },
         xAxis: {
           type: 'category',
