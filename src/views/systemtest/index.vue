@@ -629,7 +629,7 @@ export default {
       }
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.3.15:9005/')
+        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
         // 当有消息过来的时候触发
         const that = this
         this.websocket.onmessage = function(event) {
@@ -671,7 +671,6 @@ export default {
       for (var key in data) {
         this.$set(this.info, key, data[key])
       }
-      console.log(this.info)
       if (data.SysConfig_WorkChannel === true && data.SysConfig_WorkMode === true) {
         this.$message.success('修改成功！')
         this.baseStandUpdate()

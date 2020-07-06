@@ -42,7 +42,7 @@
       <el-table-column label="告警时间" prop="alarmTime" />
       <el-table-column label="振动次数" prop="freq" />
       <el-table-column label="强度" prop="amplitude" />
-      <el-table-column label="等级" prop="level" />solution
+      <el-table-column label="等级" prop="level" />
       <el-table-column label="处理状态">
         <template slot-scope="scope">
           <span>{{ scope.row.solution | solution }}</span>

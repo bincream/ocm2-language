@@ -118,7 +118,7 @@
     </div>
 
     <!-- 修改 -->
-    <el-dialog title="添加类型" :visible.sync="dialogAddVisible" width="80%">
+    <el-dialog title="类型修改" :visible.sync="dialogAddVisible" width="80%">
       <el-form
         ref="typeEdit"
         :rules="rules"
@@ -286,7 +286,7 @@
             </td>
             <td class="blackMark">音频：</td>
             <td class="width21">
-              <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="item.id" controls="controls">
+              <audio v-if="item.oggUrl" :id="item.id" controls="controls">
                 <source :src="'http://192.168.8.100/uploadAudio/' + item.oggUrl">
                 <!-- <source :src="scope.row.fileName"> -->
               </audio>
@@ -333,7 +333,7 @@
             <el-table-column label="识别类型" prop="typeId" />
             <el-table-column label="音频" width="320">
               <template slot-scope="scope">
-                <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="scope.row.id" controls="controls">
+                <audio v-if="scope.row.oggUrl" :id="scope.row.id" controls="controls">
                   <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggUrl">
                   <source :src="scope.row.fileName">
                 </audio>
@@ -569,9 +569,9 @@ export default {
       this.dialogAudioVisible = true
       getInfo({ id: row.id }).then(response => {
         this.audioList = response.data.typeAlarmList
-        response.data.typeAlarmList.forEach((item, index) => {
-          this.$set(this.audioList[index], 'oggPath', item.oggPath)
-        })
+        // response.data.typeAlarmList.forEach((item, index) => {
+        //   this.$set(this.audioList[index], 'oggPath', item.oggPath)
+        // })
       })
     },
     handleDetail(row) {
@@ -588,16 +588,7 @@ export default {
     audioDelete(row) {
       const index = this.audioList.indexOf(row)
       this.audioList.splice(index, 1)
-
       console.log(this.audioList)
-      // this.id = row.id
-      // for (let i = 0; i < this.audioList.length; i++) {
-      //   console.log(this.audioList[i].id)
-
-      //   if (this.audioList[i].id === this.id) {
-      //     this.audioList.splice(this.audioList[i], 1)
-      //   }
-      // }
     },
     audioUpdate(formName) {
       this.audioList.forEach((item, index) => {
@@ -646,7 +637,6 @@ export default {
         this.typeEdit = response.data
       })
     },
-
     updateData(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {

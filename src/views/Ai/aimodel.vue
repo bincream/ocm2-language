@@ -617,7 +617,7 @@ export default {
           break
       }
     },
-    type: function(val) {
+    solution: function(val) {
       switch (val) {
         case 0:
           return '未处理'
@@ -1013,7 +1013,7 @@ export default {
     },
     // 上传图片
     uploadAvatarSuccess1(response, file, fileList) {
-      this.$set(this.modelEdit, 'typeIcon', response.data)
+      this.$set(this.typeEdit, 'typeIcon', response.data)
     },
     uploadAvatarSuccess2(response, file, fileList) {
       this.$set(this.modelEdit, 'alarmIconRed', response.data)
