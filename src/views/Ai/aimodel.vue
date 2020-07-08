@@ -275,6 +275,13 @@
         <span>历史告警列表</span>
       </div>
       <div class="filter-container" style="position:relative">
+        <el-input
+          v-model="listQueryType.vibType"
+          placeholder="请输入震动类型"
+          style="width: 150px;"
+          class="filter-item"
+          @keyup.enter.native="handleFilter"
+        />
         <el-date-picker
           v-model="date"
           style="width: 380px;margin-bottom: 10px;vertical-align: middle;"
@@ -298,6 +305,7 @@
             :label="item.value"
             :value="item.id"
           />
+
         </el-select>
         <el-button class="filter-item" icon="el-icon-search" @click="handleTypeFilter" />
       </div>
@@ -324,6 +332,7 @@
         <el-table-column label="振动次数" prop="freq" />
         <el-table-column label="强度" prop="amplitude" />
         <el-table-column label="等级" prop="level" />
+        <el-table-column label="震动类型" prop="vibType" />
         <el-table-column label="处理状态">
           <template slot-scope="scope">
             <span>{{ scope.row.solution | solution }}</span>
@@ -801,6 +810,9 @@ export default {
     handleTypeFilter() {
       if (this.listQueryType.keywords === '') {
         this.listQueryType.keywords = undefined
+      }
+      if (this.listQueryType.vibType === '') {
+        this.listQueryType.vibType = undefined
       }
       if (this.date && this.date.length > 0) {
         this.listQueryType.beginTime = this.date[0]

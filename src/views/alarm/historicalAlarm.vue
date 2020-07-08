@@ -25,7 +25,13 @@
           :value="item.id"
         />
       </el-select>
-
+      <el-input
+        v-model="listQuery.vibType"
+        placeholder="请输入震动类型"
+        style="width: 150px;"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
+      />
       <el-button v-waves class="filter-item" icon="el-icon-search" @click="handleFilter" />
 
       <!-- <el-button
@@ -58,7 +64,9 @@
       <el-table-column label="告警时间" prop="alarmTime" />
       <el-table-column label="振动次数" prop="freq" />
       <el-table-column label="强度" prop="amplitude" />
-      <el-table-column label="等级" prop="level" />solution
+      <el-table-column label="等级" prop="level" />
+      <el-table-column label="震动类型" prop="vibType" />
+
       <el-table-column label="处理状态">
         <template slot-scope="scope">
           <span>{{ scope.row.solution | solution }}</span>
@@ -295,6 +303,9 @@ export default {
     handleFilter() {
       if (this.listQuery.keywords === '') {
         this.listQuery.keywords = undefined
+      }
+      if (this.listQuery.vibType === '') {
+        this.listQuery.vibType = undefined
       }
       if (this.date && this.date.length > 0) {
         this.listQuery.beginTime = this.date[0]

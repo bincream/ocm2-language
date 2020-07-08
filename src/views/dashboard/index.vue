@@ -168,7 +168,7 @@
             <td class="width21">
               <span>{{ alarmInfo.allrefloss }}</span>
             </td>
-            <td class="blackMark">振动类型:</td>
+            <td class="blackMark">震动类型:</td>
             <td class="width21">
               <span>{{ alarmInfo.vibType }}</span>
             </td>
@@ -244,20 +244,6 @@ export default {
           return '未处理'
         case 1:
           return '已处理'
-        default:
-          break
-      }
-    },
-    dangerLevel: function(val) {
-      switch (val) {
-        case 0:
-          return '断纤'
-        case 1:
-          return 1
-        case 2:
-          return 2
-        case 3:
-          return 3
         default:
           break
       }
