@@ -34,12 +34,6 @@
       />
       <el-button v-waves class="filter-item" icon="el-icon-search" @click="handleFilter" />
 
-      <!-- <el-button
-        v-if="checkPermission(['alarmHis/getNew'])"
-        type="primary"
-        class="filter-item"
-        @click.stop="handleRefresh"
-      >请求最新告警</el-button> -->
       <FilenameOption v-model="filename" class="filter-item" />
       <el-button type="primary" icon="document" class="filter-item" @click="handleDownload">导出Excel</el-button>
     </div>
@@ -91,13 +85,6 @@
             size="small"
             @click.stop="handleSolu(scope.row)"
           >处理报警</el-button>
-          <!-- <el-button
-            v-if="checkPermission(['alarmHis/resolve'])"
-            v-show="scope.row.type == 1"
-            type="primary"
-            size="small"
-            @click.stop="handleSeeSolu(scope.row)"
-          >查看处理措施</el-button> -->
         </template>
       </el-table-column>
     </el-table>

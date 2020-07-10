@@ -140,6 +140,7 @@ export default {
       }
     },
     initChart() {
+      const that = this
       const option = {
         title: {
           top: '5%',
@@ -155,7 +156,13 @@ export default {
         toolbox: {
           show: true,
           feature: {
-            dataView: { show: true, readOnly: false },
+            dataView: { show: true, readOnly: false,
+              contentToOption: function(opt) {
+                that.$message.success('数据已刷新')
+                console.log(opt)
+                return opt
+              }
+            },
             magicType: { show: true, type: ['line', 'bar'] },
             restore: { show: true },
             saveAsImage: { show: true }

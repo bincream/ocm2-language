@@ -13,13 +13,6 @@
         :max="50000"
         disabled
       />
-      <!-- <el-slider
-        v-model="value"
-        :marks="marks"
-        :max="36000"
-        @change="slider"
-      /> -->
-
     </div>
     <div class="optical">
       <span class="text">实时报警列表</span>
@@ -52,14 +45,6 @@
           <span>{{ scope.row.solution |solution }}</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column label="音频" width="320">
-        <template slot-scope="scope">
-          <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="scope.row.id" controls="controls">
-            <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath">
-            <source :src="scope.row.fileName">
-          </audio>
-        </template>
-      </el-table-column> -->
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button
@@ -174,14 +159,6 @@
               <span>{{ alarmInfo.vibType }}</span>
             </td>
           </tr>
-          <!-- <tr>
-            <td class="blackMark">音频:</td>
-            <td class="width21">
-              <audio :id="alarmInfo.id" controls="controls">
-                <source :src="'http://192.168.8.100/uploadAudio/'+ alarmInfo.oggPath">
-              </audio>
-            </td>
-          </tr> -->
         </table>
       </div>
       <div slot="footer" class="dialog-footer">
