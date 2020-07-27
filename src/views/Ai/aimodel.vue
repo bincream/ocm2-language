@@ -341,7 +341,7 @@
         <el-table-column label="音频" width="320">
           <template slot-scope="scope">
             <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="scope.row.id" controls="controls">
-              <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath">
+              <source :src="'http://192.168.8.101/uploadAudio/' + scope.row.oggPath">
               <source :src="scope.row.fileName">
             </audio>
           </template>
@@ -611,7 +611,8 @@ export default {
           return '训练中'
         case 2:
           return '通讯失败'
-
+        case 3:
+          return '训练成功'
         default:
           break
       }
@@ -762,15 +763,29 @@ export default {
   mounted() {
     this.getList()
   },
+
   beforeRouteLeave(to, from, next) {
     if (this.websocket) {
       this.websocket.close()
       this.websocket = null
     }
+    this.out()
     next()
   },
   methods: {
     checkPermission,
+    init(id) {
+      const that = this
+      this.interval = setInterval(function() {
+        that.getList(id)
+      }, 1000)
+    },
+    out() {
+      if (this.interval) {
+        clearInterval(this.interval) // 关闭
+        this.interval = null
+      }
+    },
     getHistoryList() {
       this.listLoading = true
       alarmHisList(this.listQueryType).then(response => {
@@ -779,12 +794,20 @@ export default {
         this.listLoading = false
       })
     },
-    getList() {
+    getList(id) {
       this.listLoading = true
+      console.log(id)
       getAllList(this.listQuery).then(response => {
         this.list = response.data.list
         this.total = response.data.total
         this.listLoading = false
+        for (let i = 0; i < this.list.length; i++) {
+          if (this.list[i].id === id) {
+            if (this.list[i].status === 3 || this.list[i].status === 2) {
+              this.out()
+            }
+          }
+        }
       })
     },
     getMtList() {
@@ -863,9 +886,8 @@ export default {
     // 训练
     handleTrain(row) {
       this.listLoading = true
-
       practice({ id: row.id }).then(response => {
-        this.getList()
+        this.init(row.id)
       }).catch(() => {
         this.listLoading = false
       })
@@ -1062,7 +1084,7 @@ export default {
     AiWs(data) {
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
+        this.websocket = new WebSocket('ws://192.168.8.101:9005/')
 
         // 当有消息过来的时候触发
         const that = this
