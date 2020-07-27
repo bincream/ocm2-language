@@ -17,6 +17,12 @@
         type="primary"
         @click="handleCreate"
       >模型添加</el-button>
+      <el-button
+        class="filter-item"
+        style="position:absolute;right:120px"
+        type="primary"
+        @click="handlestop"
+      >终止训练</el-button>
 
     </div>
 
@@ -83,7 +89,7 @@
           >标记</el-button>
           <el-button
             v-if="checkPermission(['aiModel/practice'])"
-            v-show="scope.row.status !== 1"
+            :disabled="status"
             type="primary"
             size="small"
             @click.stop="handleTrain(scope.row)"
@@ -594,7 +600,7 @@
 
 <script>
 import { getAllList, getInfo, saveType, update, save, deleteData, bindAlarm, practice, enable } from '@/api/AI/aimodel'
-import { aiModelTypeList, alarmHisList } from '@/api/public'
+import { aiModelTypeList, alarmHisList, stopPractice } from '@/api/public'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
 export default {
@@ -654,6 +660,7 @@ export default {
       total: null,
       alarmTotal: null,
       listLoading: true,
+      status: false,
       dialogStatus: '',
       date: '',
       textMap: {
@@ -769,7 +776,6 @@ export default {
       this.websocket.close()
       this.websocket = null
     }
-    this.out()
     next()
   },
   methods: {
@@ -785,6 +791,8 @@ export default {
         clearInterval(this.interval) // 关闭
         this.interval = null
       }
+      this.status = false
+      this.getList()
     },
     getHistoryList() {
       this.listLoading = true
@@ -796,7 +804,6 @@ export default {
     },
     getList(id) {
       this.listLoading = true
-      console.log(id)
       getAllList(this.listQuery).then(response => {
         this.list = response.data.list
         this.total = response.data.total
@@ -860,7 +867,6 @@ export default {
     handleCurrentChangeType(val) {
       this.listQueryType.page = val
       this.getHistoryList()
-      console.log(this.ids)
     },
     handleSizeChangeType(val) {
       this.listQueryType.limit = val
@@ -881,13 +887,15 @@ export default {
       val.forEach((item, index) => {
         this.ids.push(item.id)
       })
-      console.log(this.ids)
     },
     // 训练
     handleTrain(row) {
       this.listLoading = true
       practice({ id: row.id }).then(response => {
-        this.init(row.id)
+        if (response.data) {
+          this.init(row.id)
+          this.status = true
+        }
       }).catch(() => {
         this.listLoading = false
       })
@@ -978,6 +986,22 @@ export default {
             }
           })
         }
+      })
+    },
+    handlestop() {
+      this.$confirm('将终止所有训练进度, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        stopPractice().then((response) => {
+          if (response.data) {
+            this.$message.success('终止成功')
+            this.out()
+          } else {
+            this.$message.error('终止失败')
+          }
+        })
       })
     },
     // 添加类型提交

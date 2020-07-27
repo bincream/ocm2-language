@@ -65,3 +65,11 @@ export function baseStandUpdate(data) {
     data
   })
 }
+
+export function stopPractice(query) {
+  return request({
+    url: '/api-web/public/stopPractice',
+    method: 'get',
+    params: query
+  })
+}
