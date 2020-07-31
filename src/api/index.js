@@ -30,3 +30,10 @@ export function shutdown(query) {
     params: query
   })
 }
+export function reboot(query) {
+  return request({
+    url: '/api-web/index/index/reboot',
+    method: 'get',
+    params: query
+  })
+}

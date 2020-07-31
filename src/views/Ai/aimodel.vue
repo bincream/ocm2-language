@@ -347,7 +347,7 @@
         <el-table-column label="音频" width="320">
           <template slot-scope="scope">
             <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="scope.row.id" controls="controls">
-              <source :src="'http://192.168.8.101/uploadAudio/' + scope.row.oggPath">
+              <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath">
               <source :src="scope.row.fileName">
             </audio>
           </template>
@@ -600,6 +600,7 @@
 
 <script>
 import { getAllList, getInfo, saveType, update, save, deleteData, bindAlarm, practice, enable } from '@/api/AI/aimodel'
+import { reboot } from '@/api/index'
 import { aiModelTypeList, alarmHisList, stopPractice } from '@/api/public'
 import waves from '@/directive/waves' // 水波纹指令
 import checkPermission from '@/utils/permission' // 权限判断函数
@@ -929,14 +930,18 @@ export default {
       })
     },
     handleChangeStatus(row) {
-      enable({ id: row.id }).then(res => {
-        if (res.data) {
-          this.$message.success('操作成功')
-          this.AiWs(res.data)
-          this.getList()
-        } else {
-          this.$message.error('操作失败')
-        }
+      this.$confirm('将重启系统, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        enable({ id: row.id }).then(res => {
+          if (res.data) {
+            this.AiWs(res.data)
+          } else {
+            this.$message.error('操作失败')
+          }
+        })
       })
     },
     // 新增
@@ -1108,7 +1113,7 @@ export default {
     AiWs(data) {
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.8.101:9005/')
+        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
 
         // 当有消息过来的时候触发
         const that = this
@@ -1136,8 +1141,20 @@ export default {
         this.$message.error('浏览器不支持WebSocket')
       }
     },
+    getReboot() {
+      reboot().then(response => {
+      })
+    },
     getWsData(data) {
-
+      if (data.SysConfig_AIModelPath === true) {
+        this.$message.success('启用新模型，系统重启中')
+        this.reboot()
+        this.getList()
+      }
+      if (this.websocket) {
+        this.websocket.close()
+        this.websocket = null
+      }
     }
   }
 }
