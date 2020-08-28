@@ -259,7 +259,7 @@ export const asyncRoutes = [
         component: () => import('@/views/rsc/rscBaseStand'),
         name: 'Rsc',
         icon: 'tree-table',
-        meta: { title: '基站管理', icon: 'list' }
+        meta: { title: '基站管理', icon: 'bug' }
 
       }
     ]
@@ -271,7 +271,7 @@ export const asyncRoutes = [
     name: 'System',
     meta: {
       title: '系统管理',
-      icon: 'user'
+      icon: 'lock'
 
     },
     children: [{

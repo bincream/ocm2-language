@@ -99,7 +99,7 @@ export const asyncRoutes = [
     name: 'systemtest',
     meta: {
       title: '系统测试',
-      icon: 'tab'
+      icon: 'dashboard'
 
     },
     children: [
@@ -186,7 +186,7 @@ export const asyncRoutes = [
     name: 'alarm',
     meta: {
       title: '报警管理',
-      icon: 'dashboard'
+      icon: 'lock'
       // roles: ['', 'editor'] // 可以在根导航中设置角色
     },
     children: [
@@ -234,7 +234,7 @@ export const asyncRoutes = [
     // alwaysShow: true, // 总是显示根菜单吗
     meta: {
       title: '设备维护',
-      icon: 'example'
+      icon: 'lock'
 
       // roles: ['', 'editor'] // 可以在根导航中设置角色
     },
@@ -258,8 +258,8 @@ export const asyncRoutes = [
         path: 'baseStand',
         component: () => import('@/views/rsc/rscBaseStand'),
         name: 'Rsc',
-        icon: 'tree-table',
-        meta: { title: '基站管理', icon: 'list' }
+        icon: 'lock',
+        meta: { title: '基站管理', icon: 'bug' }
 
       }
     ]
@@ -271,7 +271,7 @@ export const asyncRoutes = [
     name: 'System',
     meta: {
       title: '系统管理',
-      icon: 'user'
+      icon: 'lock'
 
     },
     children: [{

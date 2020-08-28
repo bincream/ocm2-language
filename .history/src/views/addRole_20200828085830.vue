@@ -46,8 +46,8 @@
               <td>
                 <el-form-item label="url" prop="pmUrl">
                   <el-input
-                    v-model="pmEdit.pmUrl"
                     style="width: 400px"
+                    v-model="pmEdit.pmUrl"
                     placeholder="请输入"
                     clearable
                   />
