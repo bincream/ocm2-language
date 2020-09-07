@@ -16,6 +16,17 @@
         <!-- <el-tooltip content="Global Size" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip> -->
+        <!-- 语言切换 -->
+        <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
+          <div class="avatar-wrapper">
+            <img :src="logo.logourl" class="user-avatar">
+            <i class="el-icon-caret-bottom" />
+          </div>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item @click.native="langChange('cn')">中文</el-dropdown-item>
+            <el-dropdown-item @click.native="langChange('en')">English</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
 
       </template>
 
@@ -28,19 +39,19 @@
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/">
-            <el-dropdown-item>回到首页</el-dropdown-item>
+            <el-dropdown-item>{{ $t('navbar.huidaoshouye') }}</el-dropdown-item>
           </router-link>
           <el-dropdown-item>
-            <span style="display:block;" @click.stop="changePassowrd">修改密码</span>
+            <span style="display:block;" @click.stop="changePassowrd">{{ $t('navbar.xiugaimima') }}</span>
           </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">退出登录</span>
+            <span style="display:block;">{{ $t('navbar.tuichudenglu') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
 
-    <el-dialog title="修改密码" :visible.sync="dialogFormVisible" width="30%" :modal="false">
+    <el-dialog :title="$t('navbar.xiugaimimatankuang')" :visible.sync="dialogFormVisible" width="30%" :modal="false">
       <el-form
         ref="sendInfo"
         :rules="rules"
@@ -54,15 +65,15 @@
             <table>
               <tr height="40px">
                 <td>
-                  <el-form-item label="老密码" prop="oldOne">
-                    <el-input v-model="sendInfo.oldOne" size="small" placeholder="请输入老密码" />
+                  <el-form-item :label="$t('navbar.laomima')" prop="oldOne">
+                    <el-input v-model="sendInfo.oldOne" size="small" :placeholder="$t('navbar.qingshurulaomima')" />
                   </el-form-item>
                 </td>
               </tr>
               <tr height="40px">
                 <td width="33%">
-                  <el-form-item label="新密码" prop="newOne">
-                    <el-input v-model="sendInfo.newOne" size="small" placeholder="请输入新密码" />
+                  <el-form-item :label="$t('navbar.xinmima')" prop="newOne">
+                    <el-input v-model="sendInfo.newOne" size="small" :placeholder="$t('navbar.qingshuruxinmima')" />
                   </el-form-item>
                 </td>
               </tr>
@@ -71,8 +82,8 @@
         </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="makeSure('sendInfo')">确认</el-button>
-        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="makeSure('sendInfo')">{{ $t('queren') }}</el-button>
+        <el-button @click="dialogFormVisible = false">{{ $t('quxiao') }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -99,6 +110,9 @@ export default {
   },
   data() {
     return {
+      logo: {
+        logourl: require('../../styles/中英文语言.png')
+      },
       gettersName: '',
       gettersUserName: '',
       sendInfo: {},
@@ -125,6 +139,14 @@ export default {
     this.gettersUserName = this.$store.getters.username
   },
   methods: {
+    // 语言切换
+    langChange(e) {
+      localStorage.setItem('lang', e)
+      this.$i18n.locale = e
+      this.$router.go(0)
+      // window.location.reload()
+      // console.log(this.$i18n.locale)
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
@@ -136,19 +158,35 @@ export default {
       this.dialogFormVisible = true
     },
     makeSure(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          newPassword(this.sendInfo).then((response) => {
-            if (response.data) {
-              this.$message.success('修改成功，请退出重新登录')
-              this.dialogFormVisible = false
-              this.logout()
-            } else {
-              this.$message.error('修改失败')
-            }
-          })
-        }
-      })
+      if (this.$i18n.locale === 'cn') {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            newPassword(this.sendInfo).then((response) => {
+              if (response.data) {
+                this.$message.success('修改成功，请退出重新登录')
+                this.dialogFormVisible = false
+                this.logout()
+              } else {
+                this.$message.error('修改失败')
+              }
+            })
+          }
+        })
+      } else if (this.$i18n.locale === 'en') {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            newPassword(this.sendInfo).then((response) => {
+              if (response.data) {
+                this.$message.success('The modification is successful, please log out and log in again')
+                this.dialogFormVisible = false
+                this.logout()
+              } else {
+                this.$message.error('Fail to edit')
+              }
+            })
+          }
+        })
+      }
     }
   }
 }

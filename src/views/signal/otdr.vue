@@ -4,16 +4,16 @@
       <div class="title">
         <span>OTDR</span>
         <!-- <label class="radio-label" style="position:absolute;right:740px">起点:</label> -->
-        <span class="radio-label" style="position:absolute;width:150px;right:530px">光纤长度:{{ otdrList.FiberLength }}</span>
+        <span class="radio-label" style="position:absolute;width:150px;right:530px">{{ $t('signal.guangxianchangdu') }}{{ otdrList.FiberLength }}</span>
 
         <!-- <label class="radio-label" style="position:absolute;right:520px">终点:</label> -->
-        <span class="radio-label" style="position:absolute;width:180px;right:330px">总损耗:{{ otdrList.AllLoss }}db</span>
+        <span class="radio-label" style="position:absolute;width:180px;right:330px">{{ $t('signal.zongsunhao') }}{{ otdrList.AllLoss }}db</span>
 
         <!-- <label class="radio-label" style="position:absolute;right:280px">灵敏度:</label> -->
-        <span class="radio-label" style="position:absolute;width:200px;right:120px">总反射损耗:{{ otdrList.AllRefLoss }}</span>
+        <span class="radio-label" style="position:absolute;width:200px;right:120px">{{ $t('signal.zongfanshesunhao') }}{{ otdrList.AllRefLoss }}</span>
 
-        <el-button v-if="websocket == null" type="primary" @click="connect">连接</el-button>
-        <el-button v-else type="danger" @click="disconnect">断开连接</el-button>
+        <el-button v-if="websocket == null" type="primary" @click="connect">{{ $t('signal.lianjie') }}</el-button>
+        <el-button v-else type="danger" @click="disconnect">{{ $t('signal.duankailianjie') }}</el-button>
       </div>
       <div id="myChart" style="width: 100%; height: 50%" />
 
@@ -26,12 +26,12 @@
         highlight-current-row
         height="500"
       >
-        <el-table-column label="id" prop="id" />
-        <el-table-column label="位置(m)" prop="location" />
-        <el-table-column label="损耗" prop="loss" />
-        <el-table-column label="反射损耗" prop="refloss" />
-        <el-table-column label="累计损耗" prop="cumloss" />
-        <el-table-column label="事件类型">
+        <el-table-column :label="id" prop="id" />
+        <el-table-column :label="$t('signal.weizhi')" prop="location" />
+        <el-table-column :label="$t('signal.sunhao')" prop="loss" />
+        <el-table-column :label="$t('signal.fanshesunhao')" prop="refloss" />
+        <el-table-column :label="$t('signal.leijisunhao')" prop="cumloss" />
+        <el-table-column :label="$t('signal.shijianleixing')">
           <template slot-scope="scope">
             <span>{{ scope.row.type | status }}</span>
           </template>
@@ -53,21 +53,41 @@ export default {
   name: 'Dashboard',
   filters: {
     status: function(val) {
-      switch (val) {
-        case 0:
-          return '非反射事件'
-        case 1:
-          return '反射事件'
-        case 2:
-          return '光纤始端'
-        case 3:
-          return '光纤始端'
-        case 4:
-          return '光纤末端'
-        case 5:
-          return '其它事件'
-        default:
-          break
+      const lang = JSON.parse(JSON.stringify(window.localStorage)).lang
+      if (lang === 'cn') {
+        switch (val) {
+          case 0:
+            return '非反射事件'
+          case 1:
+            return '反射事件'
+          case 2:
+            return '光纤始端'
+          case 3:
+            return '光纤始端'
+          case 4:
+            return '光纤末端'
+          case 5:
+            return '其它事件'
+          default:
+            break
+        }
+      } else if (lang === 'en') {
+        switch (val) {
+          case 0:
+            return 'Non-reflective event'
+          case 1:
+            return 'Reflection event'
+          case 2:
+            return 'Fiber beginning'
+          case 3:
+            return 'Fiber beginning'
+          case 4:
+            return 'Fiber end'
+          case 5:
+            return 'Other events'
+          default:
+            break
+        }
       }
     }
   },
@@ -125,10 +145,16 @@ export default {
       })
     },
     connect() {
-      console.log(this.accuracy.standMode)
-      if (this.accuracy.standMode === 0) {
-        this.$message.error('振动模式下无法查看')
-        return false
+      if (this.$i18n.locale === 'cn') {
+        if (this.accuracy.standMode === 0) {
+          this.$message.error('振动模式下无法查看')
+          return false
+        }
+      } else if (this.$i18n.locale === 'en') {
+        if (this.accuracy.standMode === 0) {
+          this.$message.error('Cannot view in vibration mode')
+          return false
+        }
       }
       this.getOtdr()
     },
@@ -164,13 +190,16 @@ export default {
           that.websocket.send(that.otdr)
           console.log('建立连接')
         }
-
         this.websocket.onclose = function(event) {
           console.log('连接断开')
           // that.contextAudioStop()
         }
       } else {
-        this.$message.error('浏览器不支持WebSocket')
+        if (this.$i18n.locale === 'cn') {
+          this.$message.error('浏览器不支持WebSocket')
+        } else if (this.$i18n.locale === 'en') {
+          this.$message.error('The browser does not support WebSocket')
+        }
       }
     },
     getWsData(data) {
@@ -187,66 +216,127 @@ export default {
     },
     initChart() {
       this.chart = echarts.init(document.getElementById('myChart'))
-      const option = {
-        backgroundColor: '#F2F6FC',
-        title: {
-          left: 'center'
-        },
-        tooltip: {
-          trigger: 'axis'
-        //   axisPointer: {
-        //     animation: false
-        //   }
-        },
-        legend: {
-          data: ['频谱', '距离'],
-          left: 10
-        },
-        toolbox: {
-          feature: {
-            dataZoom: {
-              yAxisIndex: 'none'
-            },
-            restore: {},
-            saveAsImage: {}
-          }
-        },
-        axisPointer: {
-          link: { xAxisIndex: 'all' }
-        },
-        grid: {
-          left: '5%',
-          right: '5%',
-          borderWidth: 0,
-          top: 80,
-          bottom: 95,
-          textStyle: {
-            color: '#fff'
-          }
-        },
-        xAxis: {
-          type: 'category',
-          data: []
-        },
-        yAxis: {
-          name: '强度',
-          type: 'value'
+      if (this.$i18n.locale === 'cn') {
+        const option = {
+          backgroundColor: '#F2F6FC',
+          title: {
+            left: 'center'
+          },
+          tooltip: {
+            trigger: 'axis'
+            //   axisPointer: {
+            //     animation: false
+            //   }
+          },
+          legend: {
+            data: ['频谱', '距离'],
+            left: 10
+          },
+          toolbox: {
+            feature: {
+              dataZoom: {
+                yAxisIndex: 'none'
+              },
+              restore: {},
+              saveAsImage: {}
+            }
+          },
+          axisPointer: {
+            link: { xAxisIndex: 'all' }
+          },
+          grid: {
+            left: '5%',
+            right: '5%',
+            borderWidth: 0,
+            top: 80,
+            bottom: 95,
+            textStyle: {
+              color: '#fff'
+            }
+          },
+          xAxis: {
+            type: 'category',
+            data: []
+          },
+          yAxis: {
+            name: '强度',
+            type: 'value'
           // max: 1000
-        },
-        series: [{
-          data: [],
-          type: 'line',
-          progressive: 1000,
-          animation: false
-        }]
+          },
+          series: [{
+            data: [],
+            type: 'line',
+            progressive: 1000,
+            animation: false
+          }]
 
+        }
+        option.xAxis.data = this.xData
+        // option.yAxis[0].data = this.yData
+        option.series[0].data = this.yData
+        console.log(this.yData, 'ydata2')
+        this.chart.setOption(option)
+      } else if (this.$i18n.locale === 'en') {
+        const option = {
+          backgroundColor: '#F2F6FC',
+          title: {
+            left: 'center'
+          },
+          tooltip: {
+            trigger: 'axis'
+            //   axisPointer: {
+            //     animation: false
+            //   }
+          },
+          legend: {
+            data: ['Spectrum', 'Distance'],
+            left: 10
+          },
+          toolbox: {
+            feature: {
+              dataZoom: {
+                yAxisIndex: 'none'
+              },
+              restore: {},
+              saveAsImage: {}
+            }
+          },
+          axisPointer: {
+            link: { xAxisIndex: 'all' }
+          },
+          grid: {
+            left: '5%',
+            right: '5%',
+            borderWidth: 0,
+            top: 80,
+            bottom: 95,
+            textStyle: {
+              color: '#fff'
+            }
+          },
+          xAxis: {
+            type: 'category',
+            data: []
+          },
+          yAxis: {
+            name: 'Strength',
+            type: 'value'
+          // max: 1000
+          },
+          series: [{
+            data: [],
+            type: 'line',
+            progressive: 1000,
+            animation: false
+          }]
+
+        }
+        option.xAxis.data = this.xData
+        // option.yAxis[0].data = this.yData
+        option.series[0].data = this.yData
+        console.log(this.yData, 'ydata2')
+        this.chart.setOption(option)
       }
-      option.xAxis.data = this.xData
-      // option.yAxis[0].data = this.yData
-      option.series[0].data = this.yData
-      console.log(this.yData, 'ydata2')
-
-      this.chart.setOption(option)
     }
   }
 }

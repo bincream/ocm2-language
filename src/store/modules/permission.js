@@ -1,4 +1,4 @@
-import { asyncRoutes, constantRoutes } from '@/router'
+import { asyncRoutes, asyncRoutesEn, constantRoutes } from '@/router'
 
 /**
  * Use meta.role to determine if the current user has permission
@@ -56,11 +56,19 @@ const actions = {
   generateRoutes({ commit }, roles) {
     return new Promise(resolve => {
       let accessedRoutes = []
-
-      if (roles.includes('/**') || roles.includes('/api-web/**')) {
-        accessedRoutes = asyncRoutes
-      } else {
-        accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
+      const lang = JSON.parse(JSON.stringify(window.localStorage)).lang
+      if (lang === 'cn') {
+        if (roles.includes('/**') || roles.includes('/api-web/**')) {
+          accessedRoutes = asyncRoutes
+        } else {
+          accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
+        }
+      } else if (lang === 'en') {
+        if (roles.includes('/**') || roles.includes('/api-web/**')) {
+          accessedRoutes = asyncRoutesEn
+        } else {
+          accessedRoutes = filterAsyncRoutes(asyncRoutesEn, roles)
+        }
       }
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)

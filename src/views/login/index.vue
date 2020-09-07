@@ -16,7 +16,7 @@
             <img src="@/assets/login_image/logo.png" alt>
           </div> -->
           <div class="title-right">
-            <div class="title">分布式光纤传感系统通用软件平台</div>
+            <div class="title">{{ $t('login.pingtai') }}</div>
           </div>
         </div>
         <el-form-item prop="username">
@@ -25,7 +25,7 @@
           </span>
           <el-input
             v-model="loginForm.username"
-            placeholder="账号"
+            :placeholder="$t('login.zhanghao')"
             name="username"
             type="text"
             autocomplete="on"
@@ -40,7 +40,7 @@
             v-model="loginForm.password"
             show-password
             type="password"
-            placeholder="密码"
+            :placeholder="$t('login.mima')"
             name="password"
             autocomplete="on"
             @keyup.enter.native="handleLogin"
@@ -52,7 +52,7 @@
           type="primary"
           style="width:100%;margin-top: 20px;"
           @click.native.prevent="handleLogin"
-        >登录</el-button>
+        >{{ $t('login.denglu') }}</el-button>
       </el-form>
     </div>
 

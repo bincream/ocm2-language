@@ -48,7 +48,7 @@ export default {
     refuse: '撤回',
     apply: '申请',
     search: '搜索',
-    create: '新增',
+    create: 'Add',
     update: '编辑',
     delete: '删除',
     make: '制证',

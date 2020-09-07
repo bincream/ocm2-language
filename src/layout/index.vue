@@ -7,7 +7,7 @@
       type="danger"
       class="submit"
       @click.stop="shutdown"
-    >关机</el-button>
+    >{{ $t('navbar.guanji') }}</el-button>
     <div :class="{hasTagsView:needTagsView}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar />
@@ -68,10 +68,18 @@ export default {
     },
     shutdown() {
       shutdown().then((response) => {
-        if (response.data === true) {
-          this.$message.success('关机成功！')
-        } else {
-          this.$message.error('关机失败！')
+        if (this.$i18n.locale === 'cn') {
+          if (response.data === true) {
+            this.$message.success('关机成功！')
+          } else {
+            this.$message.error('关机失败！')
+          }
+        } else if (this.$i18n.locale === 'en') {
+          if (response.data === true) {
+            this.$message.success('Shut down successfully!')
+          } else {
+            this.$message.error('Shutdown failed!')
+          }
         }
       })
     }
@@ -124,7 +132,7 @@ export default {
   }
   .submit {
   position: absolute;
-  right: 160px;
+  right: 220px;
   z-index: 11;
   top: 8px;
   border-radius: 15px;

@@ -3,8 +3,8 @@
     <div class="filter-container" style="position:relative">
       <el-input
         v-model="listQuery.keywords"
-        placeholder="请输入类型中英文名"
-        style="width: 200px;"
+        :placeholder="$t('ai.qingshuruleixingzhongyingwenming')"
+        style="width: 330px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
@@ -12,10 +12,10 @@
       <el-select
         v-model="listQuery.modelId"
         class="filter-item"
-        placeholder="请选择识别模型"
+        :placeholder="$t('ai.qingxuanzeshibiemoxing')"
         clearable
         filterable
-        style=" width: 150px"
+        style=" width: 300px"
         @change="handleFilter"
       >
         <el-option
@@ -39,66 +39,66 @@
       :row-key="getRowKeys"
       @row-click="handleDetail"
     >
-      <el-table-column label="类型英文名" prop="typeEnName" />
-      <el-table-column label="类型中文名" prop="typeZhName" />
-      <el-table-column label="所属模型" prop="modelName" />
-      <el-table-column label="权重因子">
+      <el-table-column :label="$t('ai.leixingyingwenming')" prop="typeEnName" />
+      <el-table-column :label="$t('ai.leixingzhongwenming')" prop="typeZhName" />
+      <el-table-column :label="$t('ai.suoshumoxing')" prop="modelName" />
+      <el-table-column :label="$t('ai.quanzhongyinzi')">
         <template slot-scope="scope">
           <span>{{ scope.row.weight | weight }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="音频数量" prop="audioCount" />
-      <el-table-column label="类型图标">
+      <el-table-column :label="$t('ai.yinpinshuliang')" prop="audioCount" />
+      <el-table-column :label="$t('ai.leixingtubiao')">
         <template slot-scope="scope">
           <img :src="scope.row.typeIcon" al class="mini" @click.stop="bigImg(scope.row.typeIcon)">
         </template>
       </el-table-column>
-      <el-table-column label="红色报警图标">
+      <el-table-column :label="$t('ai.hongsebaojingtubiao')">
         <template slot-scope="scope">
           <img :src="scope.row.alarmIconRed" al class="mini" @click.stop="bigImg(scope.row.alarmIconRed)">
         </template>
       </el-table-column>
-      <el-table-column label="橙色报警图标">
+      <el-table-column :label="$t('ai.chengsebaojingtubiao')">
         <template slot-scope="scope">
           <img :src="scope.row.alarmIconOrange" al class="mini" @click.stop="bigImg(scope.row.alarmIconOrange)">
         </template>
       </el-table-column>
-      <el-table-column label="黄色报警图标">
+      <el-table-column :label="$t('ai.huangsebaojingtubiao')">
         <template slot-scope="scope">
           <img :src="scope.row.alarmIconYellow" al class="mini" @click.stop="bigImg(scope.row.alarmIconYellow)">
         </template>
       </el-table-column>
-      <el-table-column label="蓝色报警图标">
+      <el-table-column :label="$t('ai.lansebaojingtubiao')">
         <template slot-scope="scope">
           <img :src="scope.row.alarmIconBlue" al class="mini" @click.stop="bigImg(scope.row.alarmIconBlue)">
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="320">
+      <el-table-column :label="$t('ai.caozuo')" width="320">
         <template slot-scope="scope">
           <el-button
             v-if="checkPermission(['aiModelType/getInfo'])"
             type="info"
             size="small"
             @click.stop="handleDetail(scope.row)"
-          >详情</el-button>
+          >{{ $t('xiangqing') }}</el-button>
           <el-button
             v-if="checkPermission(['aiModelType/update'])"
             type="primary"
             size="small"
             @click.stop="handleUpdate(scope.row)"
-          >修改</el-button>
+          >{{ $t('xiugai') }}</el-button>
           <el-button
             v-if="checkPermission(['aiModelType/delete'])"
             type="danger"
             size="small"
             @click.stop="handleDelete(scope.row)"
-          >删除</el-button>
+          >{{ $t('shanchu') }}</el-button>
           <el-button
             v-if="checkPermission(['aiModelType/audioHandle'])"
             type="warning"
             size="small"
             @click.stop="handleAudio(scope.row)"
-          >音频操作</el-button>
+          >{{ $t('yinpincaozuo') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -118,7 +118,7 @@
     </div>
 
     <!-- 修改 -->
-    <el-dialog title="类型修改" :visible.sync="dialogAddVisible" width="80%">
+    <el-dialog :title="$t('ai.leixingxiugai:')" :visible.sync="dialogAddVisible" width="80%">
       <el-form
         ref="typeEdit"
         :rules="rules"
@@ -131,30 +131,30 @@
           <table>
             <tr>
               <td class="width33">
-                <el-form-item label="类型英文名" prop="typeEnName">
+                <el-form-item :label="$t('ai.leixingyingwenming:')" prop="typeEnName">
                   <el-input
                     v-model="typeEdit.typeEnName"
-                    style="width:60%"
+                    style="width:80%"
                     size="small"
-                    placeholder="请输入模型名称"
+                    :placeholder="$t('ai.qingshuruleixingmingcheng')"
                   />
                 </el-form-item>
               </td>
               <td class="width33">
-                <el-form-item label="模型中文名" prop="typeZhName">
+                <el-form-item :label="$t('ai.leixingzhongwenming:')" prop="typeZhName">
                   <el-input
                     v-model="typeEdit.typeZhName"
-                    style="width:60%"
+                    style="width:80%"
                     size="small"
-                    placeholder="请输入模型描述"
+                    :placeholder="$t('ai.qingshurumoxingmiaoshu')"
                   />
                 </el-form-item>
               </td>
               <td>
-                <el-form-item label="权重因子" prop="weight">
+                <el-form-item :label="$t('ai.quanzhongyinzi:')" prop="weight">
                   <el-select
                     v-model="typeEdit.weight"
-                    placeholder="请选择"
+                    :placeholder="$t('ai.qingxuanze')"
                     style="width:60%;"
                     class="filter-item"
                     clearable
@@ -172,7 +172,7 @@
             </tr>
             <tr>
               <td width="33%">
-                <el-form-item label="类型图标">
+                <el-form-item :label="$t('ai.leixingtubiao:')">
                   <el-upload
                     :show-file-list="false"
                     :on-success="uploadAvatarSuccess1"
@@ -194,32 +194,32 @@
         <el-button
           type="primary"
           @click="updateData('typeEdit')"
-        >确认</el-button>
-        <el-button @click="dialogAddVisible = false">取消</el-button>
+        >{{ $t('queren') }}</el-button>
+        <el-button @click="dialogAddVisible = false">{{ $t('quxiao') }}</el-button>
       </div>
     </el-dialog>
 
     <!-- 详情 -->
-    <el-dialog :visible.sync="dialogDetVisible" title="类型详情" width="100%">
+    <el-dialog :visible.sync="dialogDetVisible" :title="$t('ai.leixingxiangqing')" width="100%">
       <div class="basic">
-        <div class="title">类型信息</div>
+        <div class="title">{{ $t('ai.leixingxinxi') }}</div>
         <table>
           <tr>
-            <td class="blackMark">类型英文名:</td>
+            <td class="blackMark">{{ $t('ai.leixingyingwenming:') }}</td>
             <td class="width21">
               <span v-text="typeInfo.typeEnName" />
             </td>
-            <td class="blackMark">类型中文名:</td>
+            <td class="blackMark">{{ $t('ai.leixingzhongwenming:') }}</td>
             <td class="width21">
               <span v-text="typeInfo.typeZhName" />
             </td>
-            <td class="blackMark">权重因子:</td>
+            <td class="blackMark">{{ $t('ai.quanzhongyinzi:') }}</td>
             <td class="width21">
               <span>{{ typeInfo.weight | weight }}</span>
             </td>
           </tr>
           <tr>
-            <td class="blackMark">类型图标：</td>
+            <td class="blackMark">{{ $t('ai.leixingtubiao:') }}</td>
             <td width="21%">
               <img
                 v-show="typeInfo.typeIcon"
@@ -229,7 +229,7 @@
                 @click="bigImg(typeInfo.typeIcon)"
               >
             </td>
-            <td class="blackMark">红色报警图标：</td>
+            <td class="blackMark">{{ $t('ai.hongsebaojingtubiao:') }}</td>
             <td width="21%">
               <img
                 v-show="typeInfo.alarmIconRed"
@@ -239,7 +239,7 @@
                 @click="bigImg(typeInfo.alarmIconRed)"
               >
             </td>
-            <td class="blackMark">橙色报警图标：</td>
+            <td class="blackMark">{{ $t('ai.chengsebaojingtubiao:') }}</td>
             <td width="21%">
               <img
                 v-show="typeInfo.alarmIconOrange"
@@ -251,7 +251,7 @@
             </td>
           </tr>
           <tr>
-            <td class="blackMark">黄色报警图标：</td>
+            <td class="blackMark">{{ $t('ai.huangsebaojingtubiao:') }}</td>
             <td width="21%">
               <img
                 v-show="typeInfo.alarmIconYellow"
@@ -261,7 +261,7 @@
                 @click="bigImg(typeInfo.alarmIconYellow)"
               >
             </td>
-            <td class="blackMark">蓝色报警图标：</td>
+            <td class="blackMark">{{ $t('ai.lansebaojingtubiao:') }}</td>
             <td width="21%">
               <img
                 v-show="typeInfo.alarmIconBlue"
@@ -273,18 +273,18 @@
             </td>
           </tr>
         </table>
-        <div class="title">音频信息</div>
+        <div class="title">{{ $t('ai.yinpinxinxi') }}</div>
         <table>
           <tr
             v-for="(item,index) in typeInfo.typeAlarmList"
             :key="index"
             style="border-bottom: 1px solid #eeeeee;"
           >
-            <td class="blackMark">中心点：</td>
+            <td class="blackMark">{{ $t('ai.zhongxindian:') }}</td>
             <td class="width21">
               <span>{{ item.centerCol }}</span>
             </td>
-            <td class="blackMark">音频：</td>
+            <td class="blackMark">{{ $t('ai.yinpin:') }}</td>
             <td class="width21">
               <audio v-if="item.oggUrl" :id="item.id" controls="controls">
                 <source :src="'http://192.168.8.131/uploadAudio/' + item.oggUrl">
@@ -296,11 +296,11 @@
         </table>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogDetVisible = false">取消</el-button>
+        <el-button @click="dialogDetVisible = false">{{ $t('quxiao') }}</el-button>
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogAudioVisible" title="音频操作" width="80%">
+    <el-dialog :visible.sync="dialogAudioVisible" :title="$t('ai.yinpincaozuo1')" width="80%">
       <el-form
         ref="audioEdit"
         :rules="rules"
@@ -313,7 +313,7 @@
           <div class="filter-container" style="position:relative">
             <el-input
               v-model="listQueryType.keywords"
-              placeholder="请输入中心点"
+              :placeholder="$t('ai.qingshuruzhongxindian')"
               style="width: 200px;"
               class="filter-item"
               @keyup.enter.native="handleTypeFilter"
@@ -329,9 +329,9 @@
             height="500"
             :row-key="getRowKeys"
           >
-            <el-table-column label="中心点" prop="centerCol" />
-            <el-table-column label="识别类型" prop="typeId" />
-            <el-table-column label="音频" width="320">
+            <el-table-column :label="$t('ai.qingshuruzhongxindian')" prop="centerCol" />
+            <el-table-column :label="$t('ai.shibieleixing')" prop="typeId" />
+            <el-table-column :label="$t('ai.yinpin')" width="320">
               <template slot-scope="scope">
                 <audio v-if="scope.row.oggUrl" :id="scope.row.id" controls="controls">
                   <source :src="'http://192.168.8.131/uploadAudio/' + scope.row.oggUrl">
@@ -339,13 +339,13 @@
                 </audio>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="120">
+            <el-table-column :label="$t('ai.caozuo')" width="120">
               <template slot-scope="scope">
                 <el-button
                   type="danger"
                   size="small"
                   @click.stop="audioDelete(scope.row)"
-                >删除</el-button>
+                >{{ $t('shanchu') }}</el-button>
 
               </template>
             </el-table-column>
@@ -371,8 +371,8 @@
         <el-button
           type="primary"
           @click="audioUpdate('audioEdit')"
-        >确认</el-button>
-        <el-button @click="dialogAudioVisible = false">取消</el-button>
+        >{{ $t('queren') }}</el-button>
+        <el-button @click="dialogAudioVisible = false">{{ $t('quxiao') }}</el-button>
       </div>
     </el-dialog>
 
@@ -396,37 +396,77 @@ export default {
   },
   filters: {
     type: function(val) {
-      switch (val) {
-        case 0:
-          return '未处理'
-        case 1:
-          return '已处理'
-        default:
-          break
+      const lang = JSON.parse(JSON.stringify(window.localStorage)).lang
+      if (lang === 'cn') {
+        switch (val) {
+          case 0:
+            return '未处理'
+          case 1:
+            return '已处理'
+          default:
+            break
+        }
+      } else if (lang === 'en') {
+        switch (val) {
+          case 0:
+            return 'Untreated'
+          case 1:
+            return 'Processed'
+          default:
+            break
+        }
       }
     },
     dangerLevel: function(val) {
-      switch (val) {
-        case 0:
-          return '断纤'
-        case 1:
-          return 1
-        case 2:
-          return 2
-        case 3:
-          return 3
-        default:
-          break
+      const lang = JSON.parse(JSON.stringify(window.localStorage)).lang
+      if (lang === 'cn') {
+        switch (val) {
+          case 0:
+            return '断纤'
+          case 1:
+            return 1
+          case 2:
+            return 2
+          case 3:
+            return 3
+          default:
+            break
+        }
+      } else if (lang === 'en') {
+        switch (val) {
+          case 0:
+            return 'Fiber break'
+          case 1:
+            return 1
+          case 2:
+            return 2
+          case 3:
+            return 3
+          default:
+            break
+        }
       }
     },
     isAlarm: function(val) {
-      switch (val) {
-        case 0:
-          return '提醒'
-        case 1:
-          return '报警'
-        default:
-          break
+      const lang = JSON.parse(JSON.stringify(window.localStorage)).lang
+      if (lang === 'cn') {
+        switch (val) {
+          case 0:
+            return '提醒'
+          case 1:
+            return '报警'
+          default:
+            break
+        }
+      } else if (lang === 'en') {
+        switch (val) {
+          case 0:
+            return 'Remind'
+          case 1:
+            return 'Alarm'
+          default:
+            break
+        }
       }
     },
     weight: function(val) {
@@ -464,7 +504,7 @@ export default {
       typeInfo: {},
       typeEdit: {},
       audioEdit: {},
-      soluTypelList: [{ id: 0, value: '未处理' }, { id: 1, value: '已处理' }],
+      soluTypelList: [{ id: 0, value: 'Untreated' }, { id: 1, value: 'Processed' }],
       weightlList: [{ id: 0, value: '0' }, { id: 1, value: '1' }],
       dialogFormVisible: false,
       uploadUrl: process.env.VUE_APP_BASE_API + 'api-web/public/uploadFile',
@@ -596,40 +636,76 @@ export default {
       })
       console.log(this.alarmIdList)
       this.$refs[formName].validate(valid => {
-        if (valid) {
-          audioHandle({ typeId: this.typeId, alarmIdList: this.alarmIdList }).then(response => {
-            if (response.data) {
-              this.$message.success('修改成功')
-              this.dialogAudioVisible = false
-              this.getList()
-            } else {
-              this.$message.error('修改失败')
-            }
-          })
+        if (this.$i18n.locale === 'cn') {
+          if (valid) {
+            audioHandle({ typeId: this.typeId, alarmIdList: this.alarmIdList }).then(response => {
+              if (response.data) {
+                this.$message.success('修改成功')
+                this.dialogAudioVisible = false
+                this.getList()
+              } else {
+                this.$message.error('修改失败')
+              }
+            })
+          }
+        } else if (this.$i18n.locale === 'en') {
+          if (valid) {
+            audioHandle({ typeId: this.typeId, alarmIdList: this.alarmIdList }).then(response => {
+              if (response.data) {
+                this.$message.success('Successfully modified')
+                this.dialogAudioVisible = false
+                this.getList()
+              } else {
+                this.$message.error('Fail to edit')
+              }
+            })
+          }
         }
       })
     },
     // 类别删除
     handleDelete(row) {
-      this.$confirm('将删除该条记录, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        deleteData({ id: row.id }).then(response => {
-          if (response.data) {
-            this.$message.success('删除成功')
-            this.getList()
-          } else {
-            this.$message.error('删除失败')
-          }
+      if (this.$i18n.locale === 'cn') {
+        this.$confirm('将删除该条记录, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteData({ id: row.id }).then(response => {
+            if (response.data) {
+              this.$message.success('删除成功')
+              this.getList()
+            } else {
+              this.$message.error('删除失败')
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
         })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
+      } else if (this.$i18n.locale === 'en') {
+        this.$confirm('This record will be deleted, do you want to continue?', 'Notice', {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          deleteData({ id: row.id }).then(response => {
+            if (response.data) {
+              this.$message.success('Successfully deleted')
+              this.getList()
+            } else {
+              this.$message.error('Failed to delete')
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Undeleted'
+          })
         })
-      })
+      }
     },
     handleUpdate(row) {
       this.dialogAddVisible = true
@@ -639,16 +715,30 @@ export default {
     },
     updateData(formName) {
       this.$refs[formName].validate(valid => {
-        if (valid) {
-          update(this.typeEdit).then(response => {
-            if (response.data) {
-              this.$message.success('修改成功')
-              this.dialogAddVisible = false
-              this.getList()
-            } else {
-              this.$message.error('修改失败')
-            }
-          })
+        if (this.$i18n.locale === 'cn') {
+          if (valid) {
+            update(this.typeEdit).then(response => {
+              if (response.data) {
+                this.$message.success('修改成功')
+                this.dialogAddVisible = false
+                this.getList()
+              } else {
+                this.$message.error('修改失败')
+              }
+            })
+          }
+        } else if (this.$i18n.locale === 'en') {
+          if (valid) {
+            update(this.typeEdit).then(response => {
+              if (response.data) {
+                this.$message.success('Successfully modified')
+                this.dialogAddVisible = false
+                this.getList()
+              } else {
+                this.$message.error('Fail to edit')
+              }
+            })
+          }
         }
       })
     },
@@ -675,8 +765,14 @@ export default {
       //   return false
       // }
       const isLt2M = file.size / 1024 / 1024 < 5
-      if (!isLt2M) {
-        this.$message.error('上传大小不能超过 5MB!')
+      if (this.$i18n.locale === 'cn') {
+        if (!isLt2M) {
+          this.$message.error('上传大小不能超过 5MB!')
+        }
+      } else if (this.$i18n.locale === 'en') {
+        if (!isLt2M) {
+          this.$message.error('Upload size cannot exceed 5MB!')
+        }
       }
       return isLt2M
     },

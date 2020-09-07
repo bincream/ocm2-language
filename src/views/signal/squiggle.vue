@@ -2,18 +2,18 @@
   <div class="app-container">
     <div class="chart-container">
       <div class="title">
-        <span>全线光强图</span>
-        <span class="radio-label" style="width:160px;position:absolute;right:290px">Y轴范围：</span>
-        <el-input v-model="yMin" type="number" placeholder="Y轴最小值" style="width:100px;position:absolute;right:240px" @input="updata" />
-        <span style="position:absolute;right:220px">~</span>
-        <el-input v-model="yMax" type="number" placeholder="Y轴最大值" style="width:100px;position:absolute;right:110px" @input="updata" />
-        <span class="radio-label" style="width:160px;position:absolute;right:610px">X轴范围：</span>
-        <el-input v-model="xMin" type="number" placeholder="X轴最小值" style="width:100px;position:absolute;right:560px" @input="updata" />
-        <span style="position:absolute;right:540px">~</span>
-        <el-input v-model="xMax" type="number" placeholder="X轴最大值" style="width:100px;position:absolute;right:430px" @input="updata" />
-        <!-- <el-button style="position:absolute;right:110px" type="primary">修改</el-button> -->
-        <el-button v-if="websocket == null" type="primary" @click="connect">连接</el-button>
-        <el-button v-else type="danger" @click="disconnect">断开连接</el-button>
+        <span>{{ $t('signal.quanxianguangqiangtu') }}</span>
+        <span class="radio-label" style="width:160px;position:absolute;right:330px">{{ $t('signal.Yzhoufanwei:') }}</span>
+        <el-input v-model="yMin" type="number" :placeholder="$t('signal.Yzhouzuixiaozhi')" style="width:100px;position:absolute;right:280px" @input="updata" />
+        <span style="position:absolute;right:260px">~</span>
+        <el-input v-model="yMax" type="number" :placeholder="$t('signal.Yzhouzuidazhi')" style="width:100px;position:absolute;right:150px" @input="updata" />
+        <span class="radio-label" style="width:160px;position:absolute;right:650px">{{ $t('signal.Xzhoufanwei:') }}</span>
+        <el-input v-model="xMin" type="number" :placeholder="$t('signal.Xzhouzuixiaozhi')" style="width:100px;position:absolute;right:600px" @input="updata" />
+        <span style="position:absolute;right:580px">~</span>
+        <el-input v-model="xMax" type="number" :placeholder="$t('signal.Xzhouzuidazhi')" style="width:100px;position:absolute;right:470px" @input="updata" />
+        <!-- <el-button style="position:absolute;right:110px" type="primary">{{ $t('xiugai') }}</el-button> -->
+        <el-button v-if="websocket == null" type="primary" @click="connect">{{ $t('signal.lianjie') }}</el-button>
+        <el-button v-else type="danger" @click="disconnect">{{ $t('signal.duankailianjie') }}</el-button>
       </div>
 
       <div id="myChart" style="width: 100%; height: 80%" />
@@ -88,11 +88,19 @@ export default {
       })
     },
     connect() {
-      if (this.accuracy.standMode === 1) {
-        this.$message.error('性能模式下无法查看')
-        return false
+      if (this.$i18n.locale === 'cn') {
+        if (this.accuracy.standMode === 1) {
+          this.$message.error('性能模式下无法查看')
+          return false
+        }
+        this.getRsc()
+      } else if (this.$i18n.locale === 'en') {
+        if (this.accuracy.standMode === 1) {
+          this.$message.error('Cannot view in performance mode')
+          return false
+        }
+        this.getRsc()
       }
-      this.getRsc()
     },
     disconnect() {
       this.websocket.close()
@@ -132,7 +140,11 @@ export default {
           // that.contextAudioStop()
         }
       } else {
-        this.$message.error('浏览器不支持WebSocket')
+        if (this.$i18n.locale === 'cn') {
+          this.$message.error('浏览器不支持WebSocket')
+        } else if (this.$i18n.locale === 'en') {
+          this.$message.error('The browser does not support WebSocket')
+        }
       }
     },
     getWsData(data) {
@@ -145,63 +157,123 @@ export default {
     },
     initChart() {
       this.chart = echarts.init(document.getElementById('myChart'))
-      const option = {
-        backgroundColor: '#F2F6FC',
-        tooltip: {
-          trigger: 'axis'
-        },
-        title: {
-          left: 'center'
-        },
-        // tooltip: {
-        //   trigger: 'axis',
-        //   axisPointer: {
-        //     animation: false
-        //   }
-        // },
-        toolbox: {
-          feature: {
-            dataZoom: {
-              yAxisIndex: 'none'
-            },
-            restore: {},
-            saveAsImage: {}
-          }
-        },
-        grid: {
-          left: '5%',
-          right: '5%',
-          borderWidth: 0,
-          top: 150,
-          bottom: 95,
-          textStyle: {
-            color: '#fff'
-          }
-        },
-        xAxis: {
-          type: 'category',
-          data: [],
-          max: this.xMax,
-          min: this.xMin
-        },
-        yAxis: {
-          name: '强度',
-          type: 'value',
-          max: this.yMax,
-          min: this.yMin
-        },
-        series: [{
-          name: '频谱',
-          data: [],
-          type: 'line',
-          progressive: 1000,
-          animation: false
-        }]
+      if (this.$i18n.locale === 'cn') {
+        const option = {
+          backgroundColor: '#F2F6FC',
+          tooltip: {
+            trigger: 'axis'
+          },
+          title: {
+            left: 'center'
+          },
+          // tooltip: {
+          //   trigger: 'axis',
+          //   axisPointer: {
+          //     animation: false
+          //   }
+          // },
+          toolbox: {
+            feature: {
+              dataZoom: {
+                yAxisIndex: 'none'
+              },
+              restore: {},
+              saveAsImage: {}
+            }
+          },
+          grid: {
+            left: '5%',
+            right: '5%',
+            borderWidth: 0,
+            top: 150,
+            bottom: 95,
+            textStyle: {
+              color: '#fff'
+            }
+          },
+          xAxis: {
+            type: 'category',
+            data: [],
+            max: this.xMax,
+            min: this.xMin
+          },
+          yAxis: {
+            name: '强度',
+            type: 'value',
+            max: this.yMax,
+            min: this.yMin
+          },
+          series: [{
+            name: '频谱',
+            data: [],
+            type: 'line',
+            progressive: 1000,
+            animation: false
+          }]
+        }
+        option.xAxis.data = this.xData
+        // option.yAxis[0].data = this.yData
+        option.series[0].data = this.yData
+        this.chart.setOption(option)
+      } else if (this.$i18n.locale === 'en') {
+        const option = {
+          backgroundColor: '#F2F6FC',
+          tooltip: {
+            trigger: 'axis'
+          },
+          title: {
+            left: 'center'
+          },
+          // tooltip: {
+          //   trigger: 'axis',
+          //   axisPointer: {
+          //     animation: false
+          //   }
+          // },
+          toolbox: {
+            feature: {
+              dataZoom: {
+                yAxisIndex: 'none'
+              },
+              restore: {},
+              saveAsImage: {}
+            }
+          },
+          grid: {
+            left: '5%',
+            right: '5%',
+            borderWidth: 0,
+            top: 150,
+            bottom: 95,
+            textStyle: {
+              color: '#fff'
+            }
+          },
+          xAxis: {
+            type: 'category',
+            data: [],
+            max: this.xMax,
+            min: this.xMin
+          },
+          yAxis: {
+            name: 'Strength',
+            type: 'value',
+            max: this.yMax,
+            min: this.yMin
+          },
+          series: [{
+            name: 'Spectrum',
+            data: [],
+            type: 'line',
+            progressive: 1000,
+            animation: false
+          }]
+        }
+        option.xAxis.data = this.xData
+        // option.yAxis[0].data = this.yData
+        option.series[0].data = this.yData
+        this.chart.setOption(option)
       }
-      option.xAxis.data = this.xData
-      // option.yAxis[0].data = this.yData
-      option.series[0].data = this.yData
-      this.chart.setOption(option)
     },
     updata() {
       if (this.yMax === '') {

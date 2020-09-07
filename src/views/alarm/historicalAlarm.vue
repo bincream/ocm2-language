@@ -3,17 +3,17 @@
     <div class="filter-container" style="position:relative">
       <el-date-picker
         v-model="date"
-        style="width: 380px;margin-bottom: 10px;vertical-align: middle;"
+        style="width: 320px;margin-bottom: 10px;vertical-align: middle;"
         type="datetimerange"
-        start-placeholder="开始日期"
-        end-placeholder="告警时间"
+        :start-placeholder="$t('alarmInfo.kaishishijian')"
+        :end-placeholder="$t('alarmInfo.gaojingshijian')"
         value-format="yyyy-MM-dd HH:mm:ss"
         clearable
       />
       <el-select
         v-model="listQuery.type"
-        placeholder="请选择处理类型"
-        style="width: 150px;"
+        :placeholder="$t('alarmInfo.qingxuanzechulileixing')"
+        style="width: 250px;"
         class="filter-item"
         clearable
         filterable
@@ -27,15 +27,15 @@
       </el-select>
       <el-input
         v-model="listQuery.vibType"
-        placeholder="请输入震动类型"
-        style="width: 150px;"
+        :placeholder="$t('alarmInfo.qingshuruzhendongleixing')"
+        style="width: 260px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
       <el-button v-waves class="filter-item" icon="el-icon-search" @click="handleFilter" />
 
       <FilenameOption v-model="filename" class="filter-item" />
-      <el-button type="primary" icon="document" class="filter-item" @click="handleDownload">导出Excel</el-button>
+      <el-button type="primary" icon="document" class="filter-item" @click="handleDownload">{{ $t('alarmInfo.daochu') }}</el-button>
     </div>
 
     <el-table
@@ -48,25 +48,25 @@
       highlight-current-row
       height="500"
     >
-      <el-table-column label="报警类型" prop="alarmType" />
-      <el-table-column label="通道号" prop="lineInfoChannel" />
-      <el-table-column label="距离" prop="distance" />
-      <el-table-column label="开始点" prop="beginCol" />
-      <el-table-column label="中心点" prop="centerCol" />
-      <el-table-column label="结束点" prop="endCol" />
-      <el-table-column label="开始时间" prop="beginTime" />
-      <el-table-column label="告警时间" prop="alarmTime" />
-      <el-table-column label="振动次数" prop="freq" />
-      <el-table-column label="强度" prop="amplitude" />
-      <el-table-column label="等级" prop="level" />
-      <el-table-column label="震动类型" prop="vibType" />
+      <el-table-column :label="$t('alarmInfo.baojingleixing')" prop="alarmType" />
+      <el-table-column :label="$t('alarmInfo.tongdaohao')" prop="lineInfoChannel" />
+      <el-table-column :label="$t('alarmInfo.juli')" prop="distance" />
+      <el-table-column :label="$t('alarmInfo.kaishidian')" prop="beginCol" />
+      <el-table-column :label="$t('alarmInfo.zhongxindian')" prop="centerCol" />
+      <el-table-column :label="$t('alarmInfo.jieshudian')" prop="endCol" />
+      <el-table-column :label="$t('alarmInfo.kaishishijian')" prop="beginTime" />
+      <el-table-column :label="$t('alarmInfo.gaojingshijian')" prop="alarmTime" />
+      <el-table-column :label="$t('alarmInfo.zhendongcishu')" prop="freq" />
+      <el-table-column :label="$t('alarmInfo.qiangdu')" prop="amplitude" />
+      <el-table-column :label="$t('alarmInfo.dengji')" prop="level" />
+      <el-table-column :label="$t('alarmInfo.zhendongleixing')" prop="vibType" />
 
-      <el-table-column label="处理状态">
+      <el-table-column :label="$t('alarmInfo.chulizhuangtai')" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.solution | solution }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="音频" width="320">
+      <el-table-column :label="$t('alarmInfo.yinpin')" width="320">
         <template slot-scope="scope">
           <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="scope.row.id" controls="controls">
             <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
@@ -76,7 +76,7 @@
           </audio>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="140">
+      <el-table-column :label="$t('alarmInfo.caozuo')" width="120">
         <template slot-scope="scope">
           <el-button
             v-if="checkPermission(['alarmHis/handle'])"
@@ -84,7 +84,7 @@
             type="warning"
             size="small"
             @click.stop="handleSolu(scope.row)"
-          >处理报警</el-button>
+          >{{ $t('alarmInfo.chuligaojing') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -104,7 +104,7 @@
     </div>
 
     <!--新增编辑页面 -->
-    <el-dialog title="处理告警" :visible.sync="dialogFormVisible" width="30%">
+    <el-dialog :title="$t('alarmInfo.chuligaojing')" :visible.sync="dialogFormVisible" width="30%">
       <el-form
         ref="solutionEdit"
         :rules="rules"
@@ -117,13 +117,13 @@
           <table>
             <tr>
               <td class="width33">
-                <el-form-item label="处理措施" prop="solution">
+                <el-form-item :label="$t('alarmInfo.chulicuoshi')" prop="solution">
                   <el-input
                     v-model="solutionEdit.solution"
                     type="textarea"
                     :rows="5"
                     size="small"
-                    placeholder="请输入"
+                    :placeholder="$t('alarmInfo.qingshuru')"
                   />
                 </el-form-item>
               </td>
@@ -136,8 +136,8 @@
           v-show="solutionEdit.id"
           type="primary"
           @click="createData('solutionEdit')"
-        >确认</el-button>
-        <el-button @click="dialogFormVisible = false">取消</el-button>
+        >{{ $t('queren') }}</el-button>
+        <el-button @click="dialogFormVisible = false">{{ $t('quxiao') }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -170,13 +170,25 @@ export default {
       }
     },
     solution: function(val) {
-      switch (val) {
-        case 0:
-          return '未处理'
-        case 1:
-          return '已处理'
-        default:
-          break
+      const lang = JSON.parse(JSON.stringify(window.localStorage)).lang
+      if (lang === 'cn') {
+        switch (val) {
+          case 0:
+            return '未处理'
+          case 1:
+            return '已处理'
+          default:
+            break
+        }
+      } else if (lang === 'en') {
+        switch (val) {
+          case 0:
+            return 'Untreated'
+          case 1:
+            return 'Processed'
+          default:
+            break
+        }
       }
     }
   },
@@ -201,7 +213,7 @@ export default {
         ]
       },
       solutionEdit: {},
-      soluTypelList: [{ id: 0, value: '未处理' }, { id: 1, value: '已处理' }],
+      soluTypelList: [{ id: 0, value: 'Untreated' }, { id: 1, value: 'Processed' }],
       filename: ''
     }
   },
@@ -316,29 +328,53 @@ export default {
       }
     },
     handleRefresh() {
-      getNew().then(response => {
-        this.$message.success('获取新历史报警记录' + response.data + '条')
-        this.getList()
-      })
+      if (this.$i18n.locale === 'cn') {
+        getNew().then(response => {
+          this.$message.success('获取新历史报警记录' + response.data + '条')
+          this.getList()
+        })
+      } else if (this.$i18n.locale === 'en') {
+        getNew().then(response => {
+          this.$message.success('Get' + response.data + 'new historical alarm records')
+          this.getList()
+        })
+      }
     },
     // 处理
     handleSolu(row) {
       this.ids = []
       this.ids.push(row.id)
-      this.$confirm('是否确认该条告警已处理？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        resolve({ ids: this.ids }).then((response) => {
-          if (response.data) {
-            this.$message.success('操作成功')
-            this.getList()
-          } else {
-            this.$message.error('操作失败')
-          }
+      if (this.$i18n.locale === 'cn') {
+        this.$confirm('是否确认该条告警已处理？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          resolve({ ids: this.ids }).then((response) => {
+            if (response.data) {
+              this.$message.success('操作成功')
+              this.getList()
+            } else {
+              this.$message.error('操作失败')
+            }
+          })
         })
-      })
+      } else if (this.$i18n.locale === 'en') {
+        this.$confirm('Are you sure that the alarm has been processed?', 'Notice', {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          resolve({ ids: this.ids }).then((response) => {
+            if (response.data) {
+              this.$message.success('Successful operation')
+              this.getList()
+            } else {
+              this.$message.error('Operation failed')
+            }
+          })
+        })
+      }
     },
     handleSeeSolu(row) {
       this.solutionEdit.solution = row.solution
@@ -347,39 +383,73 @@ export default {
     // 新增提交
     createData(formName) {
       this.$refs[formName].validate((valid) => {
-        if (valid) {
-          resolve(this.solutionEdit).then((response) => {
-            if (response.data) {
-              this.$message.success('操作成功')
-              this.dialogFormVisible = false
-              this.getList()
-            } else {
-              this.$message.error('操作失败')
-            }
-          })
+        if (this.$i18n.locale === 'cn') {
+          if (valid) {
+            resolve(this.solutionEdit).then((response) => {
+              if (response.data) {
+                this.$message.success('操作成功')
+                this.dialogFormVisible = false
+                this.getList()
+              } else {
+                this.$message.error('操作失败')
+              }
+            })
+          }
+        } else if (this.$i18n.locale === 'en') {
+          if (valid) {
+            resolve(this.solutionEdit).then((response) => {
+              if (response.data) {
+                this.$message.success('Successful operation')
+                this.dialogFormVisible = false
+                this.getList()
+              } else {
+                this.$message.error('Operation failed')
+              }
+            })
+          }
         }
       })
     },
     handleDownload() {
       getAllList({ page: 1, limit: this.total }).then(response => {
         const list = response.data.list
-        list.forEach((item) => {
-          if (item.type === 0) {
-            item.type = '未处理'
-          } else if (item.type === 1) {
-            item.type = '已处理'
-          }
-        })
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['基站', '开始点', '中心点', '结束点', '识别类型', '开始时间', '告警时间', '振动次数', '是否处理', '处理方式', '']
-          const filterVal = ['standName', 'startCol', 'centerCol', 'endCol', 'typeId', 'beginTime', 'endTime', 'freq', 'type', 'solution']
-          const data = this.formatJson(filterVal, list)
-          excel.export_json_to_excel({
-            header: tHeader,
-            data,
-            filename: this.filename
+        if (this.$i18n.locale === 'cn') {
+          list.forEach((item) => {
+            if (item.type === 0) {
+              item.type = '未处理'
+            } else if (item.type === 1) {
+              item.type = '已处理'
+            }
           })
-        })
+          import('@/vendor/Export2Excel').then(excel => {
+            const tHeader = ['基站', '开始点', '中心点', '结束点', '识别类型', '开始时间', '告警时间', '振动次数', '是否处理', '处理方式', '']
+            const filterVal = ['standName', 'startCol', 'centerCol', 'endCol', 'typeId', 'beginTime', 'endTime', 'freq', 'type', 'solution']
+            const data = this.formatJson(filterVal, list)
+            excel.export_json_to_excel({
+              header: tHeader,
+              data,
+              filename: this.filename
+            })
+          })
+        } else if (this.$i18n.locale === 'en') {
+          list.forEach((item) => {
+            if (item.type === 0) {
+              item.type = 'Untreated'
+            } else if (item.type === 1) {
+              item.type = 'Processed'
+            }
+          })
+          import('@/vendor/Export2Excel').then(excel => {
+            const tHeader = ['Base station', 'Starting point', 'Center point', 'End point', 'Identification type', 'Starting time', 'Alarm time', 'Number of vibrations', 'Whether to deal with', 'Processing method', '']
+            const filterVal = ['standName', 'startCol', 'centerCol', 'endCol', 'typeId', 'beginTime', 'endTime', 'freq', 'type', 'solution']
+            const data = this.formatJson(filterVal, list)
+            excel.export_json_to_excel({
+              header: tHeader,
+              data,
+              filename: this.filename
+            })
+          })
+        }
       })
     },
     formatJson(filterVal, jsonData) {

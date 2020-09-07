@@ -3,22 +3,22 @@
 
     <div class="chart-container">
       <div class="title">
-        <span>单点音频</span>
-        <el-input v-model="monitorEdit.col" placeholder="请输入距离" style="width:120px;position:absolute;right:120px" />
+        <span>{{ $t('signal.dandianyinpin') }}</span>
+        <el-input v-model="monitorEdit.col" :placeholder="$t('signal.qingshurujuli')" style="width:210px;position:absolute;right:180px" />
         <el-button
           v-if="checkPermission(['twoDimension/realtimeAudioQuery'])"
           v-show="websocket1 == null"
           type="primary"
           style="position:absolute;right:0px"
           @click="monitorStart"
-        >开始监听</el-button>
+        >{{ $t('signal.kaishijianting') }}</el-button>
         <el-button
           v-if="checkPermission(['twoDimension/realtimeAudioQuery'])"
           v-show="websocket1 !== null"
-          type="primary"
+          type="danger"
           style="position:absolute;right:0px"
           @click="monitorEnd"
-        >结束监听</el-button>
+        >{{ $t('signal.jieshujianting') }}</el-button>
         <audio id="audioPlayer" ref="audioPlayer">
           <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
           <!-- <source src="/static/img/warning.mp3" type="audio/mp3" > -->
@@ -28,23 +28,23 @@
       </div>
       <div style="background:blue;height:2px" />
       <div class="title">
-        <span>阈值设置下的二维振动</span>
-        <span class="radio-label" style="width:160px;position:absolute;right:220px">Y轴范围：</span>
-        <el-input v-model="yMax" type="number" placeholder="请输入Y轴最大范围" style="width:160px;position:absolute;right:110px" @input="updataY" />
+        <span>{{ $t('signal.yuzhishezhixiadeerweizhendong') }}</span>
+        <span class="radio-label" style="width:160px;position:absolute;right:240px">{{ $t('signal.Yzhoufanwei:') }}</span>
+        <el-input v-model="yMax" type="number" :placeholder="$t('signal.qingshuruYzhouzuidafanwei')" style="width:160px;position:absolute;right:130px" @input="updataY" />
 
-        <!-- <el-button style="position:absolute;right:110px" type="primary" @click="updataY">修改</el-button> -->
+        <!-- <el-button style="position:absolute;right:110px" type="primary" @click="updataY">{{ $t('xiugai') }}</el-button> -->
         <el-button
           v-if="checkPermission(['twoDimension/vibQuery'])"
           v-show="websocket == null"
           type="primary"
           @click="connect"
-        >连接</el-button>
+        >{{ $t('signal.lianjie') }}</el-button>
         <el-button
           v-if="checkPermission(['twoDimension/vibQuery'])"
           v-show="websocket !== null"
           type="danger"
           @click="disconnect"
-        >断开连接</el-button>
+        >{{ $t('signal.duankailianjie') }}</el-button>
       </div>
       <div id="myChart1" style="width:100%;height:29%;margin:auto" />
       <div id="vibrateChart" style="width:100%;height:68%;margin:auto" />
@@ -139,11 +139,19 @@ export default {
   methods: {
     checkPermission,
     connect() {
-      if (this.baseStandInfo.standMode === 1) {
-        this.$message.error('性能模式下无法查看')
-        return false
+      if (this.$i18n.locale === 'cn') {
+        if (this.baseStandInfo.standMode === 1) {
+          this.$message.error('性能模式下无法查看')
+          return false
+        }
+        this.getVibQuery()
+      } else if (this.$i18n.locale === 'en') {
+        if (this.baseStandInfo.standMode === 1) {
+          this.$message.error('Cannot view in performance mode')
+          return false
+        }
+        this.getVibQuery()
       }
-      this.getVibQuery()
     },
     disconnect() {
       this.destroyedWs()
@@ -210,17 +218,32 @@ export default {
 
         const audioStack = []
         // 信道与调距提示判断
-        if (buffer.byteLength === 2) {
-          var msgView = new DataView(buffer)
-          var msgRate = msgView.getInt16(0, true)
-          if (msgRate === 0) { // 信道满
-            that.$message.error('监听信道已满,请稍后再试!')
-            that.contextAudioStop() // 停止
-          } else { // 调距
-            that.inputLength = msgRate * 10
+        if (this.$i18n.locale === 'cn') {
+          if (buffer.byteLength === 2) {
+            var msgView = new DataView(buffer)
+            var msgRate = msgView.getInt16(0, true)
+            if (msgRate === 0) { // 信道满
+              that.$message.error('监听信道已满,请稍后再试!')
+              that.contextAudioStop() // 停止
+            } else { // 调距
+              that.inputLength = msgRate * 10
+            }
+            return false
           }
-          return false
+        } else if (this.$i18n.locale === 'en') {
+          if (buffer.byteLength === 2) {
+            var msgView1 = new DataView(buffer)
+            var msgRate1 = msgView1.getInt16(0, true)
+            if (msgRate1 === 0) { // 信道满
+              that.$message.error('The monitoring channel is full, please try again later!')
+              that.contextAudioStop() // 停止
+            } else { // 调距
+              that.inputLength = msgRate * 10
+            }
+            return false
+          }
         }
+
         // 获取采样率
         // var dataView = new DataView(buffer)
         // console.log(dataView)
@@ -350,13 +373,24 @@ export default {
     },
     // 监听
     monitorStart() {
-      if (this.baseStandInfo.standMode !== 0) {
-        this.$message.error('性能模式下无法监听')
-        return false
-      }
-      if (!this.monitorEdit.col) {
-        this.$message.error('请输入距离')
-        return false
+      if (this.$i18n.locale === 'cn') {
+        if (this.baseStandInfo.standMode !== 0) {
+          this.$message.error('性能模式下无法监听')
+          return false
+        }
+        if (!this.monitorEdit.col) {
+          this.$message.error('请输入距离')
+          return false
+        }
+      } else if (this.$i18n.locale === 'en') {
+        if (this.baseStandInfo.standMode !== 0) {
+          this.$message.error('Cannot monitor in performance mode')
+          return false
+        }
+        if (!this.monitorEdit.col) {
+          this.$message.error('Please enter the distance')
+          return false
+        }
       }
       realtimeAudioQuery(this.monitorEdit).then(response => {
         this.monitorData = response.data
@@ -371,72 +405,141 @@ export default {
     },
     myChart1(data) {
       this.chart = echarts.init(document.getElementById('myChart1'))
-      const option = {
-        backgroundColor: '#F2F6FC',
-        tooltip: {
-          trigger: 'axis'
-        },
-        toolbox: {
-          feature: {
+      if (this.$i18n.locale === 'cn') {
+        const option = {
+          backgroundColor: '#F2F6FC',
+          tooltip: {
+            trigger: 'axis'
+          },
+          toolbox: {
+            feature: {
             // dataZoom: {
             //   yAxisIndex: 'none'
             // },
             // restore: {},
-            saveAsImage: {}
-          }
-        },
-        grid: {
-          height: '50%',
-          bottom: '1%'
-        },
-        xAxis: {
-          axisLabel: {
-            formatter: function() {
-              return ''
+              saveAsImage: {}
             }
           },
-          show: false,
-          splitLine: {// 去除网格线
-            show: false
+          grid: {
+            height: '50%',
+            bottom: '1%'
           },
-          type: 'category',
-          data: [],
-          min: this.startX,
-          max: this.endX
-        },
-        yAxis: {
-          axisLabel: {
-            formatter: function() {
-              return ''
+          xAxis: {
+            axisLabel: {
+              formatter: function() {
+                return ''
+              }
+            },
+            show: false,
+            splitLine: {// 去除网格线
+              show: false
+            },
+            type: 'category',
+            data: [],
+            min: this.startX,
+            max: this.endX
+          },
+          yAxis: {
+            axisLabel: {
+              formatter: function() {
+                return ''
+              }
+            },
+            splitLine: {// 去除网格线
+              show: false
+            },
+            type: 'value'
+          },
+          series: [{
+            name: '强度',
+            data: data,
+            type: 'line',
+            itemStyle: {
+              color: '#313695'
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                offset: 0,
+                color: '#4575b4'
+              }, {
+                offset: 1,
+                color: '#74add1'
+              }])
+            }
+          }]
+        }
+        option.xAxis.data = this.xData
+        option.yAxis.data = data
+        option.series[0].data = data
+        this.chart.setOption(option)
+      } else if (this.$i18n.locale === 'en') {
+        const option = {
+          backgroundColor: '#F2F6FC',
+          tooltip: {
+            trigger: 'axis'
+          },
+          toolbox: {
+            feature: {
+            // dataZoom: {
+            //   yAxisIndex: 'none'
+            // },
+            // restore: {},
+              saveAsImage: {}
             }
           },
-          splitLine: {// 去除网格线
-            show: false
+          grid: {
+            height: '50%',
+            bottom: '1%'
           },
-          type: 'value'
-        },
-        series: [{
-          name: '强度',
-          data: data,
-          type: 'line',
-          itemStyle: {
-            color: '#313695'
+          xAxis: {
+            axisLabel: {
+              formatter: function() {
+                return ''
+              }
+            },
+            show: false,
+            splitLine: {// 去除网格线
+              show: false
+            },
+            type: 'category',
+            data: [],
+            min: this.startX,
+            max: this.endX
           },
-          areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-              offset: 0,
-              color: '#4575b4'
-            }, {
-              offset: 1,
-              color: '#74add1'
-            }])
-          }
-        }]
+          yAxis: {
+            axisLabel: {
+              formatter: function() {
+                return ''
+              }
+            },
+            splitLine: {// 去除网格线
+              show: false
+            },
+            type: 'value'
+          },
+          series: [{
+            name: 'Strength',
+            data: data,
+            type: 'line',
+            itemStyle: {
+              color: '#313695'
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                offset: 0,
+                color: '#4575b4'
+              }, {
+                offset: 1,
+                color: '#74add1'
+              }])
+            }
+          }]
+        }
+        option.xAxis.data = this.xData
+        option.yAxis.data = data
+        option.series[0].data = data
+        this.chart.setOption(option)
       }
-      option.xAxis.data = this.xData
-      option.yAxis.data = data
-      option.series[0].data = data
-      this.chart.setOption(option)
     },
     initChart() {
       var myDate = new Date()
@@ -476,119 +579,227 @@ export default {
         this.twoData.splice(0, this.twoData.length - 2500)
       }
       this.chart1 = echarts.init(document.getElementById('vibrateChart'))
-      const option = {
-        tooltip: {
-          trigger: 'item'
-        },
-        backgroundColor: '#F2F6FC',
-        grid: {
-          height: '80%',
-          top: '0'
-        },
-        xAxis: {
-          type: 'category',
-          data: []
-        },
-        yAxis: {
-          type: 'category',
-          data: []
-        },
-        toolbox: {
-          feature: {
-            dataZoom: {
-              yAxisIndex: 'none'
-            },
-            restore: {},
-            saveAsImage: {}
-          }
-        },
-        visualMap: {
-          type: 'piecewise',
-          calculable: true,
-          orient: 'horizontal',
-          left: 'center',
-          bottom: '5%',
-          splitNumber: 8,
-          pieces: [
-            {
-              gt: this.baseStandInfo.tdColor1,
-              lte: this.baseStandInfo.tdColor2,
-              color: '#6495ED'
-            }, {
-              gt: this.baseStandInfo.tdColor2,
-              lte: this.baseStandInfo.tdColor3,
-              color: '#0000FF'
-            }, {
-              gt: this.baseStandInfo.tdColor3,
-              lte: this.baseStandInfo.tdColor4,
-              color: '#FFD700'
-            }, {
-              gt: this.baseStandInfo.tdColor4,
-              lte: this.baseStandInfo.tdColor5,
-              color: '#FFA500'
-            }, {
-              gt: this.baseStandInfo.tdColor5,
-              lte: this.baseStandInfo.tdColor6,
-              color: '#FF4500'
-            }, {
-              gt: this.baseStandInfo.tdColor6,
-              color: '#FF0000'
-            }],
-          outOfRange: {
-            color: '#999'
+      if (this.$i18n.locale === 'cn') {
+        const option = {
+          tooltip: {
+            trigger: 'item'
           },
-          inRange: {
-            color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
-          }
-        },
-        series: [{
-          name: '强度',
-          type: 'heatmap',
-          // type: 'scatter',
-
-          data: [],
-          symbolSize: function(param) {
-            // 每个点是一个矩形，其[宽px, 高px]
-            return [6, 16]
+          backgroundColor: '#F2F6FC',
+          grid: {
+            height: '80%',
+            top: '0'
           },
-          emphasis: {
-            itemStyle: {
-              borderColor: '#333',
-              borderWidth: 1
+          xAxis: {
+            type: 'category',
+            data: []
+          },
+          yAxis: {
+            type: 'category',
+            data: []
+          },
+          toolbox: {
+            feature: {
+              dataZoom: {
+                yAxisIndex: 'none'
+              },
+              restore: {},
+              saveAsImage: {}
             }
           },
-          progressive: 1000,
-          animation: false
-        }]
-      }
-      option.xAxis.data = this.xData
-      option.yAxis.data = this.yData
-      option.series[0].data = this.twoData
-      console.log(this.xData)
-      console.log(this.twoData)
+          visualMap: {
+            type: 'piecewise',
+            calculable: true,
+            orient: 'horizontal',
+            left: 'center',
+            bottom: '5%',
+            splitNumber: 8,
+            pieces: [
+              {
+                gt: this.baseStandInfo.tdColor1,
+                lte: this.baseStandInfo.tdColor2,
+                color: '#6495ED'
+              }, {
+                gt: this.baseStandInfo.tdColor2,
+                lte: this.baseStandInfo.tdColor3,
+                color: '#0000FF'
+              }, {
+                gt: this.baseStandInfo.tdColor3,
+                lte: this.baseStandInfo.tdColor4,
+                color: '#FFD700'
+              }, {
+                gt: this.baseStandInfo.tdColor4,
+                lte: this.baseStandInfo.tdColor5,
+                color: '#FFA500'
+              }, {
+                gt: this.baseStandInfo.tdColor5,
+                lte: this.baseStandInfo.tdColor6,
+                color: '#FF4500'
+              }, {
+                gt: this.baseStandInfo.tdColor6,
+                color: '#FF0000'
+              }],
+            outOfRange: {
+              color: '#999'
+            },
+            inRange: {
+              color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+            }
+          },
+          series: [{
+            name: '强度',
+            type: 'heatmap',
+            // type: 'scatter',
 
-      const that = this
+            data: [],
+            symbolSize: function(param) {
+            // 每个点是一个矩形，其[宽px, 高px]
+              return [6, 16]
+            },
+            emphasis: {
+              itemStyle: {
+                borderColor: '#333',
+                borderWidth: 1
+              }
+            },
+            progressive: 1000,
+            animation: false
+          }]
+        }
+        option.xAxis.data = this.xData
+        option.yAxis.data = this.yData
+        option.series[0].data = this.twoData
 
-      this.chart1.on('restore', function(params) { // 选取的x轴值
-        that.startX = 0
-        that.endX = that.Data1.length
-      })
-      this.chart1.on('dataZoom', function(params) { // 选取的x轴值
-        var start = params.batch[0].startValue
-        var end = params.batch[0].endValue
-        // var startX = option.xAxis.data[start] / that.baseStandInfo.precisions
-        // var endX = option.xAxis.data[end] / that.baseStandInfo.precisions
-        if (start !== undefined) {
-          that.startX = start
-          that.endX = end
-        } else {
+        const that = this
+
+        this.chart1.on('restore', function(params) { // 选取的x轴值
           that.startX = 0
           that.endX = that.Data1.length
+        })
+        this.chart1.on('dataZoom', function(params) { // 选取的x轴值
+          var start = params.batch[0].startValue
+          var end = params.batch[0].endValue
+          // var startX = option.xAxis.data[start] / that.baseStandInfo.precisions
+          // var endX = option.xAxis.data[end] / that.baseStandInfo.precisions
+          if (start !== undefined) {
+            that.startX = start
+            that.endX = end
+          } else {
+            that.startX = 0
+            that.endX = that.Data1.length
+          }
+        })
+        this.chart1.setOption(option)
+      } else if (this.$i18n.locale === 'en') {
+        const option = {
+          tooltip: {
+            trigger: 'item'
+          },
+          backgroundColor: '#F2F6FC',
+          grid: {
+            height: '80%',
+            top: '0'
+          },
+          xAxis: {
+            type: 'category',
+            data: []
+          },
+          yAxis: {
+            type: 'category',
+            data: []
+          },
+          toolbox: {
+            feature: {
+              dataZoom: {
+                yAxisIndex: 'none'
+              },
+              restore: {},
+              saveAsImage: {}
+            }
+          },
+          visualMap: {
+            type: 'piecewise',
+            calculable: true,
+            orient: 'horizontal',
+            left: 'center',
+            bottom: '5%',
+            splitNumber: 8,
+            pieces: [
+              {
+                gt: this.baseStandInfo.tdColor1,
+                lte: this.baseStandInfo.tdColor2,
+                color: '#6495ED'
+              }, {
+                gt: this.baseStandInfo.tdColor2,
+                lte: this.baseStandInfo.tdColor3,
+                color: '#0000FF'
+              }, {
+                gt: this.baseStandInfo.tdColor3,
+                lte: this.baseStandInfo.tdColor4,
+                color: '#FFD700'
+              }, {
+                gt: this.baseStandInfo.tdColor4,
+                lte: this.baseStandInfo.tdColor5,
+                color: '#FFA500'
+              }, {
+                gt: this.baseStandInfo.tdColor5,
+                lte: this.baseStandInfo.tdColor6,
+                color: '#FF4500'
+              }, {
+                gt: this.baseStandInfo.tdColor6,
+                color: '#FF0000'
+              }],
+            outOfRange: {
+              color: '#999'
+            },
+            inRange: {
+              color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+            }
+          },
+          series: [{
+            name: 'Strength',
+            type: 'heatmap',
+            // type: 'scatter',
+
+            data: [],
+            symbolSize: function(param) {
+            // 每个点是一个矩形，其[宽px, 高px]
+              return [6, 16]
+            },
+            emphasis: {
+              itemStyle: {
+                borderColor: '#333',
+                borderWidth: 1
+              }
+            },
+            progressive: 1000,
+            animation: false
+          }]
         }
-      })
-      console.log(that.startX)// 区间开始值："17-11-06"
-      console.log(that.endX)// 区间结束值："17-11-08"
-      this.chart1.setOption(option)
+        option.xAxis.data = this.xData
+        option.yAxis.data = this.yData
+        option.series[0].data = this.twoData
+
+        const that = this
+
+        this.chart1.on('restore', function(params) { // 选取的x轴值
+          that.startX = 0
+          that.endX = that.Data1.length
+        })
+        this.chart1.on('dataZoom', function(params) { // 选取的x轴值
+          var start = params.batch[0].startValue
+          var end = params.batch[0].endValue
+          // var startX = option.xAxis.data[start] / that.baseStandInfo.precisions
+          // var endX = option.xAxis.data[end] / that.baseStandInfo.precisions
+          if (start !== undefined) {
+            that.startX = start
+            that.endX = end
+          } else {
+            that.startX = 0
+            that.endX = that.Data1.length
+          }
+        })
+        this.chart1.setOption(option)
+      }
     },
     createWs1() { // 监听
       if (window.WebSocket) {
@@ -619,7 +830,11 @@ export default {
           // that.contextAudioStop()
         }
       } else {
-        this.$message.error('浏览器不支持WebSocket')
+        if (this.$i18n.locale === 'cn') {
+          this.$message.error('浏览器不支持WebSocket')
+        } else if (this.$i18n.locale === 'en') {
+          this.$message.error('The browser does not support WebSocket')
+        }
       }
     },
     createWs() { // 二维振动ws
@@ -650,7 +865,11 @@ export default {
           // that.contextAudioStop()
         }
       } else {
-        this.$message.error('浏览器不支持WebSocket')
+        if (this.$i18n.locale === 'cn') {
+          this.$message.error('浏览器不支持WebSocket')
+        } else if (this.$i18n.locale === 'en') {
+          this.$message.error('The browser does not support WebSocket')
+        }
       }
     },
 

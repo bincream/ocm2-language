@@ -38,7 +38,7 @@ import Layout from '@/layout'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
-export const constantRoutes = [
+const constantRoutesCN = [
   {
     path: '/redirect',
     component: Layout,
@@ -83,8 +83,55 @@ export const constantRoutes = [
       }
     ]
   }
-
 ]
+const constantRoutesEN = [
+  {
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path(.*)',
+        component: () => import('@/views/redirect/index')
+      }
+    ]
+  },
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+  {
+    path: '/auth-redirect',
+    component: () => import('@/views/login/auth-redirect'),
+    hidden: true
+  },
+  {
+    path: '/404',
+    component: () => import('@/views/error-page/404'),
+    hidden: true
+  },
+  {
+    path: '/401',
+    component: () => import('@/views/error-page/401'),
+    hidden: true
+  },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/dashboard/index'),
+        name: 'Dashboard',
+        meta: { title: 'Home', icon: 'nested', affix: true }
+      }
+    ]
+  }
+]
+const lang = JSON.parse(JSON.stringify(window.localStorage)).lang
+export const constantRoutes = lang === 'cn' ? constantRoutesCN : constantRoutesEN
 
 /**
  * asyncRoutes
@@ -97,19 +144,14 @@ export const asyncRoutes = [
     component: Layout,
     // alwaysShow: true, // 总是显示根菜单吗
     name: 'systemtest',
-    meta: {
-      title: '系统测试',
-      icon: 'tab'
-
-    },
     children: [
       {
-        path: 'systemtest',
+        path: '/systemtest',
         component: () => import('@/views/systemtest/index'),
         name: 'Systemtest',
         meta: {
-          title: '系统测试'
-
+          title: '系统测试',
+          icon: 'tab'
         }
       }
     ]
@@ -232,20 +274,14 @@ export const asyncRoutes = [
     path: '/maintain',
     component: Layout,
     // alwaysShow: true, // 总是显示根菜单吗
-    meta: {
-      title: '设备维护',
-      icon: 'example'
-
-      // roles: ['', 'editor'] // 可以在根导航中设置角色
-    },
     children: [
       {
-        path: 'maintain',
+        path: '/maintain',
         component: () => import('@/views/maintain/index'),
         name: 'maintain',
         meta: {
-          title: '设备维护'
-
+          title: '设备维护',
+          icon: 'example'
         }
       }
     ]
@@ -364,6 +400,273 @@ export const asyncRoutes = [
   { path: '*', redirect: '404', hidden: true }
 ]
 
+export const asyncRoutesEn = [
+
+  {
+    path: '/systemtest',
+    component: Layout,
+    // alwaysShow: true, // 总是显示根菜单吗
+    name: 'systemtest',
+    // meta: {
+    //   title: '系统测试',
+    //   icon: 'tab'
+    // },
+    // 11111
+    children: [
+      {
+        path: '/systemtest',
+        component: () => import('@/views/systemtest/index'),
+        name: 'Systemtest',
+        meta: {
+          title: 'System test',
+          icon: 'tab'
+        }
+      }
+    ]
+  },
+  {
+    path: '/signal',
+    component: Layout,
+    alwaysShow: true, // 总是显示根菜单吗
+    name: 'Signal',
+    meta: {
+      title: 'Signal adjust',
+      icon: 'chart'
+
+    },
+    children: [
+      {
+        path: 'squiggle/rscQuery',
+        component: () => import('@/views/signal/squiggle'),
+        name: 'Squiggle',
+        meta: {
+          title: 'Wave curve'
+        }
+      },
+      {
+        path: 'twoDimension',
+        component: () => import('@/views/signal/twoDimension'),
+        name: 'TwoDimension',
+        meta: {
+          title: 'Two-dimensional vibration'
+        }
+      },
+      {
+        path: 'otdr/otdrQuery',
+        component: () => import('@/views/signal/otdr'),
+        name: 'OTDR',
+        meta: {
+          title: 'OTDR'
+        }
+      }
+    ]
+  },
+  {
+    path: '/ai',
+    component: Layout,
+    redirect: 'ai',
+    name: 'Ai',
+    meta: {
+      title: 'AI recognition',
+      icon: 'icon'
+    },
+    children: [
+      {
+        path: 'aiModel',
+        component: () => import('@/views/Ai/aimodel'),
+        name: 'aimodel',
+        meta: {
+          title: 'Recognition model'
+        }
+      },
+      {
+        path: 'aiModelType',
+        component: () => import('@/views/Ai/aiModelType'),
+        name: 'aiModelType',
+        meta: {
+          title: 'Identification type'
+        }
+      }
+    ]
+  },
+  {
+    path: '/alarm',
+    component: Layout,
+    alwaysShow: true, // 总是显示根菜单吗
+    name: 'alarm',
+    meta: {
+      title: 'Alarm MGT',
+      icon: 'dashboard'
+      // roles: ['', 'editor'] // 可以在根导航中设置角色
+    },
+    children: [
+      {
+        path: 'alarmInfo',
+        component: () => import('@/views/alarm/realTimeAlarm'),
+        name: 'RealTimeAlarm',
+        meta: {
+          title: 'Real-time alarm'
+
+        }
+      },
+      {
+        path: 'alarmHis',
+        component: () => import('@/views/alarm/historicalAlarm'),
+        name: 'HistoricalAlarm',
+        meta: {
+          title: 'History alarm'
+        }
+      },
+      {
+        path: 'alarmTime',
+        component: () => import('@/views/alarm/timeStatistics'),
+        name: 'timeStatistics',
+        meta: {
+          title: 'Time statistics'
+
+        }
+      },
+      {
+        path: 'alarmDistance',
+        component: () => import('@/views/alarm/regionalStatistics'),
+        name: 'regionalStatistics',
+        meta: {
+          title: 'Regional Statistics'
+
+        }
+      }
+    ]
+  },
+  {
+    path: '/maintain',
+    component: Layout,
+    // alwaysShow: true, // 总是显示根菜单吗
+    children: [
+      {
+        path: '/maintain',
+        component: () => import('@/views/maintain/index'),
+        name: 'maintain',
+        meta: {
+          title: 'Maintenance',
+          icon: 'example'
+        }
+      }
+    ]
+  },
+  {
+    path: '/rsc',
+    component: Layout,
+    // 11111
+    children: [
+      {
+        path: 'baseStand',
+        component: () => import('@/views/rsc/rscBaseStand'),
+        name: 'Rsc',
+        icon: 'tree-table',
+        meta: { title: 'Base station MGT', icon: 'list' }
+
+      }
+    ]
+  },
+
+  {
+    path: '/sysRole',
+    component: Layout,
+    name: 'System',
+    meta: {
+      title: 'System MGT',
+      icon: 'user'
+
+    },
+    children: [{
+      path: 'systemUser/getList',
+      component: () => import('@/views/system/sysUser'),
+      name: 'sysUser',
+      meta: {
+        title: 'System user MGT',
+        noCache: true
+
+      }
+    },
+    {
+      path: 'sysPer/getList',
+      component: () => import('@/views/system/sysRole'),
+      name: 'sysRole',
+      meta: {
+        title: 'Role authority MGT',
+        noCache: true
+
+      }
+    },
+
+    {
+      path: 'sysLog/getList',
+      component: () => import('@/views/system/sysLog'),
+      name: 'SysLog',
+      meta: {
+        title: 'Operation log'
+
+      }
+    }
+    ]
+  },
+  {
+    path: '/addRole',
+    component: Layout,
+    children: [
+      {
+        path: 'addRole',
+        component: () => import('@/views/addRole'),
+        name: 'AddRole',
+        meta: { title: '添加权限', icon: 'keyuan', noCache: true }
+      }
+    ]
+  },
+  // {
+  //   path: '/permission',
+  //   component: Layout,
+  //   redirect: 'permission/page',
+  //   alwaysShow: true, // will always show the root menu
+  //   name: 'Permission',
+  //   meta: {
+  //     title: 'Permission',
+  //     icon: 'lock',
+  //     roles: ['', 'editor'] // you can set roles in root nav
+  //   },
+  //   children: [
+  //     {
+  //       path: 'page',
+  //       component: () => import('@/views/permission/page'),
+  //       name: 'PagePermission',
+  //       meta: {
+  //         title: 'Page Permission'
+  //         // or you can only set roles in sub nav
+  //       }
+  //     },
+  //     {
+  //       path: 'directive',
+  //       component: () => import('@/views/permission/directive'),
+  //       name: 'DirectivePermission',
+  //       meta: {
+  //         title: 'Directive Permission'
+
+  //         // if do not set roles, means: this page does not require permission
+  //       }
+  //     },
+  //     {
+  //       path: 'role',
+  //       component: () => import('@/views/permission/role'),
+  //       name: 'RolePermission',
+  //       meta: {
+  //         title: 'Role Permission'
+
+  //       }
+  //     }
+  //   ]
+  // },
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '404', hidden: true }
+]
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),

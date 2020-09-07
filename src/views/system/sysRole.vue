@@ -5,7 +5,7 @@
         <div class="filter-container" style="position:relative">
           <el-input
             v-model="listQuery.keywords"
-            placeholder="输入系统角色名称"
+            :placeholder="$t('systemUser.shuruxitongjuesemingcheng')"
             style="width: 200px;"
             class="filter-item"
             @keyup.enter.native="handleFilter"
@@ -17,7 +17,7 @@
             style="position:absolute;right:0px"
             type="primary"
             @click="handleCreate"
-          >新增</el-button>
+          >{{ $t('systemUser.xinzeng') }}</el-button>
         </div>
 
         <el-table
@@ -32,18 +32,18 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" />
-          <el-table-column label="角色名称" align="center">
+          <el-table-column :label="$t('systemUser.juesemingcheng')" align="center">
             <template slot-scope="scope">
               <span v-show="scope.row.dialogStatus == 'info'">{{ scope.row.roleName }}</span>
               <el-input
                 v-show="scope.row.dialogStatus == 'create' || scope.row.dialogStatus == 'update'"
                 v-model="scope.row.roleName"
                 style="width: 80%;"
-                placeholder="请输入"
+                :placeholder="$t('systemUser.qingshuru')"
               />
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="220">
+          <el-table-column :label="$t('systemUser.caozuo')" width="220">
             <template slot-scope="scope">
               <el-button
                 v-if="checkPermission(['sysPer/update'])"
@@ -51,21 +51,21 @@
                 type="primary"
                 size="small"
                 @click.stop="handleSave(scope.row)"
-              >确认</el-button>
+              >{{ $t('systemUser.queren') }}</el-button>
               <el-button
                 v-if="checkPermission(['sysPer/update'])"
                 v-show="scope.row.dialogStatus == 'info' && scope.row.id > 4"
                 type="primary"
                 size="small"
                 @click.stop="handleUpdate(scope.row)"
-              >编辑</el-button>
+              >{{ $t('systemUser.bianji') }}</el-button>
               <el-button
                 v-if="checkPermission(['sysPer/delete'])"
                 v-show="scope.row.id > 4"
                 type="danger"
                 size="small"
                 @click.stop="handleDelete(scope.row)"
-              >删除</el-button>
+              >{{ $t('systemUser.shanchu') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -88,7 +88,7 @@
         <div class="filter-container" style="position:relative">
           <el-input
             v-model="filterText"
-            placeholder="输入关键字进行过滤"
+            :placeholder="$t('systemUser.shuruguanjianzijinxingguolv')"
             style="width: 200px;"
             class="filter-item"
           />
@@ -98,7 +98,7 @@
             style="position:absolute;right:0px"
             type="primary"
             @click="assignPermissions"
-          >分配权限</el-button>
+          >{{ $t('systemUser.fenpeiquanxian') }}</el-button>
         </div>
         <div class="scroll" @mouseenter="mouseEnter" @mouseleave="mouseLeave">
           <el-tree
@@ -194,34 +194,66 @@ export default {
     },
     // 新增提交
     handleSave(row) {
-      if (row.id) {
-        if (!row.roleName) {
-          this.$message.error('角色名称不能为空')
-          return false
-        }
-        update(row).then((response) => {
-          if (response.data) {
-            this.$message.success('修改成功')
-            this.dialogFormVisible = false
-            this.getList()
-          } else {
-            this.$message.error(('修改失败'))
+      if (this.$i18n.locale === 'cn') {
+        if (row.id) {
+          if (!row.roleName) {
+            this.$message.error('角色名称不能为空')
+            return false
           }
-        })
-      } else {
-        if (!row.roleName) {
-          this.$message.error('角色名称不能为空')
-          return false
-        }
-        save(row).then((response) => {
-          if (response.data) {
-            this.$message.success('新增成功')
-            this.dialogFormVisible = false
-            this.getList()
-          } else {
-            this.$message.error('新增失败')
+          update(row).then((response) => {
+            if (response.data) {
+              this.$message.success('修改成功')
+              this.dialogFormVisible = false
+              this.getList()
+            } else {
+              this.$message.error(('修改失败'))
+            }
+          })
+        } else {
+          if (!row.roleName) {
+            this.$message.error('角色名称不能为空')
+            return false
           }
-        })
+          save(row).then((response) => {
+            if (response.data) {
+              this.$message.success('新增成功')
+              this.dialogFormVisible = false
+              this.getList()
+            } else {
+              this.$message.error('新增失败')
+            }
+          })
+        }
+      } else if (this.$i18n.locale === 'en') {
+        if (row.id) {
+          if (!row.roleName) {
+            this.$message.error('Role name cannot be empty')
+            return false
+          }
+          update(row).then((response) => {
+            if (response.data) {
+              this.$message.success('Successfully modified')
+              this.dialogFormVisible = false
+              this.getList()
+            } else {
+              this.$message.error(('Fail to edit'))
+            }
+          })
+        } else {
+          if (!row.roleName) {
+            this.$message.error('Role name cannot be empty')
+            return false
+          }
+          save(row).then((response) => {
+            if (response.data) {
+              this.$message.success('Added successfully')
+              this.dialogFormVisible = false
+              this.getList()
+            } else {
+              this.$message.error('Add failed')
+            }
+          })
+        }
       }
     },
     // 修改
@@ -229,29 +261,56 @@ export default {
       row.dialogStatus = 'update'
     },
     handleDelete(row) {
-      if (row.id) {
-        this.$confirm('此操作将删除该记录, 是否继续?', '提示', {
-          confirmButtonText: '确 定',
-          cancelButtonText: '取 消',
-          type: 'warning'
-        }).then(() => {
-          deleteData({ id: row.id }).then(response => {
-            if (response.data) {
-              this.$message.success('删除成功')
-              this.getList()
-            } else {
-              this.$message.error('删除失败')
-            }
+      if (this.$i18n.locale === 'cn') {
+        if (row.id) {
+          this.$confirm('此操作将删除该记录, 是否继续?', '提示', {
+            confirmButtonText: '确 定',
+            cancelButtonText: '取 消',
+            type: 'warning'
+          }).then(() => {
+            deleteData({ id: row.id }).then(response => {
+              if (response.data) {
+                this.$message.success('删除成功')
+                this.getList()
+              } else {
+                this.$message.error('删除失败')
+              }
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
           })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
+        } else {
+          const index = this.list.indexOf(row)
+          this.list.splice(index, 1)
+        }
+      } else if (this.$i18n.locale === 'en') {
+        if (row.id) {
+          this.$confirm('This operation will delete the record, do you want to continue?', 'Notice', {
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
+            type: 'warning'
+          }).then(() => {
+            deleteData({ id: row.id }).then(response => {
+              if (response.data) {
+                this.$message.success('Successfully deleted')
+                this.getList()
+              } else {
+                this.$message.error('Failed to delete')
+              }
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: 'Cancelled to delete'
+            })
           })
-        })
-      } else {
-        const index = this.list.indexOf(row)
-        this.list.splice(index, 1)
+        } else {
+          const index = this.list.indexOf(row)
+          this.list.splice(index, 1)
+        }
       }
     },
     handleSelectionChange(val) {
@@ -262,19 +321,35 @@ export default {
     },
     // 详情页面
     handleDetail(row) {
-      if (!checkPermission(['sysPer/getPmList'])) {
-        this.$message.error('没有详情权限!')
-        return false
+      if (this.$i18n.locale === 'cn') {
+        if (!checkPermission(['sysPer/getPmList'])) {
+          this.$message.error('没有详情权限!')
+          return false
+        }
+        this.checkStrict = true
+        this.$refs.multipleTable.clearSelection()
+        this.$refs.multipleTable.toggleRowSelection(row)
+        this.$refs.tree.setCheckedKeys([])
+        getPerInfo({ id: row.id }).then(response => {
+          this.expandKey = response.data
+          this.$refs.tree.setCheckedKeys(response.data)
+          this.treeCheckIds = response.data
+        })
+      } else if (this.$i18n.locale === 'en') {
+        if (!checkPermission(['sysPer/getPmList'])) {
+          this.$message.error('No details permission!')
+          return false
+        }
+        this.checkStrict = true
+        this.$refs.multipleTable.clearSelection()
+        this.$refs.multipleTable.toggleRowSelection(row)
+        this.$refs.tree.setCheckedKeys([])
+        getPerInfo({ id: row.id }).then(response => {
+          this.expandKey = response.data
+          this.$refs.tree.setCheckedKeys(response.data)
+          this.treeCheckIds = response.data
+        })
       }
-      this.checkStrict = true
-      this.$refs.multipleTable.clearSelection()
-      this.$refs.multipleTable.toggleRowSelection(row)
-      this.$refs.tree.setCheckedKeys([])
-      getPerInfo({ id: row.id }).then(response => {
-        this.expandKey = response.data
-        this.$refs.tree.setCheckedKeys(response.data)
-        this.treeCheckIds = response.data
-      })
     },
     filter() {
       if (this.filterText === '') {
@@ -313,31 +388,59 @@ export default {
       console.log('鼠标滑出')
     },
     handCheck(data) {
-      if (this.ids.length === 0) {
-        this.$message.error('请选择一个角色进行分配权限')
-        this.$refs.tree.setCheckedKeys([])
-        return false
+      if (this.$i18n.locale === 'cn') {
+        if (this.ids.length === 0) {
+          this.$message.error('请选择一个角色进行分配权限')
+          this.$refs.tree.setCheckedKeys([])
+          return false
+        }
+      } else if (this.$i18n.locale === 'en') {
+        if (this.ids.length === 0) {
+          this.$message.error('Please select a role to assign permissions')
+          this.$refs.tree.setCheckedKeys([])
+          return false
+        }
       }
       this.treeCheckIds = this.uq(this.$refs.tree.getCheckedKeys(), this.$refs.tree.getHalfCheckedKeys())
     },
     assignPermissions() {
-      if (this.ids.length === 0) {
-        this.$message.error('请选择一个角色进行分配权限')
-        this.$refs.tree.setCheckedKeys([])
-        return false
-      } else if (this.ids.length > 1) {
-        this.$message.error('角色分配权限时不可多选')
-        return false
-      }
-      assPer({ id: this.ids[0], pmList: this.treeCheckIds }).then(response => {
-        if (response.data) {
-          this.$message.success('权限分配成功')
+      if (this.$i18n.locale === 'cn') {
+        if (this.ids.length === 0) {
+          this.$message.error('请选择一个角色进行分配权限')
           this.$refs.tree.setCheckedKeys([])
-          this.getList()
-        } else {
-          this.$message.error('权限分配失败')
+          return false
+        } else if (this.ids.length > 1) {
+          this.$message.error('角色分配权限时不可多选')
+          return false
         }
-      })
+        assPer({ id: this.ids[0], pmList: this.treeCheckIds }).then(response => {
+          if (response.data) {
+            this.$message.success('权限分配成功')
+            this.$refs.tree.setCheckedKeys([])
+            this.getList()
+          } else {
+            this.$message.error('权限分配失败')
+          }
+        })
+      } else if (this.$i18n.locale === 'en') {
+        if (this.ids.length === 0) {
+          this.$message.error('Please select a role to assign permissions')
+          this.$refs.tree.setCheckedKeys([])
+          return false
+        } else if (this.ids.length > 1) {
+          this.$message.error('Do not select multiple roles when assigning permissions')
+          return false
+        }
+        assPer({ id: this.ids[0], pmList: this.treeCheckIds }).then(response => {
+          if (response.data) {
+            this.$message.success('Permission assigned successfully')
+            this.$refs.tree.setCheckedKeys([])
+            this.getList()
+          } else {
+            this.$message.error('Permission assignment failed')
+          }
+        })
+      }
     }
   }
 }

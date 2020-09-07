@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="optical">
-      <span class="text">光纤长度</span>
+      <span style="background: #a5db8f;" class="text">{{ $t('dashboard.guangxianchangdu') }}</span>
     </div>
     <div class="block">
       <el-tooltip v-for="(item,index) in pointList" :key="index" effect="dark" :content="item.value" placement="top">
@@ -15,7 +15,7 @@
       />
     </div>
     <div class="optical">
-      <span class="text">实时报警列表</span>
+      <span style="background: #a5db8f;" class="text">{{ $t('dashboard.shishibaojingliebiao') }}</span>
     </div>
     <el-table
       ref="multipleTable"
@@ -28,31 +28,31 @@
       height="500"
       @row-click="handleDetail"
     >
-      <el-table-column label="报警类型" prop="alarmType" />
-      <el-table-column label="通道号" prop="lineInfoChannel" />
-      <el-table-column label="距离" prop="distance" />
-      <el-table-column label="开始点" prop="beginCol" />
-      <el-table-column label="中心点" prop="centerCol" />
-      <el-table-column label="结束点" prop="endCol" />
-      <el-table-column label="开始时间" prop="beginTime" />
-      <el-table-column label="告警时间" prop="alarmTime" />
-      <el-table-column label="振动次数" prop="freq" />
-      <el-table-column label="强度" prop="amplitude" />
-      <el-table-column label="等级" prop="level" />
-      <el-table-column label="震动类型" prop="vibType" />
-      <el-table-column label="处理状态">
+      <el-table-column :label="$t('dashboard.baojingleixing')" prop="alarmType" />
+      <el-table-column :label="$t('dashboard.tongdaohao')" prop="lineInfoChannel" />
+      <el-table-column :label="$t('dashboard.juli')" prop="distance" />
+      <el-table-column :label="$t('dashboard.kaishidian')" prop="beginCol" />
+      <el-table-column :label="$t('dashboard.zhongxindian')" prop="centerCol" />
+      <el-table-column :label="$t('dashboard.jieshudian')" prop="endCol" />
+      <el-table-column :label="$t('dashboard.kaishishijian')" prop="beginTime" />
+      <el-table-column :label="$t('dashboard.gaojingshijian')" prop="alarmTime" />
+      <el-table-column :label="$t('dashboard.zhendongcishu')" prop="freq" />
+      <el-table-column :label="$t('dashboard.qiangdu')" prop="amplitude" />
+      <el-table-column :label="$t('dashboard.dengji')" prop="level" />
+      <el-table-column :label="$t('dashboard.zhendongleixing')" prop="vibType" />
+      <el-table-column :label="$t('dashboard.chulizhuangtai')">
         <template slot-scope="scope">
           <span>{{ scope.row.solution |solution }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column :label="$t('dashboard.caozuo')" width="200">
         <template slot-scope="scope">
           <el-button
             v-show="scope.row.solution == 0"
             type="warning"
             size="small"
             @click.stop="handleSolu(scope.row)"
-          >处理报警</el-button>
+          >{{ $t('dashboard.chulibaojing') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -71,90 +71,90 @@
       />
     </div>
     <!-- 详情 -->
-    <el-dialog :visible.sync="dialogDetVisible" title="报警详情" width="100%">
+    <el-dialog :visible.sync="dialogDetVisible" :title="$t('dashboard.baojingxiangqing')" width="100%">
       <div class="basic">
-        <div class="title">光缆信息</div>
+        <div class="title">{{ $t('dashboard.guanglanxinxi') }}</div>
         <table>
           <tr>
-            <td class="blackMark">报警类型:</td>
+            <td class="blackMark">{{ $t('dashboard.baojingleixing:') }}</td>
             <td class="width21">
               <span v-text="alarmInfo.alarmType" />
             </td>
-            <td class="blackMark">通道号:</td>
+            <td class="blackMark">{{ $t('dashboard.tongdaohao:') }}</td>
             <td class="width21">
               <span v-text="alarmInfo.lineInfoChannel" />
             </td>
-            <td class="blackMark">距离:</td>
+            <td class="blackMark">{{ $t('dashboard.juli:') }}</td>
             <td class="width21">
               <span v-text="alarmInfo.distance" />
             </td>
           </tr>
           <tr>
-            <td class="blackMark">开始点:</td>
+            <td class="blackMark">{{ $t('dashboard.kaishidian:') }}</td>
             <td class="width21">
               <span v-text="alarmInfo.beginCol" />
             </td>
-            <td class="blackMark">中心点:</td>
+            <td class="blackMark">{{ $t('dashboard.zhongxindian:') }}</td>
             <td class="width21">
               <span v-text="alarmInfo.centerCol" />
             </td>
-            <td class="blackMark">结束点:</td>
+            <td class="blackMark">{{ $t('dashboard.jieshudian:') }}</td>
             <td class="width21">
               <span v-text="alarmInfo.endCol" />
             </td>
           </tr>
           <tr>
-            <td class="blackMark">强度:</td>
+            <td class="blackMark">{{ $t('dashboard.qiangdu:') }}</td>
             <td class="width21">
               <span>{{ alarmInfo.amplitude }}</span>
             </td>
-            <td class="blackMark">开始时间:</td>
+            <td class="blackMark">{{ $t('dashboard.kaishishijian:') }}</td>
             <td class="width21">
               <span v-text="alarmInfo.beginTime" />
             </td>
-            <td class="blackMark">告警时间:</td>
+            <td class="blackMark">{{ $t('dashboard.gaojingshijian:') }}</td>
             <td class="width21">
               <span>{{ alarmInfo.alarmTime }}</span>
             </td>
           </tr>
           <tr>
-            <td class="blackMark">等级:</td>
+            <td class="blackMark">{{ $t('dashboard.dengji:') }}</td>
             <td class="width21">
               <span>{{ alarmInfo.level }}</span>
             </td>
-            <td class="blackMark">振动次数:</td>
+            <td class="blackMark">{{ $t('dashboard.zhendongcishu:') }}</td>
             <td class="width21">
               <span>{{ alarmInfo.freq }}</span>
             </td>
-            <td class="blackMark">损耗:</td>
+            <td class="blackMark">{{ $t('dashboard.sunhao:') }}</td>
             <td class="width21">
               <span>{{ alarmInfo.loss }}</span>
             </td>
           </tr>
           <tr>
-            <td class="blackMark">反射损耗:</td>
+            <td class="blackMark">{{ $t('dashboard.fanshesunhao:') }}</td>
             <td class="width21">
               <span>{{ alarmInfo.refloss }}</span>
             </td>
-            <td class="blackMark">累计损耗:</td>
+            <td class="blackMark">{{ $t('dashboard.leijisunhao:') }}</td>
             <td class="width21">
               <span>{{ alarmInfo.cumloss }}</span>
             </td>
-            <td class="blackMark">事件类型:</td>
+            <td class="blackMark">{{ $t('dashboard.shijianleixing:') }}</td>
             <td class="width21">
               <span>{{ alarmInfo.eventType | eventType }}</span>
             </td>
           </tr>
           <tr>
-            <td class="blackMark">总损耗:</td>
+            <td class="blackMark">{{ $t('dashboard.zongsunhao:') }}</td>
             <td class="width21">
               <span>{{ alarmInfo.allloss }}</span>
             </td>
-            <td class="blackMark">总反射损耗:</td>
+            <td class="blackMark">{{ $t('dashboard.zongfansesunhao:') }}</td>
             <td class="width21">
               <span>{{ alarmInfo.allrefloss }}</span>
             </td>
-            <td class="blackMark">震动类型:</td>
+            <td class="blackMark">{{ $t('dashboard.zhendongleixing:') }}</td>
             <td class="width21">
               <span>{{ alarmInfo.vibType }}</span>
             </td>
@@ -162,7 +162,7 @@
         </table>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogDetVisible = false">取消</el-button>
+        <el-button @click="dialogDetVisible = false">{{ $t('dashboard.quxiao') }}</el-button>
       </div>
     </el-dialog>
 
@@ -199,8 +199,8 @@
           v-show="solutionEdit.id"
           type="primary"
           @click="createData('solutionEdit')"
-        >确认</el-button>
-        <el-button @click="dialogFormVisible = false">取消</el-button>
+        >{{ $t('queren') }}</el-button>
+        <el-button @click="dialogFormVisible = false">{{ $t('quxiao') }}</el-button>
       </div>
     </el-dialog> -->
   </div>
@@ -217,41 +217,85 @@ export default {
   },
   filters: {
     solution: function(val) {
-      switch (val) {
-        case 0:
-          return '未处理'
-        case 1:
-          return '已处理'
-        default:
-          break
+      const lang = JSON.parse(JSON.stringify(window.localStorage)).lang
+      if (lang === 'cn') {
+        switch (val) {
+          case 0:
+            return '未处理'
+          case 1:
+            return '已处理'
+          default:
+            break
+        }
+      } else if (lang === 'en') {
+        switch (val) {
+          case 0:
+            return 'Untreated'
+          case 1:
+            return 'Processed'
+          default:
+            break
+        }
       }
     },
     isAlarm: function(val) {
-      switch (val) {
-        case 0:
-          return '提醒'
-        case 1:
-          return '报警'
-        default:
-          break
+      const lang = JSON.parse(JSON.stringify(window.localStorage)).lang
+      if (lang === 'cn') {
+        switch (val) {
+          case 0:
+            return '提醒'
+          case 1:
+            return '报警'
+          default:
+            break
+        }
+      } else if (lang === 'en') {
+        switch (val) {
+          case 0:
+            return 'Remind'
+          case 1:
+            return 'Alarm'
+          default:
+            break
+        }
       }
     },
     eventType: function(val) {
-      switch (val) {
-        case 0:
-          return '非反射事件'
-        case 1:
-          return '反射事件'
-        case 2:
-          return '光纤始端'
-        case 3:
-          return '光纤始端'
-        case 4:
-          return '光纤末端'
-        case 5:
-          return '其它事件'
-        default:
-          break
+      const lang = JSON.parse(JSON.stringify(window.localStorage)).lang
+      if (lang === 'cn') {
+        switch (val) {
+          case 0:
+            return '非反射事件'
+          case 1:
+            return '反射事件'
+          case 2:
+            return '光纤始端'
+          case 3:
+            return '光纤始端'
+          case 4:
+            return '光纤末端'
+          case 5:
+            return '其它事件'
+          default:
+            break
+        }
+      } else if (lang === 'en') {
+        switch (val) {
+          case 0:
+            return 'Non-reflective event'
+          case 1:
+            return 'Reflection event'
+          case 2:
+            return 'Fiber beginning'
+          case 3:
+            return 'Fiber beginning'
+          case 4:
+            return 'Fiber end'
+          case 5:
+            return 'Other events'
+          default:
+            break
+        }
       }
     }
   },
@@ -271,7 +315,7 @@ export default {
       dialogDetVisible: false,
       alarmInfo: {},
       solutionEdit: {},
-      soluTypelList: [{ id: 0, value: '未处理' }, { id: 1, value: '已处理' }],
+      soluTypelList: [{ id: 0, value: 'Untreated' }, { id: 1, value: 'Processed' }],
       dialogFormVisible: false,
       rules: {
         solution: [{ required: true, message: '请输入', trigger: 'change' }]
@@ -353,7 +397,6 @@ export default {
           this.left = (item.centerCol / 500)
           this.pointList.push({ value: item.centerCol.toString(), left: this.left })
         })
-        console.log(this.pointList)
       })
     },
     handleSizeChange(val) {
@@ -382,20 +425,37 @@ export default {
       this.solutionEdit.id = row.id
       this.ids = []
       this.ids.push(row.id)
-      this.$confirm('是否确认该条告警已处理？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        resolve({ ids: this.ids }).then((response) => {
-          if (response.data) {
-            this.$message.success('操作成功')
-            this.getList()
-          } else {
-            this.$message.error('操作失败')
-          }
+      if (this.$i18n.locale === 'cn') {
+        this.$confirm('是否确认该条告警已处理？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          resolve({ ids: this.ids }).then((response) => {
+            if (response.data) {
+              this.$message.success('操作成功')
+              this.getList()
+            } else {
+              this.$message.error('操作失败')
+            }
+          })
         })
-      })
+      } else if (this.$i18n.locale === 'en') {
+        this.$confirm('Are you sure that the alarm has been processed?', 'Notice', {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          resolve({ ids: this.ids }).then((response) => {
+            if (response.data) {
+              this.$message.success('Successful operation')
+              this.getList()
+            } else {
+              this.$message.error('Operation failed')
+            }
+          })
+        })
+      }
     },
     handleSeeSolu(row) {
       this.solutionEdit.solution = row.solution
@@ -414,10 +474,7 @@ export default {
 .optical{
   height: 30px;
   text-align: center;
-  margin-right: 45%;
-  margin-left: 45%;
-  background: #a5db8f;
-  margin: 20px 45% 20px 45%;
+  margin: 20px 40% 20px 40%;
 }
 .text{
   font-size: 22px;

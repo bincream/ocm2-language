@@ -37,7 +37,11 @@ export default {
       const first = matched[0]
 
       if (!this.isDashboard(first)) {
-        matched = [{ path: '/dashboard', meta: { title: '首页' }}].concat(matched)
+        if (this.$i18n.locale === 'cn') {
+          matched = [{ path: '/dashboard', meta: { title: '首页' }}].concat(matched)
+        } else if (this.$i18n.locale === 'en') {
+          matched = [{ path: '/dashboard', meta: { title: 'Home' }}].concat(matched)
+        }
       }
 
       this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)

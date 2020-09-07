@@ -7,7 +7,7 @@
         <div class="basic">
           <table class="table_table">
             <tr>
-              <td class="blackMark">当前版本</td>
+              <td class="blackMark">{{ $t('maintain.dangqianbanben') }}</td>
               <td class="width20">
                 <span>{{ info.trainReminderTime }}1.1.0.001</span>
               </td>
@@ -24,7 +24,7 @@
           <table class="table_table">
             <tr>
               <td class="blackMark">
-                设备升级
+                {{ $t('maintain.shebeishengji') }}
               </td>
               <td style="width: 10%" />
             </tr>
@@ -34,14 +34,14 @@
           <table class="table_table">
             <tr>
               <td class="blackMark">
-                DSP远程升级
+                {{ $t('maintain.DSPyuanchengshengji') }}
                 <i class="el-icon-share" />
               </td>
               <td style="width: 10%" />
             </tr>
             <tr>
               <td class="blackMark">
-                FPGA远程升级
+                {{ $t('maintain.FPGAyuanchengshengji') }}
                 <i class="el-icon-share" />
               </td>
               <td style="width: 10%" />
@@ -57,10 +57,10 @@
           <table class="table_table">
             <tr>
               <td class="blackMark">
-                恢复出厂设置
+                {{ $t('maintain.huifuchuchanshezhi') }}
               </td>
               <td class="width20">
-                <el-button type="primary" @click="reset">确定</el-button>
+                <el-button type="primary" @click="reset">{{ $t('queren') }}</el-button>
               </td>
               <td class="blackMark" />
             </tr>
@@ -133,7 +133,7 @@ export default {
 .blackMark{
     color: black;
   font-weight: 600;
-  width: 10%;
+  width: 20%;
   text-align: right;
 }
 

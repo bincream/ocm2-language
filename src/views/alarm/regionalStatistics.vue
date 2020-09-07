@@ -6,9 +6,9 @@
         style="width: 400px;margin-left: 10px;"
         type="datetimerange"
         class="filter-item"
-        start-placeholder="开始日期"
-        range-separator="至"
-        end-placeholder="告警时间"
+        :start-placeholder="$t('alarmInfo.kaishishijian')"
+        range-separator="~"
+        :end-placeholder="$t('alarmInfo.gaojingshijian')"
         value-format="yyyy-MM-dd HH:mm:ss"
         clearable
       />
@@ -146,16 +146,30 @@ export default {
       this.xData = []
       this.yData = []
       getAllList(this.listQuery).then(response => {
-        if (response.data && response.data.length > 0) {
-          response.data.forEach(item => {
-            this.xData.push(item.distance)
-            this.yData.push(item.count)
-          })
-          this.xData.push(50000)
-          this.yData.push(0)
-          this.initChart()
-        } else {
-          this.$message.error('该搜索条件下没有报警信息')
+        if (this.$i18n.locale === 'cn') {
+          if (response.data && response.data.length > 0) {
+            response.data.forEach(item => {
+              this.xData.push(item.distance)
+              this.yData.push(item.count)
+            })
+            this.xData.push(50000)
+            this.yData.push(0)
+            this.initChart()
+          } else {
+            this.$message.error('该搜索条件下没有报警信息')
+          }
+        } else if (this.$i18n.locale === 'en') {
+          if (response.data && response.data.length > 0) {
+            response.data.forEach(item => {
+              this.xData.push(item.distance)
+              this.yData.push(item.count)
+            })
+            this.xData.push(50000)
+            this.yData.push(0)
+            this.initChart()
+          } else {
+            this.$message.error('There is no alarm information under this search condition')
+          }
         }
       })
     },
@@ -165,71 +179,139 @@ export default {
       }
     },
     initChart() {
-      const option = {
-        title: {
-          top: '5%',
-          text: '区域报警分析图'
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'cross',
-            label: {
-              backgroundColor: '#6a7985'
-            }
-          }
-        },
-        legend: {
-          top: '5%',
-          data: ['报警次数']
-        },
-        toolbox: {
-          show: true,
-          feature: {
-            dataView: { show: true, readOnly: false },
-            magicType: { show: true, type: ['line', 'bar'] },
-            restore: { show: true },
-            saveAsImage: { show: true }
-          }
-        },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
-        xAxis: [
-          {
-            type: 'category',
-            boundaryGap: false,
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-          }
-        ],
-        yAxis: [
-          {
-            type: 'value'
-          }
-        ],
-        series: [
-          {
-            name: '报警次数',
-            type: 'line',
-            stack: '总量',
-            label: {
-              normal: {
-                show: true,
-                position: 'top'
+      if (this.$i18n.locale === 'cn') {
+        const option = {
+          title: {
+            top: '5%',
+            text: '区域报警分析图'
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross',
+              label: {
+                backgroundColor: '#6a7985'
               }
-            },
-            areaStyle: { normal: {}},
-            data: [820, 932, 901, 934, 1290, 1330, 1320]
-          }
-        ]
+            }
+          },
+          legend: {
+            top: '5%',
+            data: ['报警次数']
+          },
+          toolbox: {
+            show: true,
+            feature: {
+              dataView: { show: true, readOnly: false },
+              magicType: { show: true, type: ['line', 'bar'] },
+              restore: { show: true },
+              saveAsImage: { show: true }
+            }
+          },
+          grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+          },
+          xAxis: [
+            {
+              type: 'category',
+              boundaryGap: false,
+              data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+            }
+          ],
+          yAxis: [
+            {
+              type: 'value'
+            }
+          ],
+          series: [
+            {
+              name: '报警次数',
+              type: 'line',
+              stack: '总量',
+              label: {
+                normal: {
+                  show: true,
+                  position: 'top'
+                }
+              },
+              areaStyle: { normal: {}},
+              data: [820, 932, 901, 934, 1290, 1330, 1320]
+            }
+          ]
+        }
+        this.chart = echarts.init(document.getElementById('lineChart'))
+        option.xAxis[0].data = this.xData
+        option.series[0].data = this.yData
+        this.chart.setOption(option, true)
+      } else if (this.$i18n.locale === 'en') {
+        const option = {
+          title: {
+            top: '5%',
+            text: 'Regional alarm analysis chart'
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross',
+              label: {
+                backgroundColor: '#6a7985'
+              }
+            }
+          },
+          legend: {
+            top: '5%',
+            data: ['Number of alarms']
+          },
+          toolbox: {
+            show: true,
+            feature: {
+              dataView: { show: true, readOnly: false },
+              magicType: { show: true, type: ['line', 'bar'] },
+              restore: { show: true },
+              saveAsImage: { show: true }
+            }
+          },
+          grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+          },
+          xAxis: [
+            {
+              type: 'category',
+              boundaryGap: false,
+              data: ['Mon', 'Tue', 'Wed', 'Turs', 'Fri', 'Sat', 'Sun']
+            }
+          ],
+          yAxis: [
+            {
+              type: 'value'
+            }
+          ],
+          series: [
+            {
+              name: '报警次数',
+              type: 'line',
+              stack: 'Total',
+              label: {
+                normal: {
+                  show: true,
+                  position: 'top'
+                }
+              },
+              areaStyle: { normal: {}},
+              data: [820, 932, 901, 934, 1290, 1330, 1320]
+            }
+          ]
+        }
+        this.chart = echarts.init(document.getElementById('lineChart'))
+        option.xAxis[0].data = this.xData
+        option.series[0].data = this.yData
+        this.chart.setOption(option, true)
       }
-      this.chart = echarts.init(document.getElementById('lineChart'))
-      option.xAxis[0].data = this.xData
-      option.series[0].data = this.yData
-      this.chart.setOption(option, true)
     }
   }
 }

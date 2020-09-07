@@ -1,9 +1,9 @@
 <template>
   <div style="display:inline-block;">
-    <label class="radio-label">excel表名:</label>
+    <label class="radio-label">{{ $t('alarmInfo.exclebiaoming') }}</label>
     <el-input
       v-model="filename"
-      placeholder="默认为：excel-list.xlsx"
+      :placeholder="$t('alarmInfo.morenwei')"
       style="width:200px;"
       prefix-icon="el-icon-document"
     />
