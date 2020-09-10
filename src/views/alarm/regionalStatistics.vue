@@ -199,12 +199,20 @@ export default {
             data: ['报警次数']
           },
           toolbox: {
+            right: 60,
             show: true,
             feature: {
-              dataView: { show: true, readOnly: false },
-              magicType: { show: true, type: ['line', 'bar'] },
-              restore: { show: true },
-              saveAsImage: { show: true }
+              dataView: { show: true, readOnly: false, title: '数据视图', lang: ['数据视图', '关闭', '刷新'] },
+              magicType: {
+                show: true,
+                type: ['line', 'bar'],
+                title: {
+                  line: '切换为折线图',
+                  bar: '切换为柱状图'
+                }
+              },
+              restore: { show: true, title: '还原' },
+              saveAsImage: { show: true, title: '保存为图片' }
             }
           },
           grid: {
@@ -265,12 +273,20 @@ export default {
             data: ['Number of alarms']
           },
           toolbox: {
+            right: 60,
             show: true,
             feature: {
-              dataView: { show: true, readOnly: false },
-              magicType: { show: true, type: ['line', 'bar'] },
-              restore: { show: true },
-              saveAsImage: { show: true }
+              dataView: { show: true, readOnly: false, title: 'Data view', lang: ['Data view', 'Close', 'Refresh'] },
+              magicType: {
+                show: true,
+                type: ['line', 'bar'],
+                title: {
+                  line: 'Switch to line chart',
+                  bar: 'Switch to bar chart'
+                }
+              },
+              restore: { show: true, title: 'Restore' },
+              saveAsImage: { show: true, title: 'Save as picture' }
             }
           },
           grid: {

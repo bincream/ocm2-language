@@ -1,9 +1,62 @@
 <template>
   <div class="app-container">
-    <div class="optical">
-      <span style="background: #a5db8f;" class="text">{{ $t('dashboard.guangxianchangdu') }}</span>
+    <div class="line1">
+      <el-tooltip v-for="(item,index) in pointList1" :key="index" effect="dark" :content="item.value" placement="top">
+        <div class="point1" :style="{'margin-left': item.left + '%'}" />
+      </el-tooltip>
     </div>
-    <div class="block">
+    <div class="line2">
+      <el-tooltip v-for="(item,index) in pointList2" :key="index" effect="dark" :content="item.value" placement="top">
+        <div class="point2" :style="{'margin-left': item.left + '%'}" />
+      </el-tooltip>
+    </div>
+    <div class="line3">
+      <el-tooltip v-for="(item,index) in pointList3" :key="index" effect="dark" :content="item.value" placement="top">
+        <div class="point3" :style="{'margin-left': item.left + '%'}" />
+      </el-tooltip>
+    </div>
+    <div class="line4">
+      <el-tooltip v-for="(item,index) in pointList4" :key="index" effect="dark" :content="item.value" placement="top">
+        <div class="point4" :style="{'margin-left': item.left + '%'}" />
+      </el-tooltip>
+    </div>
+    <div class="line5">
+      <el-tooltip v-for="(item,index) in pointList5" :key="index" effect="dark" :content="item.value" placement="top">
+        <div class="point5" :style="{'margin-left': item.left + '%'}" />
+      </el-tooltip>
+    </div>
+    <div class="line6">
+      <el-tooltip v-for="(item,index) in pointList6" :key="index" effect="dark" :content="item.value" placement="top">
+        <div class="point6" :style="{'margin-left': item.left + '%'}" />
+      </el-tooltip>
+    </div>
+    <div class="line7">
+      <el-tooltip v-for="(item,index) in pointList7" :key="index" effect="dark" :content="item.value" placement="top">
+        <div class="point7" :style="{'margin-left': item.left + '%'}" />
+      </el-tooltip>
+    </div>
+    <div class="line8">
+      <el-tooltip v-for="(item,index) in pointList8" :key="index" effect="dark" :content="item.value" placement="top">
+        <div class="point8" :style="{'margin-left': item.left + '%'}" />
+      </el-tooltip>
+    </div>
+    <div class="line9">
+      <el-tooltip v-for="(item,index) in pointList9" :key="index" effect="dark" :content="item.value" placement="top">
+        <div class="point9" :style="{'margin-left': item.left + '%'}" />
+      </el-tooltip>
+    </div>
+    <div class="line10">
+      <el-tooltip v-for="(item,index) in pointList10" :key="index" effect="dark" :content="item.value" placement="top">
+        <div class="point10" :style="{'margin-left': item.left + '%'}" />
+      </el-tooltip>
+    </div>
+    <!-- <div class="optical">
+      <span style="background: #a5db8f;" class="text">{{ $t('dashboard.guangxianchangdu') }}</span>
+    </div> -->
+    <div class="img">
+      <img style="width:100%;height:auto;" src="../../assets/桌面最终1.png">
+    </div>
+    <!-- <div class="block">
       <el-tooltip v-for="(item,index) in pointList" :key="index" effect="dark" :content="item.value" placement="top">
         <div class="point" :style="{'margin-left': item.left + '%'}" />
       </el-tooltip>
@@ -13,196 +66,7 @@
         :max="50000"
         disabled
       />
-    </div>
-    <div class="optical">
-      <span style="background: #a5db8f;" class="text">{{ $t('dashboard.shishibaojingliebiao') }}</span>
-    </div>
-    <el-table
-      ref="multipleTable"
-      v-loading="listLoading"
-      :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
-      :data="list"
-      stripe
-      :row-style="{textAlign: 'center'}"
-      highlight-current-row
-      height="500"
-      @row-click="handleDetail"
-    >
-      <el-table-column :label="$t('dashboard.baojingleixing')" prop="alarmType" />
-      <el-table-column :label="$t('dashboard.tongdaohao')" prop="lineInfoChannel" />
-      <el-table-column :label="$t('dashboard.juli')" prop="distance" />
-      <el-table-column :label="$t('dashboard.kaishidian')" prop="beginCol" />
-      <el-table-column :label="$t('dashboard.zhongxindian')" prop="centerCol" />
-      <el-table-column :label="$t('dashboard.jieshudian')" prop="endCol" />
-      <el-table-column :label="$t('dashboard.kaishishijian')" prop="beginTime" />
-      <el-table-column :label="$t('dashboard.gaojingshijian')" prop="alarmTime" />
-      <el-table-column :label="$t('dashboard.zhendongcishu')" prop="freq" />
-      <el-table-column :label="$t('dashboard.qiangdu')" prop="amplitude" />
-      <el-table-column :label="$t('dashboard.dengji')" prop="level" />
-      <el-table-column :label="$t('dashboard.zhendongleixing')" prop="vibType" />
-      <el-table-column :label="$t('dashboard.chulizhuangtai')">
-        <template slot-scope="scope">
-          <span>{{ scope.row.solution |solution }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('dashboard.caozuo')" width="200">
-        <template slot-scope="scope">
-          <el-button
-            v-show="scope.row.solution == 0"
-            type="warning"
-            size="small"
-            @click.stop="handleSolu(scope.row)"
-          >{{ $t('dashboard.chulibaojing') }}</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <div class="pagination-container">
-      <el-pagination
-        v-show="total>0"
-        :current-page="listQuery.page"
-        :page-sizes="[10,20,30, 50]"
-        :page-size="listQuery.limit"
-        :total="total"
-        background
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
-    </div>
-    <!-- 详情 -->
-    <el-dialog :visible.sync="dialogDetVisible" :title="$t('dashboard.baojingxiangqing')" width="100%">
-      <div class="basic">
-        <div class="title">{{ $t('dashboard.guanglanxinxi') }}</div>
-        <table>
-          <tr>
-            <td class="blackMark">{{ $t('dashboard.baojingleixing:') }}</td>
-            <td class="width21">
-              <span v-text="alarmInfo.alarmType" />
-            </td>
-            <td class="blackMark">{{ $t('dashboard.tongdaohao:') }}</td>
-            <td class="width21">
-              <span v-text="alarmInfo.lineInfoChannel" />
-            </td>
-            <td class="blackMark">{{ $t('dashboard.juli:') }}</td>
-            <td class="width21">
-              <span v-text="alarmInfo.distance" />
-            </td>
-          </tr>
-          <tr>
-            <td class="blackMark">{{ $t('dashboard.kaishidian:') }}</td>
-            <td class="width21">
-              <span v-text="alarmInfo.beginCol" />
-            </td>
-            <td class="blackMark">{{ $t('dashboard.zhongxindian:') }}</td>
-            <td class="width21">
-              <span v-text="alarmInfo.centerCol" />
-            </td>
-            <td class="blackMark">{{ $t('dashboard.jieshudian:') }}</td>
-            <td class="width21">
-              <span v-text="alarmInfo.endCol" />
-            </td>
-          </tr>
-          <tr>
-            <td class="blackMark">{{ $t('dashboard.qiangdu:') }}</td>
-            <td class="width21">
-              <span>{{ alarmInfo.amplitude }}</span>
-            </td>
-            <td class="blackMark">{{ $t('dashboard.kaishishijian:') }}</td>
-            <td class="width21">
-              <span v-text="alarmInfo.beginTime" />
-            </td>
-            <td class="blackMark">{{ $t('dashboard.gaojingshijian:') }}</td>
-            <td class="width21">
-              <span>{{ alarmInfo.alarmTime }}</span>
-            </td>
-          </tr>
-          <tr>
-            <td class="blackMark">{{ $t('dashboard.dengji:') }}</td>
-            <td class="width21">
-              <span>{{ alarmInfo.level }}</span>
-            </td>
-            <td class="blackMark">{{ $t('dashboard.zhendongcishu:') }}</td>
-            <td class="width21">
-              <span>{{ alarmInfo.freq }}</span>
-            </td>
-            <td class="blackMark">{{ $t('dashboard.sunhao:') }}</td>
-            <td class="width21">
-              <span>{{ alarmInfo.loss }}</span>
-            </td>
-          </tr>
-          <tr>
-            <td class="blackMark">{{ $t('dashboard.fanshesunhao:') }}</td>
-            <td class="width21">
-              <span>{{ alarmInfo.refloss }}</span>
-            </td>
-            <td class="blackMark">{{ $t('dashboard.leijisunhao:') }}</td>
-            <td class="width21">
-              <span>{{ alarmInfo.cumloss }}</span>
-            </td>
-            <td class="blackMark">{{ $t('dashboard.shijianleixing:') }}</td>
-            <td class="width21">
-              <span>{{ alarmInfo.eventType | eventType }}</span>
-            </td>
-          </tr>
-          <tr>
-            <td class="blackMark">{{ $t('dashboard.zongsunhao:') }}</td>
-            <td class="width21">
-              <span>{{ alarmInfo.allloss }}</span>
-            </td>
-            <td class="blackMark">{{ $t('dashboard.zongfansesunhao:') }}</td>
-            <td class="width21">
-              <span>{{ alarmInfo.allrefloss }}</span>
-            </td>
-            <td class="blackMark">{{ $t('dashboard.zhendongleixing:') }}</td>
-            <td class="width21">
-              <span>{{ alarmInfo.vibType }}</span>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogDetVisible = false">{{ $t('dashboard.quxiao') }}</el-button>
-      </div>
-    </el-dialog>
-
-    <!-- 新增编辑页面
-    <el-dialog title="处理告警" :visible.sync="dialogFormVisible" width="30%">
-      <el-form
-        ref="solutionEdit"
-        :rules="rules"
-        :model="solutionEdit"
-        :show-message="false"
-        inline
-        status-icon
-      >
-        <div class="basic">
-          <table>
-            <tr>
-              <td class="width33">
-                <el-form-item label="处理措施" prop="solution">
-                  <el-input
-                    v-model="solutionEdit.solution"
-                    type="textarea"
-                    :rows="5"
-                    size="small"
-                    placeholder="请输入"
-                  />
-                </el-form-item>
-              </td>
-            </tr>
-          </table>
-        </div>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          v-show="solutionEdit.id"
-          type="primary"
-          @click="createData('solutionEdit')"
-        >{{ $t('queren') }}</el-button>
-        <el-button @click="dialogFormVisible = false">{{ $t('quxiao') }}</el-button>
-      </div>
-    </el-dialog> -->
+    </div> -->
   </div>
 </template>
 
@@ -271,10 +135,8 @@ export default {
           case 2:
             return '光纤始端'
           case 3:
-            return '光纤始端'
-          case 4:
             return '光纤末端'
-          case 5:
+          case 4:
             return '其它事件'
           default:
             break
@@ -288,10 +150,8 @@ export default {
           case 2:
             return 'Fiber beginning'
           case 3:
-            return 'Fiber beginning'
-          case 4:
             return 'Fiber end'
-          case 5:
+          case 4:
             return 'Other events'
           default:
             break
@@ -321,6 +181,98 @@ export default {
         solution: [{ required: true, message: '请输入', trigger: 'change' }]
       },
       ids: [],
+      pointList1: [
+        {
+          value: '2500',
+          left: 0
+        },
+        {
+          value: '2500',
+          left: 100
+        }
+      ],
+      pointList2: [
+        {
+          value: '2500',
+          left: 60
+        },
+        {
+          value: '2500',
+          left: 100
+        }
+      ],
+      pointList3: [
+        {
+          value: '2500',
+          left: 50
+        }
+      ],
+      pointList4: [
+        {
+          value: '2500',
+          left: 50
+        }
+      ],
+      pointList5: [
+        {
+          value: '2500',
+          left: 50
+        }
+      ],
+      pointList6: [
+        {
+          value: '2500',
+          left: 0
+        },
+        {
+          value: '2500',
+          left: 75
+        },
+        {
+          value: '2500',
+          left: 100
+        }
+      ],
+      pointList7: [
+        {
+          value: '2500',
+          left: 75
+        }
+      ],
+      pointList8: [
+        {
+          value: '2500',
+          left: 0
+        },
+        {
+          value: '2500',
+          left: 75
+        },
+        {
+          value: '2500',
+          left: 100
+        }
+      ],
+      pointList9: [
+        {
+          value: '2500',
+          left: 75
+        }
+      ],
+      pointList10: [
+        {
+          value: '2500',
+          left: 0
+        },
+        {
+          value: '2500',
+          left: 75
+        },
+        {
+          value: '2500',
+          left: 100
+        }
+      ],
       pointList: [],
       value: 50000,
       marks: {
@@ -470,28 +422,177 @@ export default {
   }
 }
 </script>
-<style scoped>
-.optical{
-  height: 30px;
-  text-align: center;
-  margin: 20px 40% 20px 40%;
-}
-.text{
-  font-size: 22px;
-  height: 12px;
-  width: 66px;
-  margin-top: 5px;
-  }
-.block{
-  position: relative;
-  margin: 10px;
-  height: 55px;
-  padding-bottom: 10px;
-}
-
-</style>
-
 <style lang="css">
+*{
+  margin: 0px;
+  padding: 0px;
+}
+.line1, .line2, .line3, .line4, .line5, .line6, .line7, .line8, .line9, .line10 {
+  position: absolute;
+}
+@keyframes fade {
+  from {
+      opacity: 1.0;
+  }
+  50% {
+      opacity: 0.4;
+  }
+  to {
+      opacity: 1.0;
+  }
+}
+@-webkit-keyframes fade {
+    from {
+        opacity: 1.0;
+    }
+  50% {
+        opacity: 0.4;
+    }
+    to {
+        opacity: 1.0;
+    }
+}
+.line1 {
+  background: transparent;
+  /* outline: 1px solid #ff0; */
+  top: 334px;
+  left: 926px;
+  z-index: 50;
+  width: 74px;
+  height: 4px;
+  transform: rotate(-90deg);
+  /* IE 9 */
+  /* -ms-transform: rotate(88deg); */
+  /* Firefox */
+  /* -moz-transform: rotate(88deg); */
+  /* Safari and Chrome */
+  /* -webkit-transform: rotate(8deg); */
+  /* Opera */
+  /* -o-transform: rotate(88deg); */
+}
+.line2 {
+  background: transparent;
+  /* outline: 5px solid #000; */
+  top: 294px;
+  left: 706px;
+  z-index: 150;
+  width: 263px;
+  height: 4px;
+  transform: rotate(180deg);
+}
+.line3 {
+  background: transparent;
+  /* outline: 1px solid #ff0; */
+  top: 273px;
+  left: 677px;
+  z-index: 50;
+  width: 46px;
+  height: 4px;
+  transform: rotate(-90deg);
+  /* IE 9 */
+  /* -ms-transform: rotate(88deg); */
+  /* Firefox */
+  /* -moz-transform: rotate(88deg); */
+  /* Safari and Chrome */
+  /* -webkit-transform: rotate(8deg); */
+  /* Opera */
+  /* -o-transform: rotate(88deg); */
+}
+.line4 {
+  background: transparent;
+  /* outline: 5px solid #000; */
+  top: 248px;
+  left: 451px;
+  z-index: 150;
+  width: 254px;
+  height: 4px;
+  transform: rotate(180deg);
+}
+
+.line5 {
+  background: transparent;
+  /* outline: 1px solid #ff0; */
+  top: 456px;
+  left: 235px;
+  z-index: 50;
+  width: 426px;
+  height: 4px;
+  transform: rotate(90deg);
+  /* IE 9 */
+  /* -ms-transform: rotate(88deg); */
+  /* Firefox */
+  /* -moz-transform: rotate(88deg); */
+  /* Safari and Chrome */
+  /* -webkit-transform: rotate(8deg); */
+  /* Opera */
+  /* -o-transform: rotate(88deg); */
+}
+.line6 {
+  background: transparent;
+  /* outline: 5px solid #000; */
+  top: 660px;
+  left: 442px;
+  z-index: 150;
+  width: 327px;
+  height: 4px;
+  transform: rotate(-4deg);
+}
+.line7 {
+  background: transparent;
+  /* outline: 1px solid #ff0; */
+  top: 610px;
+  left: 725px;
+  z-index: 50;
+  width: 90px;
+  height: 4px;
+  transform: rotate(-90deg);
+  /* IE 9 */
+  /* -ms-transform: rotate(88deg); */
+  /* Firefox */
+  /* -moz-transform: rotate(88deg); */
+  /* Safari and Chrome */
+  /* -webkit-transform: rotate(8deg); */
+  /* Opera */
+  /* -o-transform: rotate(88deg); */
+}
+.line8 {
+  background: transparent;
+  /* outline: 5px solid #000; */
+  top: 558px;
+  left: 768px;
+  z-index: 150;
+  width: 114px;
+  height: 4px;
+  transform: rotate(0deg);
+}
+.line9 {
+  background: transparent;
+  /* outline: 1px solid #ff0; */
+  top: 598px;
+  left: 846px;
+  z-index: 50;
+  width: 85px;
+  height: 4px;
+  transform: rotate(90deg);
+  /* IE 9 */
+  /* -ms-transform: rotate(88deg); */
+  /* Firefox */
+  /* -moz-transform: rotate(88deg); */
+  /* Safari and Chrome */
+  /* -webkit-transform: rotate(8deg); */
+  /* Opera */
+  /* -o-transform: rotate(88deg); */
+}
+.line10 {
+  background: transparent;
+  /* outline: 5px solid #000; */
+  top: 637px;
+  left: 882px;
+  z-index: 150;
+  width: 208px;
+  height: 4px;
+  transform: rotate(-3.5deg);
+}
 .el-slider__runway{
   background-color: #1890ff;
 }
@@ -504,23 +605,124 @@ export default {
 .el-slider__button {
     opacity: 0.0;
 }
-.line{
-  width: 99%;
-  height: 2px;
+.linear {
+	height:0px;
+	border: 8px solid red;
+	margin-left: 30px;
+	margin-top: 300px;
   background-color: #1890ff;
-  border-top-left-radius: 3px;
-  border-bottom-left-radius: 3px;
   position: absolute;
+  z-index:900;
 }
-.point{
+.img{
+	width:1300px;
+	height:auto;
+	margin-left: 150px;
+  margin-top: 25px;
+	background:#fff;
+  position: absolute;
+  z-index:-1;
+}
+.point1{
     position: absolute;
     z-index: 999;
-    height: 10px;
-    width: 10px;
+    height: 8px;
+    width: 8px;
     border-radius: 100%;
-    -webkit-transform: translateX(-50%);
-    transform: translateX(-50%);
     background-color: red;
-    top: 14px;
+    animation: fade 600ms infinite;
+    -webkit-animation: fade 600ms infinite;
+}
+.point2{
+    position: absolute;
+    z-index: 999;
+    height: 8px;
+    width: 8px;
+    border-radius: 100%;
+    background-color: orange;
+    animation: fade 600ms infinite;
+    -webkit-animation: fade 600ms infinite;
+}
+.point3{
+    position: absolute;
+    z-index: 999;
+    height: 8px;
+    width: 8px;
+    border-radius: 100%;
+    background-color: yellow;
+    animation: fade 600ms infinite;
+    -webkit-animation: fade 600ms infinite;
+}
+.point4{
+    position: absolute;
+    z-index: 999;
+    height: 8px;
+    width: 8px;
+    border-radius: 100%;
+    /* -webkit-transform: translateX(-50%);
+    transform: translateX(-50%); */
+    background-color: lightgreen;
+    animation: fade 600ms infinite;
+    -webkit-animation: fade 600ms infinite;
+}
+.point5{
+    position: absolute;
+    z-index: 999;
+    height: 8px;
+    width: 8px;
+    border-radius: 100%;
+    background-color: blue;
+    animation: fade 600ms infinite;
+    -webkit-animation: fade 600ms infinite;
+}
+.point6{
+    position: absolute;
+    z-index: 999;
+    height: 8px;
+    width: 8px;
+    border-radius: 100%;
+    background-color: purple;
+    animation: fade 600ms infinite;
+    -webkit-animation: fade 600ms infinite;
+}
+.point7{
+    position: absolute;
+    z-index: 999;
+    height: 8px;
+    width: 8px;
+    border-radius: 100%;
+    background-color: purple;
+    animation: fade 600ms infinite;
+    -webkit-animation: fade 600ms infinite;
+}
+.point8{
+    position: absolute;
+    z-index: 999;
+    height: 8px;
+    width: 8px;
+    border-radius: 100%;
+    background-color: purple;
+    animation: fade 600ms infinite;
+    -webkit-animation: fade 600ms infinite;
+}
+.point9{
+    position: absolute;
+    z-index: 999;
+    height: 8px;
+    width: 8px;
+    border-radius: 100%;
+    background-color: lightseagreen;
+    animation: fade 600ms infinite;
+    -webkit-animation: fade 600ms infinite;
+}
+.point10{
+    position: absolute;
+    z-index: 999;
+    height: 8px;
+    width: 8px;
+    border-radius: 100%;
+    background-color: lightslategray;
+    animation: fade 600ms infinite;
+    -webkit-animation: fade 600ms infinite;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
 
-    <div class="chart-container">
+    <div class="chart-top">
       <div class="title">
         <span>{{ $t('signal.dandianyinpin') }}</span>
         <el-input v-model="monitorEdit.col" :placeholder="$t('signal.qingshurujuli')" style="width:210px;position:absolute;right:180px" />
@@ -26,7 +26,10 @@
           <!-- <source src="/static/img/warning.ogg" type="audio/ogg" > -->
         </audio>
       </div>
-      <div style="background:blue;height:2px" />
+      <div id="audioChart" style="width:100%;height:400px;margin:auto" />
+    </div>
+    <el-divider />
+    <div class="chart-container">
       <div class="title">
         <span>{{ $t('signal.yuzhishezhixiadeerweizhendong') }}</span>
         <span class="radio-label" style="width:160px;position:absolute;right:240px">{{ $t('signal.Yzhoufanwei:') }}</span>
@@ -74,6 +77,7 @@ export default {
       warningEdit: {},
       spectrogramEdit: {},
       audioStatus: 0,
+      xAudioData: [],
       infoCount: {
         noPassCount: 0,
         getPastCount: 0,
@@ -172,6 +176,7 @@ export default {
         setTimeout(() => {
           this.initChart()
           this.myChart1()
+          this.audioChart()
         }, 500)
       })
     },
@@ -180,6 +185,19 @@ export default {
         this.vibQuery = response.data
         this.createWs()
       })
+    },
+    getAudioData(buffer) {
+      var audio = []
+      this.xAudioData = []
+      var msgView = new DataView(buffer)
+      for (let i = 0; i < msgView.byteLength / 2; i++) {
+        if (i % 2 === 0) {
+          this.xAudioData.push(i * this.baseStandInfo.precisions)
+        }
+        audio.push(msgView.getInt16(i * 2, true))
+      }
+      console.log('audio', audio)
+      return audio
     },
     getWsData(data) {
       this.Data1 = data
@@ -217,6 +235,7 @@ export default {
         let segment = void 0
 
         const audioStack = []
+        var audioData
         // 信道与调距提示判断
         if (this.$i18n.locale === 'cn') {
           if (buffer.byteLength === 2) {
@@ -254,7 +273,8 @@ export default {
         numberOfChannels = 1
         buffer = buffer.slice(2) // 去掉自己封装的前2个字节
         segment = {}
-
+        audioData = that.getAudioData(buffer)
+        that.audioChart(audioData)
         // 解码，ArrayBuffer => audioBuffer
         that.contextAudio.decodeAudioData(that.wavify(buffer, numberOfChannels, sampleRate)).then((audioBuffer) => {
           segment.buffer = audioBuffer
@@ -403,6 +423,234 @@ export default {
       this.websocket1 = null
       audio.pause()
     },
+    audioChart(data) {
+      this.chart = echarts.init(document.getElementById('audioChart'))
+      if (this.$i18n.locale === 'cn') {
+        const option = {
+          backgroundColor: '#394056',
+          title: {
+            top: 20,
+            text: '波形曲线',
+            textStyle: {
+              fontWeight: 'normal',
+              fontSize: 16,
+              color: '#F1F1F3'
+            },
+            left: '2%'
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              lineStyle: {
+                color: '#57617B'
+              }
+            }
+          },
+          legend: {
+            top: 20,
+            icon: 'rect',
+            itemWidth: 14,
+            itemHeight: 5,
+            itemGap: 13,
+            data: ['波形'],
+            right: '50%',
+            textStyle: {
+              fontSize: 12,
+              color: '#F1F1F3'
+            }
+          },
+          grid: {
+            top: 100,
+            left: '4%',
+            right: '4%',
+            bottom: '4%',
+            containLabel: true
+          },
+          xAxis: [{
+            type: 'category',
+            boundaryGap: false,
+            axisLine: {
+              lineStyle: {
+                color: '#57617B'
+              }
+            }
+          }],
+          yAxis: [{
+            type: 'value',
+            name: '振幅',
+            axisTick: {
+              show: false
+            },
+            axisLine: {
+              lineStyle: {
+                color: '#57617B'
+              }
+            },
+            axisLabel: {
+              margin: 10,
+              textStyle: {
+                fontSize: 14
+              }
+            },
+            splitLine: {
+              lineStyle: {
+                color: '#57617B'
+              }
+            }
+          }],
+          series: [{
+            name: '波形',
+            type: 'line',
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 5,
+            showSymbol: false,
+            lineStyle: {
+              normal: {
+                width: 1
+              }
+            },
+            areaStyle: {
+              normal: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                  offset: 0,
+                  color: 'rgba(137, 189, 27, 0.3)'
+                }, {
+                  offset: 0.8,
+                  color: 'rgba(137, 189, 27, 0)'
+                }], false),
+                shadowColor: 'rgba(0, 0, 0, 0.1)',
+                shadowBlur: 10
+              }
+            },
+            itemStyle: {
+              normal: {
+                color: 'rgb(137,189,27)',
+                borderColor: 'rgba(137,189,2,0.27)',
+                borderWidth: 12
+
+              }
+            }
+          }]
+        }
+        option.xAxis.data = this.xAudioData
+        option.yAxis.data = data
+        option.series[0].data = data
+        this.chart.setOption(option)
+      } else if (this.$i18n.locale === 'en') {
+        const option = {
+          backgroundColor: '#394056',
+          title: {
+            top: 20,
+            text: 'Wave curve',
+            textStyle: {
+              fontWeight: 'normal',
+              fontSize: 16,
+              color: '#F1F1F3'
+            },
+            left: '2%'
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              lineStyle: {
+                color: '#57617B'
+              }
+            }
+          },
+          legend: {
+            top: 20,
+            icon: 'rect',
+            itemWidth: 14,
+            itemHeight: 5,
+            itemGap: 13,
+            data: ['Waveform'],
+            right: '50%',
+            textStyle: {
+              fontSize: 12,
+              color: '#F1F1F3'
+            }
+          },
+          grid: {
+            top: 100,
+            left: '4%',
+            right: '4%',
+            bottom: '4%',
+            containLabel: true
+          },
+          xAxis: [{
+            type: 'category',
+            boundaryGap: false,
+            axisLine: {
+              lineStyle: {
+                color: '#57617B'
+              }
+            }
+          }],
+          yAxis: [{
+            type: 'value',
+            name: '(Amplitude)',
+            axisTick: {
+              show: false
+            },
+            axisLine: {
+              lineStyle: {
+                color: '#57617B'
+              }
+            },
+            axisLabel: {
+              margin: 10,
+              textStyle: {
+                fontSize: 14
+              }
+            },
+            splitLine: {
+              lineStyle: {
+                color: '#57617B'
+              }
+            }
+          }],
+          series: [{
+            name: 'Waveform',
+            type: 'line',
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 5,
+            showSymbol: false,
+            lineStyle: {
+              normal: {
+                width: 1
+              }
+            },
+            areaStyle: {
+              normal: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                  offset: 0,
+                  color: 'rgba(137, 189, 27, 0.3)'
+                }, {
+                  offset: 0.8,
+                  color: 'rgba(137, 189, 27, 0)'
+                }], false),
+                shadowColor: 'rgba(0, 0, 0, 0.1)',
+                shadowBlur: 10
+              }
+            },
+            itemStyle: {
+              normal: {
+                color: 'rgb(137,189,27)',
+                borderColor: 'rgba(137,189,2,0.27)',
+                borderWidth: 12
+
+              }
+            }
+          }]
+        }
+        option.xAxis.data = this.xAudioData
+        option.yAxis.data = data
+        option.series[0].data = data
+        this.chart.setOption(option)
+      }
+    },
     myChart1(data) {
       this.chart = echarts.init(document.getElementById('myChart1'))
       if (this.$i18n.locale === 'cn') {
@@ -412,12 +660,13 @@ export default {
             trigger: 'axis'
           },
           toolbox: {
+            right: 60,
             feature: {
             // dataZoom: {
             //   yAxisIndex: 'none'
             // },
             // restore: {},
-              saveAsImage: {}
+              saveAsImage: { title: '保存为图片' }
             }
           },
           grid: {
@@ -479,12 +728,13 @@ export default {
             trigger: 'axis'
           },
           toolbox: {
+            right: 60,
             feature: {
             // dataZoom: {
             //   yAxisIndex: 'none'
             // },
             // restore: {},
-              saveAsImage: {}
+              saveAsImage: { title: 'Save as picture' }
             }
           },
           grid: {
@@ -598,12 +848,17 @@ export default {
             data: []
           },
           toolbox: {
+            right: 60,
             feature: {
               dataZoom: {
-                yAxisIndex: 'none'
+                yAxisIndex: 'none',
+                title: {
+                  zoom: '区域缩放',
+                  back: '区域缩放还原'
+                }
               },
-              restore: {},
-              saveAsImage: {}
+              restore: { title: '还原' },
+              saveAsImage: { title: '保存为图片' }
             }
           },
           visualMap: {
@@ -708,12 +963,17 @@ export default {
             data: []
           },
           toolbox: {
+            right: 60,
             feature: {
               dataZoom: {
-                yAxisIndex: 'none'
+                yAxisIndex: 'none',
+                title: {
+                  zoom: 'Area zoom',
+                  back: 'Area zoom restore'
+                }
               },
-              restore: {},
-              saveAsImage: {}
+              restore: { title: 'Restore' },
+              saveAsImage: { title: 'Save as picture' }
             }
           },
           visualMap: {

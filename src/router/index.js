@@ -182,14 +182,14 @@ export const asyncRoutes = [
         meta: {
           title: '二维振动'
         }
-      },
-      {
-        path: 'otdr/otdrQuery',
-        component: () => import('@/views/signal/otdr'),
-        name: 'OTDR',
-        meta: {
-          title: 'OTDR'
-        }
+      // },
+      // {
+      //   path: 'otdr/otdrQuery',
+      //   component: () => import('@/views/signal/otdr'),
+      //   name: 'OTDR',
+      //   meta: {
+      //     title: 'OTDR'
+      //   }
       }
     ]
   },
@@ -450,14 +450,14 @@ export const asyncRoutesEn = [
         meta: {
           title: 'Two-dimensional vibration'
         }
-      },
-      {
-        path: 'otdr/otdrQuery',
-        component: () => import('@/views/signal/otdr'),
-        name: 'OTDR',
-        meta: {
-          title: 'OTDR'
-        }
+      // },
+      // {
+      //   path: 'otdr/otdrQuery',
+      //   component: () => import('@/views/signal/otdr'),
+      //   name: 'OTDR',
+      //   meta: {
+      //     title: 'OTDR'
+      //   }
       }
     ]
   },

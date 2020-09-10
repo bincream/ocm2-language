@@ -334,7 +334,7 @@
           <el-table
             :data="tableData"
             border
-            style="width: 40%"
+            style="width: 50%"
           >
             <el-table-column :label="$t('systemtest.tongdaohao')" width="180">
               <template slot-scope="scope">
@@ -822,12 +822,17 @@ export default {
           // data: ['恒定预警']
           },
           toolbox: {
+            right: 60,
             feature: {
               dataZoom: {
-                yAxisIndex: 'none'
+                yAxisIndex: 'none',
+                title: {
+                  zoom: '区域缩放',
+                  back: '区域缩放还原'
+                }
               },
-              restore: {},
-              saveAsImage: {}
+              restore: { title: '还原' },
+              saveAsImage: { title: '保存为图片' }
             }
           },
           grid: {
@@ -868,12 +873,17 @@ export default {
           // data: ['恒定预警']
           },
           toolbox: {
+            right: 60,
             feature: {
               dataZoom: {
-                yAxisIndex: 'none'
+                yAxisIndex: 'none',
+                title: {
+                  zoom: 'Area zoom',
+                  back: 'Area zoom restore'
+                }
               },
-              restore: {},
-              saveAsImage: {}
+              restore: { title: 'Restore' },
+              saveAsImage: { title: 'Save as picture' }
             }
           },
           grid: {

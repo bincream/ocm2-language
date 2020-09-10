@@ -113,6 +113,8 @@ export default {
     getList() {
       this.xData = []
       this.yData = []
+      const monthData = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th', '13th', '14th', '15th', '16th', '17th', '18th', '19th', '20th', '21st', '22nd', '23rd', '24th', '25th', '26th', '27th', '28th', '29th', '30th', '31st']
+      const dayData = ['1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '24:00']
       getAllList(this.listQuery).then(response => {
         // x轴数据，y轴数据，最大值，最小值，最大值index,最小值index
         if (this.$i18n.locale === 'cn') {
@@ -135,17 +137,17 @@ export default {
           }
         } else if (this.$i18n.locale === 'en') {
           if (response.data.length > 0) {
-            let time = ''
             if (this.listQuery.type === 1) {
-              time = 'Month'
+              this.xData = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.']
             } else if (this.listQuery.type === 2) {
-              time = 'Day'
+              response.data.forEach((item, index) => {
+                this.xData.push(monthData[index])
+              })
             } else {
-              time = 'Hour'
+              response.data.forEach((item, index) => {
+                this.xData.push(dayData[index])
+              })
             }
-            response.data.forEach((item, index) => {
-              this.xData.push(index + 1 + time)
-            })
             this.yData = response.data
             this.initChart()
           } else {
@@ -160,7 +162,6 @@ export default {
       }
     },
     initChart() {
-      const that = this
       if (this.$i18n.locale === 'cn') {
         const option = {
           title: {
@@ -175,18 +176,20 @@ export default {
             data: ['报警合计']
           },
           toolbox: {
+            right: 120,
             show: true,
             feature: {
-              dataView: { show: true, readOnly: false,
-                contentToOption: function(opt) {
-                  that.$message.success('数据已刷新')
-                  console.log(opt)
-                  return opt
+              dataView: { show: true, readOnly: false, title: '数据视图', lang: ['数据视图', '关闭', '刷新'] },
+              magicType: {
+                show: true,
+                type: ['line', 'bar'],
+                title: {
+                  line: '切换为折线图',
+                  bar: '切换为柱状图'
                 }
               },
-              magicType: { show: true, type: ['line', 'bar'] },
-              restore: { show: true },
-              saveAsImage: { show: true }
+              restore: { show: true, title: '还原' },
+              saveAsImage: { show: true, title: '保存为图片' }
             }
           },
           calculable: true,
@@ -244,18 +247,20 @@ export default {
             data: ['Total Alarm']
           },
           toolbox: {
+            right: 120,
             show: true,
             feature: {
-              dataView: { show: true, readOnly: false,
-                contentToOption: function(opt) {
-                  that.$message.success('Data refreshed')
-                  console.log(opt)
-                  return opt
+              dataView: { show: true, readOnly: false, title: 'Data view', lang: ['Data view', 'Close', 'Refresh'] },
+              magicType: {
+                show: true,
+                type: ['line', 'bar'],
+                title: {
+                  line: 'Switch to line chart',
+                  bar: 'Switch to bar chart'
                 }
               },
-              magicType: { show: true, type: ['line', 'bar'] },
-              restore: { show: true },
-              saveAsImage: { show: true }
+              restore: { show: true, title: 'Restore' },
+              saveAsImage: { show: true, title: 'Save as picture' }
             }
           },
           calculable: true,

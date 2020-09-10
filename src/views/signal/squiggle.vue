@@ -173,12 +173,19 @@ export default {
           //   }
           // },
           toolbox: {
+            right: 60,
             feature: {
               dataZoom: {
-                yAxisIndex: 'none'
+                yAxisIndex: 'none',
+                title: {
+                  zoom: '区域缩放',
+                  back: '区域缩放还原'
+                }
               },
-              restore: {},
-              saveAsImage: {}
+              restore: { title: '还原' },
+              saveAsImage: {
+                title: '保存为图片'
+              }
             }
           },
           grid: {
@@ -231,12 +238,19 @@ export default {
           //   }
           // },
           toolbox: {
+            right: 60,
             feature: {
               dataZoom: {
-                yAxisIndex: 'none'
+                yAxisIndex: 'none',
+                title: {
+                  zoom: 'Area zoom',
+                  back: 'Area zoom restore'
+                }
               },
-              restore: {},
-              saveAsImage: {}
+              restore: { title: 'Restore' },
+              saveAsImage: {
+                title: 'Save as picture'
+              }
             }
           },
           grid: {

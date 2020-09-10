@@ -63,10 +63,8 @@ export default {
           case 2:
             return '光纤始端'
           case 3:
-            return '光纤始端'
-          case 4:
             return '光纤末端'
-          case 5:
+          case 4:
             return '其它事件'
           default:
             break
@@ -80,10 +78,8 @@ export default {
           case 2:
             return 'Fiber beginning'
           case 3:
-            return 'Fiber beginning'
-          case 4:
             return 'Fiber end'
-          case 5:
+          case 4:
             return 'Other events'
           default:
             break
@@ -233,12 +229,17 @@ export default {
             left: 10
           },
           toolbox: {
+            right: 60,
             feature: {
               dataZoom: {
-                yAxisIndex: 'none'
+                yAxisIndex: 'none',
+                title: {
+                  zoom: '区域缩放',
+                  back: '区域缩放还原'
+                }
               },
-              restore: {},
-              saveAsImage: {}
+              restore: { title: '还原' },
+              saveAsImage: { title: '保存为图片' }
             }
           },
           axisPointer: {
@@ -293,12 +294,17 @@ export default {
             left: 10
           },
           toolbox: {
+            right: 60,
             feature: {
               dataZoom: {
-                yAxisIndex: 'none'
+                yAxisIndex: 'none',
+                title: {
+                  zoom: 'Area zoom',
+                  back: 'Area zoom restore'
+                }
               },
-              restore: {},
-              saveAsImage: {}
+              restore: { title: 'Restore' },
+              saveAsImage: { title: 'Save as picture' }
             }
           },
           axisPointer: {
