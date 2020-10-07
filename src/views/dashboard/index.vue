@@ -1,5 +1,18 @@
 <template>
   <div class="app-container">
+    <div>
+      <el-slider
+        v-model="value1"
+        class="block"
+        vertical
+        :step="1"
+        height="200px"
+        show-stops
+        :max="4"
+        :min="1"
+        style="position:absolute;"
+      />
+    </div>
     <div class="line1">
       <el-tooltip v-for="(item,index) in pointList1" :key="index" effect="dark" :content="item.value" placement="top">
         <div class="point1" :style="{'margin-left': item.left + '%'}" />
@@ -162,6 +175,8 @@ export default {
   data() {
     return {
       currentRole: 'adminDashboard',
+      value1: 1,
+      value2: 0,
       list: [],
       total: null,
       interval: null,
@@ -639,7 +654,7 @@ export default {
     height: 8px;
     width: 8px;
     border-radius: 100%;
-    background-color: orange;
+    background-color: red;
     animation: fade 600ms infinite;
     -webkit-animation: fade 600ms infinite;
 }
@@ -649,7 +664,7 @@ export default {
     height: 8px;
     width: 8px;
     border-radius: 100%;
-    background-color: yellow;
+    background-color: red;
     animation: fade 600ms infinite;
     -webkit-animation: fade 600ms infinite;
 }
@@ -661,7 +676,7 @@ export default {
     border-radius: 100%;
     /* -webkit-transform: translateX(-50%);
     transform: translateX(-50%); */
-    background-color: lightgreen;
+    background-color: red;
     animation: fade 600ms infinite;
     -webkit-animation: fade 600ms infinite;
 }
@@ -671,7 +686,7 @@ export default {
     height: 8px;
     width: 8px;
     border-radius: 100%;
-    background-color: blue;
+    background-color: red;
     animation: fade 600ms infinite;
     -webkit-animation: fade 600ms infinite;
 }
@@ -681,7 +696,7 @@ export default {
     height: 8px;
     width: 8px;
     border-radius: 100%;
-    background-color: purple;
+    background-color: red;
     animation: fade 600ms infinite;
     -webkit-animation: fade 600ms infinite;
 }
@@ -691,7 +706,7 @@ export default {
     height: 8px;
     width: 8px;
     border-radius: 100%;
-    background-color: purple;
+    background-color: red;
     animation: fade 600ms infinite;
     -webkit-animation: fade 600ms infinite;
 }
@@ -701,7 +716,7 @@ export default {
     height: 8px;
     width: 8px;
     border-radius: 100%;
-    background-color: purple;
+    background-color: red;
     animation: fade 600ms infinite;
     -webkit-animation: fade 600ms infinite;
 }
@@ -711,7 +726,7 @@ export default {
     height: 8px;
     width: 8px;
     border-radius: 100%;
-    background-color: lightseagreen;
+    background-color: red;
     animation: fade 600ms infinite;
     -webkit-animation: fade 600ms infinite;
 }
@@ -721,7 +736,7 @@ export default {
     height: 8px;
     width: 8px;
     border-radius: 100%;
-    background-color: lightslategray;
+    background-color: red;
     animation: fade 600ms infinite;
     -webkit-animation: fade 600ms infinite;
 }

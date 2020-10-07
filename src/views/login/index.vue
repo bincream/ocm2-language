@@ -112,6 +112,7 @@ export default {
     }
   },
   created() {
+    localStorage.setItem('lang', localStorage.lang || 'en')
     // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {

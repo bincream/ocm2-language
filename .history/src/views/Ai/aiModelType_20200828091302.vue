@@ -287,7 +287,7 @@
             <td class="blackMark">音频：</td>
             <td class="width21">
               <audio v-if="item.oggUrl" :id="item.id" controls="controls">
-                <source :src="'http://192.168.8.131/uploadAudio/' + item.oggUrl">
+                <source :src="'http://192.168.8.100/uploadAudio/' + item.oggUrl">
                 <!-- <source :src="scope.row.fileName"> -->
               </audio>
             </td>
@@ -334,7 +334,7 @@
             <el-table-column label="音频" width="320">
               <template slot-scope="scope">
                 <audio v-if="scope.row.oggUrl" :id="scope.row.id" controls="controls">
-                  <source :src="'http://192.168.8.131/uploadAudio/' + scope.row.oggUrl">
+                  <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggUrl">
                   <source :src="scope.row.fileName">
                 </audio>
               </template>

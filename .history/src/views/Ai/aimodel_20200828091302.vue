@@ -347,7 +347,7 @@
         <el-table-column label="音频" width="320">
           <template slot-scope="scope">
             <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="scope.row.id" controls="controls">
-              <source :src="'http://192.168.8.131/uploadAudio/' + scope.row.oggPath">
+              <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath">
               <source :src="scope.row.fileName">
             </audio>
           </template>
@@ -1113,7 +1113,7 @@ export default {
     AiWs(data) {
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.8.131:9005/')
+        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
 
         // 当有消息过来的时候触发
         const that = this

@@ -6,7 +6,7 @@ import messages from './langs'
 Vue.use(VueI18n)
 // 从localStorage获取语言选择。
 const i18n = new VueI18n({
-  locale: localStorage.lang || 'en', // 初始未选择默认 en 中文
+  locale: localStorage.lang || 'en', // 初始未选择默认 en 英文
   messages
 })
 locale.i18n((key, value) => i18n.t(key, value)) // 兼容element
