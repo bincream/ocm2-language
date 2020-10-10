@@ -1,16 +1,17 @@
 <template>
   <div class="app-container">
-    <div>
+    <el-button style="position:absolute;margin-top:71px;margin-left:105px;z-index:100" type="primary" icon="el-icon-plus" size="mini" circle @click="add" />
+    <el-button style="position:absolute;margin-top:200px;margin-left:105px;z-index:100" type="primary" icon="el-icon-minus" size="mini" circle @click="less" />
+    <div class="block">
       <el-slider
-        v-model="value1"
-        class="block"
+        v-model="valueSlider"
         vertical
         :step="1"
-        height="200px"
+        height="100px"
         show-stops
-        :max="4"
+        :max="5"
         :min="1"
-        style="position:absolute;"
+        style="position:absolute;margin-top:100px;margin-left:100px;"
       />
     </div>
     <div class="line1">
@@ -175,8 +176,7 @@ export default {
   data() {
     return {
       currentRole: 'adminDashboard',
-      value1: 1,
-      value2: 0,
+      valueSlider: 1,
       list: [],
       total: null,
       interval: null,
@@ -338,6 +338,18 @@ export default {
   },
 
   methods: {
+    add() {
+      if (this.valueSlider < 4) {
+        this.valueSlider++
+      }
+      console.log(this.valueSlider)
+    },
+    less() {
+      if (this.valueSlider > 1) {
+        this.valueSlider--
+      }
+      console.log(this.valueSlider)
+    },
     init() {
       const that = this
       this.interval = setInterval(function() {
