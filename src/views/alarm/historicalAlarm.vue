@@ -41,7 +41,7 @@
     <el-table
       ref="multipleTable"
       v-loading="listLoading"
-      :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
+      :header-cell-style="{background: 'rgb(22, 144, 255)', textAlign: 'center', color: 'white'}"
       :data="list"
       stripe
       :row-style="{textAlign: 'center'}"
@@ -68,9 +68,9 @@
       </el-table-column>
       <el-table-column :label="$t('alarmInfo.yinpin')" width="320">
         <template slot-scope="scope">
-          <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="scope.row.id" controls="controls" :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath">
+          <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="scope.row.id" controls="controls" :src="'http://192.168.8.131/uploadAudio/' + scope.row.oggPath">
             <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
-            <!-- <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath" > -->
+            <!-- <source :src="'http://192.168.8.131/uploadAudio/' + scope.row.oggPath" > -->
             <!-- eslint-disable-next-line vue/html-closing-bracket-spacing -->
             <!-- <source :src="scope.row.fileName" > -->
           </audio>

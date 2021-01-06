@@ -19,7 +19,7 @@
 
       <el-table
         ref="multipleTable"
-        :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
+        :header-cell-style="{background: 'rgb(22, 144, 255)', textAlign: 'center', color: 'white'}"
         :data="list"
         stripe
         :row-style="{textAlign: 'center'}"
@@ -167,7 +167,7 @@ export default {
     createWs() { // 二维振动ws
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
+        this.websocket = new WebSocket('ws://192.168.8.131:9005/')
 
         // 当有消息过来的时候触发
         const that = this

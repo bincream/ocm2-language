@@ -79,7 +79,7 @@ const constantRoutesCN = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: '首页', icon: 'nested', affix: true }
+        meta: { title: '首页', icon: 'tab', affix: true }
       }
     ]
   }
@@ -125,7 +125,7 @@ const constantRoutesEN = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
-        meta: { title: 'Home', icon: 'nested', affix: true }
+        meta: { title: 'Home', icon: 'tab', affix: true }
       }
     ]
   }
@@ -151,7 +151,7 @@ export const asyncRoutes = [
         name: 'Systemtest',
         meta: {
           title: '系统测试',
-          icon: 'tab'
+          icon: 'nested'
         }
       }
     ]
@@ -419,7 +419,7 @@ export const asyncRoutesEn = [
         name: 'Systemtest',
         meta: {
           title: 'System test',
-          icon: 'tab'
+          icon: 'nested'
         }
       }
     ]

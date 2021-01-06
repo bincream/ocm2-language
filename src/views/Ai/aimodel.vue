@@ -29,7 +29,7 @@
     <el-table
       ref="multipleTable"
       v-loading="listLoading"
-      :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
+      :header-cell-style="{background: 'rgb(22, 144, 255)', textAlign: 'center', color: 'white'}"
       :data="list"
       stripe
       :row-style="{textAlign: 'center'}"
@@ -51,8 +51,13 @@
       </el-table-column>
       <el-table-column :label="$t('ai.leixingshuliang')" prop="typeCount" />
       <!-- <el-table-column label="模型存放路径" prop="path" /> -->
-      <el-table-column :label="$t('ai.moxingzhixindu')" prop="score" />
-      <el-table-column :label="$t('ai.caozuo')" width="700">
+      <el-table-column :label="$t('ai.moxingzhixindu')" prop="score" width="100" />
+      <el-table-column
+        :label="$t('ai.caozuo')"
+        width="700"
+        show-overflow-tooltip
+        fixed="right"
+      >
         <template slot-scope="scope">
           <el-button
             v-if="checkPermission(['aiModel/enable'])"
@@ -318,7 +323,7 @@
       <el-table
         ref="historyTable"
         v-loading="listLoading"
-        :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
+        :header-cell-style="{background: 'rgb(22, 144, 255)', textAlign: 'center', color: 'white'}"
         :data="alarmHisList"
         stripe
         highlight-current-row
@@ -347,7 +352,7 @@
         <el-table-column :label="$t('ai.yinpin')" width="320">
           <template slot-scope="scope">
             <audio v-if="scope.row.oggPath && scope.row.audioPath" :id="scope.row.id" controls="controls">
-              <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggPath">
+              <source :src="'http://192.168.8.131/uploadAudio/' + scope.row.oggPath">
               <source :src="scope.row.fileName">
             </audio>
           </template>
@@ -1315,7 +1320,7 @@ export default {
     AiWs(data) {
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
+        this.websocket = new WebSocket('ws://192.168.8.131:9005/')
 
         // 当有消息过来的时候触发
         const that = this

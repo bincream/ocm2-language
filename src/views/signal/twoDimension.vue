@@ -1064,7 +1064,7 @@ export default {
     createWs1() { // 监听
       if (window.WebSocket) {
         // this.WebSocket1 = new WebSocket1('ws://' + process.env.LINK_API)
-        this.websocket1 = new WebSocket('ws://192.168.8.100:9005/')
+        this.websocket1 = new WebSocket('ws://192.168.8.131:9005/')
         this.contextAudio = new AudioContext()
 
         // 当有消息过来的时候触发
@@ -1100,7 +1100,7 @@ export default {
     createWs() { // 二维振动ws
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LIN K_API)
-        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
+        this.websocket = new WebSocket('ws://192.168.8.131:9005/')
 
         // 当有消息过来的时候触发
         const that = this
@@ -1159,16 +1159,15 @@ export default {
   margin-bottom: 100px;
 }
 .title {
+  height: 40px;
   position: relative;
-  margin-left: 20px;
+  margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  line-height:42px;
-  font-size:30px;
-  font-weight:500;
+  font-size:22px;
   color:rgba(0,0,0,1);
-  margin-top: 20px
+  line-height:42px;
 }
 
 .radio-label {

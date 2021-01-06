@@ -30,7 +30,7 @@
     <el-table
       ref="typeTable"
       v-loading="listLoading"
-      :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
+      :header-cell-style="{background: 'rgb(22, 144, 255)', textAlign: 'center', color: 'white'}"
       :data="list"
       stripe
       :row-style="{textAlign: 'center'}"
@@ -287,7 +287,7 @@
             <td class="blackMark">{{ $t('ai.yinpin:') }}</td>
             <td class="width21">
               <audio v-if="item.oggUrl" :id="item.id" controls="controls">
-                <source :src="'http://192.168.8.100/uploadAudio/' + item.oggUrl">
+                <source :src="'http://192.168.8.131/uploadAudio/' + item.oggUrl">
                 <!-- <source :src="scope.row.fileName"> -->
               </audio>
             </td>
@@ -322,7 +322,7 @@
           </div>
           <el-table
             ref="audioTable"
-            :header-cell-style="{background: 'rgb(22, 159, 231)', textAlign: 'center', color: 'white'}"
+            :header-cell-style="{background: 'rgb(22, 144, 255)', textAlign: 'center', color: 'white'}"
             :data="audioList"
             stripe
             highlight-current-row
@@ -334,7 +334,7 @@
             <el-table-column :label="$t('ai.yinpin')" width="320">
               <template slot-scope="scope">
                 <audio v-if="scope.row.oggUrl" :id="scope.row.id" controls="controls">
-                  <source :src="'http://192.168.8.100/uploadAudio/' + scope.row.oggUrl">
+                  <source :src="'http://192.168.8.131/uploadAudio/' + scope.row.oggUrl">
                   <source :src="scope.row.fileName">
                 </audio>
               </template>

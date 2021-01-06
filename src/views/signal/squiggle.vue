@@ -115,7 +115,7 @@ export default {
     createWs() { // 二维振动ws
       if (window.WebSocket) {
         // this.websocket = new WebSocket('ws://' + process.env.LINK_API)
-        this.websocket = new WebSocket('ws://192.168.8.100:9005/')
+        this.websocket = new WebSocket('ws://192.168.8.131:9005/')
 
         // 当有消息过来的时候触发
         const that = this
@@ -310,7 +310,6 @@ export default {
 .chart-container {
   width: 100%;
   height: calc(100vh - 84px);
-  margin-bottom: 150px;
 }
 .radio-label {
   font-size: 18px;
